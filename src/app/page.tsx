@@ -12,14 +12,14 @@ import { Search, MapPin, Users, Star, Share2, Heart, Phone, Eye } from 'lucide-r
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import placeholderImages from '@/lib/placeholder-images.json';
 import { useToast } from '@/hooks/use-toast';
-import { useUser, useFirestore } from '@/firebase';
-import { doc, updateDoc, arrayUnion, arrayRemove, getDoc } from 'firebase/firestore';
-import { useState, useEffect } from 'react';
+import { useUser, useFirestore, useCollection } from '@/firebase';
+import { doc, updateDoc, arrayUnion, arrayRemove, getDoc, collection, query } from 'firebase/firestore';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import { PropertyCard } from '@/components/PropertyCard';
 
 
 const cities = placeholderImages.cities;
-const properties = placeholderImages.properties;
 const testimonials = placeholderImages.testimonials;
 const benefits = placeholderImages.benefits;
 
@@ -28,6 +28,14 @@ export default function HomePage() {
   const [location, setLocation] = useState('');
   const [propertyType, setPropertyType] = useState('');
   const router = useRouter();
+  
+  const firestore = useFirestore();
+  const propertiesQuery = useMemo(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'properties'));
+  }, [firestore]);
+
+  const { data: properties, isLoading: isLoadingProperties } = useCollection(propertiesQuery as any);
 
   const handleSearch = () => {
     const query = new URLSearchParams();
@@ -113,17 +121,29 @@ export default function HomePage() {
         <section className="py-12 bg-background">
           <div className="container mx-auto">
             <h2 className="text-3xl font-bold mb-6">Trending Properties in Varanasi</h2>
-            <Carousel opts={{ align: "start", loop: true }}>
-              <CarouselContent>
-                {properties.concat(properties).map((prop, index) => (
-                  <CarouselItem key={`${prop.id}-${index}`} className="md:basis-1/2 lg:basis-1/3">
-                    <PropertyCard {...prop} />
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="left-[-20px]" />
-              <CarouselNext className="right-[-20px]" />
-            </Carousel>
+            {isLoadingProperties ? <p>Loading...</p> : 
+              <Carousel opts={{ align: "start", loop: true }}>
+                <CarouselContent>
+                  {properties?.map((prop, index) => (
+                    <CarouselItem key={`${prop.id}-${index}`} className="md:basis-1/2 lg:basis-1/3">
+                      <PropertyCard 
+                        id={prop.id}
+                        title={prop.title}
+                        location={prop.location}
+                        amenities={prop.amenities || ''}
+                        securityDeposit={prop.securityDeposit || 0}
+                        price={prop.price}
+                        views={prop.views || 0}
+                        image={{src: prop.imageUrls?.[0] || `https://picsum.photos/seed/${prop.id}/400/250`, hint: 'property'}}
+                        rating={prop.rating || 4}
+                      />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-[-20px]" />
+                <CarouselNext className="right-[-20px]" />
+              </Carousel>
+            }
           </div>
         </section>
 
@@ -133,17 +153,29 @@ export default function HomePage() {
               <Users className="mr-3 text-primary h-8 w-8" />
               RoomLelo Recommendations
             </h2>
-            <Carousel opts={{ align: "start", loop: true }}>
-              <CarouselContent>
-                {properties.map((prop, index) => (
-                  <CarouselItem key={`${prop.id}-${index}`} className="md:basis-1/2 lg:basis-1/3">
-                    <PropertyCard {...prop} />
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="left-[-20px]" />
-              <CarouselNext className="right-[-20px]" />
-            </Carousel>
+             {isLoadingProperties ? <p>Loading...</p> : 
+              <Carousel opts={{ align: "start", loop: true }}>
+                <CarouselContent>
+                  {properties?.slice(0, 3).map((prop, index) => (
+                     <CarouselItem key={`${prop.id}-${index}`} className="md:basis-1/2 lg:basis-1/3">
+                       <PropertyCard 
+                        id={prop.id}
+                        title={prop.title}
+                        location={prop.location}
+                        amenities={prop.amenities || ''}
+                        securityDeposit={prop.securityDeposit || 0}
+                        price={prop.price}
+                        views={prop.views || 0}
+                        image={{src: prop.imageUrls?.[0] || `https://picsum.photos/seed/${prop.id}/400/250`, hint: 'property'}}
+                        rating={prop.rating || 4}
+                      />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-[-20px]" />
+                <CarouselNext className="right-[-20px]" />
+              </Carousel>
+            }
           </div>
         </section>
 
@@ -192,134 +224,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-const PropertyCard = ({ id, title, location, amenities, securityDeposit, price, views, image, rating }: {
-  id: string; // Changed to string to match firestore id
-  title: string;
-  location: string;
-  amenities: string;
-  securityDeposit: number;
-  price: number;
-  views: number;
-  image: { src: string; hint: string };
-  rating: number;
-}) => {
-  const { toast } = useToast();
-  const { user } = useUser();
-  const firestore = useFirestore();
-  const router = useRouter();
-  const [isFavorite, setIsFavorite] = useState(false);
-
-  useEffect(() => {
-    if (user) {
-      const userRef = doc(firestore, 'users', user.uid);
-      getDoc(userRef).then(docSnap => {
-        if (docSnap.exists()) {
-          const userData = docSnap.data();
-          if (userData.favorites && userData.favorites.includes(id)) {
-            setIsFavorite(true);
-          }
-        }
-      });
-    }
-  }, [user, firestore, id]);
-
-  const handleShare = () => {
-    navigator.clipboard.writeText(`${window.location.origin}/properties/${id}`);
-    toast({
-      title: "Link Copied!",
-      description: "Property link has been copied to your clipboard.",
-    });
-  };
-
-  const handleCall = () => {
-    toast({
-      title: "Contact Owner",
-      description: "Functionality to call the owner will be implemented soon.",
-    });
-  };
-
-  const handleVisit = () => {
-    router.push(`/properties/${id}`);
-  };
-  
-  const handleFavorite = async () => {
-    if (!user) {
-      toast({
-        variant: "destructive",
-        title: "Login Required",
-        description: "Please login to add properties to your favorites.",
-      });
-      router.push('/login');
-      return;
-    }
-    const userRef = doc(firestore, 'users', user.uid);
-    try {
-      if (isFavorite) {
-        await updateDoc(userRef, {
-          favorites: arrayRemove(id)
-        });
-        toast({
-          title: "Removed from Favorites",
-        });
-        setIsFavorite(false);
-      } else {
-        await updateDoc(userRef, {
-          favorites: arrayUnion(id)
-        });
-        toast({
-          title: "Added to Favorites!",
-        });
-        setIsFavorite(true);
-      }
-    } catch(e: any) {
-       console.error("Favorite toggle error: ", e);
-       toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Could not update favorites. Please try again.",
-      });
-    }
-  };
-
-
-  return (
-    <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 h-full flex flex-col">
-      <CardContent className="p-0 flex-grow flex flex-col">
-        <div className="relative">
-          <Image src={image.src} alt={title} width={400} height={250} className="w-full object-cover h-48" data-ai-hint={image.hint} />
-          <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded-md flex items-center">
-              <Star className="w-3 h-3 mr-1 fill-yellow-400 text-yellow-400" /> {rating}
-          </div>
-        </div>
-        <div className="p-4 flex flex-col flex-grow">
-          <div className="flex justify-between items-start">
-            <h3 className="font-bold text-lg flex-1 mr-2">{title}</h3>
-            <div className="flex space-x-1">
-              <Button variant="ghost" size="icon" className="w-8 h-8" onClick={handleShare}><Share2 className="w-4 h-4" /></Button>
-              <Button variant="ghost" size="icon" className="w-8 h-8" onClick={handleFavorite}>
-                <Heart className={`w-4 h-4 ${isFavorite ? 'text-red-500 fill-current' : ''}`} />
-              </Button>
-            </div>
-          </div>
-          <p className="text-sm text-muted-foreground flex items-center mt-1"><MapPin className="w-4 h-4 mr-1" /> {location}</p>
-          <p className="text-sm my-2 flex-grow">{amenities}</p>
-          <p className="text-sm font-semibold">Security Deposit: ₹{securityDeposit.toLocaleString()}</p>
-          <div className="flex items-center text-sm text-amber-600 my-2">
-              <Eye className="w-4 h-4 mr-1" /> {views} people already view this property, Hurr...
-          </div>
-          <div className="flex justify-between items-center mt-auto pt-4">
-            <div>
-              <p className="text-xs text-muted-foreground">Starting at:</p>
-              <p className="font-bold text-lg">₹{price.toLocaleString()}/Month</p>
-            </div>
-            <div className="flex space-x-2">
-              <Button variant="outline" onClick={handleCall}><Phone className="w-4 h-4 mr-2" /> Call</Button>
-              <Button onClick={handleVisit}>Visit</Button>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
