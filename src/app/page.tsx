@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -8,74 +10,29 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, MapPin, BedDouble, Users, Star, ChevronLeft, ChevronRight, Share2, Heart, Phone, Eye } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import placeholderImages from '@/lib/placeholder-images.json';
 
-const cities = [
-  { name: 'Varanasi', img: '/varanasi.jpg' },
-  { name: 'Lucknow', img: '/lucknow.jpg' },
-  { name: 'Prayagraj', img: '/prayagraj.jpg' },
-  { name: 'Patna', img: '/patna.jpg' },
-];
+const cities = placeholderImages.cities;
+const properties = placeholderImages.properties;
+const testimonials = placeholderImages.testimonials;
+const benefits = placeholderImages.benefits;
 
-const properties = [
-  {
-    id: 1,
-    title: 'Homes 39',
-    location: 'Lanka (Varanasi)',
-    amenities: 'With standard amenities like Bed, Matters, Tabl...',
-    securityDeposit: 20000,
-    price: 20000,
-    views: 268,
-    image: '/property1.jpg',
-    rating: 0
-  },
-  {
-    id: 2,
-    title: 'Homes 38',
-    location: 'Lanka (Varanasi)',
-    amenities: 'Fully Independent Furnished 2BHK Flats Near Hy...',
-    securityDeposit: 20000,
-    price: 20000,
-    views: 121,
-    image: '/property2.jpg',
-    rating: 0
-  },
-];
-
-const testimonials = [
-    {
-        name: 'Rajneesh Kumar',
-        role: 'Tenant in RIl homes01',
-        text: 'When I moved to a completely new city from my hometown, RoomLelo really helped me to find an affordable place to live and assisted me with other requirements. Great Initiative.',
-        avatar: '/avatar1.png'
-    },
-    {
-        name: 'Suryansh Kumar',
-        role: 'Tenant in RIl homes02',
-        text: 'Cannot be more thankful to you RoomLelo for your existence. Saved my time, effort and money by simply booking the flat online from your website. Move-in was quick and easy.',
-        avatar: '/avatar2.png'
-    },
-    {
-        name: 'Swapnil',
-        role: 'Tenant in Sparsh apartment',
-        text: 'Once my fan got out of order in the late evening, they solved it within an hour. Kept their promise of quick maintenance.',
-        avatar: '/avatar3.png'
-    }
-];
-
-const benefits = [
-  { title: 'Free Listing', description: 'You won\'t have to worry about paying any amount for better audience engagement unlike other property search platforms.', icon: '/benefit1.png' },
-  { title: 'Rent on Time', description: 'You won\'t have to worry about rent delays or defaults, once associated with us.', icon: '/benefit2.png' },
-  { title: 'Verified tenants', description: 'You won\'t have to worry about problematic tenants or possession of valid Identity Proof of Tenant\'s, once associated with us.', icon: '/benefit3.png' },
-  { title: 'Owners Dashboard', description: 'You will get to access all relevant details from your customized dashboard on our exclusive Partners app.', icon: '/benefit4.png' },
-]
 
 export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
       <main className="flex-grow">
-        <section className="relative h-[400px] bg-cover bg-center text-white" style={{ backgroundImage: "url('/hero-bg.png')"}}>
-            <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+        <section className="relative h-[400px] bg-cover bg-center text-white">
+          <Image
+              src={placeholderImages.hero.src}
+              alt="Hero background"
+              fill
+              style={{ objectFit: 'cover' }}
+              className="absolute inset-0"
+              data-ai-hint="apartment building"
+            />
+            <div className="absolute inset-0 bg-black bg-opacity-40"></div>
             <div className="relative z-10 flex flex-col items-center justify-center h-full">
                 <div className="bg-white rounded-lg shadow-lg p-4 lg:p-6 w-full max-w-4xl mx-auto mt-auto mb-[-60px]">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
@@ -127,7 +84,7 @@ export default function HomePage() {
             <div className="flex justify-center space-x-8">
               {cities.map(city => (
                 <div key={city.name} className="text-center">
-                  <Image src={city.img} alt={city.name} width={100} height={100} className="rounded-full mx-auto" />
+                  <Image src={city.img.src} alt={city.name} width={100} height={100} className="rounded-full mx-auto" data-ai-hint={city.img.hint} />
                   <p className="mt-2 font-semibold">{city.name}</p>
                   {city.name !== 'Varanasi' && city.name !== 'Lucknow' && <p className="text-xs text-gray-500">(Coming Soon)</p>}
                 </div>
@@ -182,7 +139,7 @@ export default function HomePage() {
                         <Card key={testimonial.name} className="bg-white text-center p-6 shadow-lg">
                             <CardContent>
                                 <p className="text-gray-600 mb-6">&quot;{testimonial.text}&quot;</p>
-                                <Image src={testimonial.avatar} alt={testimonial.name} width={60} height={60} className="rounded-full mx-auto mb-4" />
+                                <Image src={testimonial.avatar.src} alt={testimonial.name} width={60} height={60} className="rounded-full mx-auto mb-4" data-ai-hint={testimonial.avatar.hint} />
                                 <h4 className="font-bold">{testimonial.name}</h4>
                                 <p className="text-sm text-gray-500">{testimonial.role}</p>
                             </CardContent>
@@ -198,7 +155,7 @@ export default function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {benefits.map(benefit => (
                 <div key={benefit.title} className="flex items-start">
-                  <Image src={benefit.icon} alt={benefit.title} width={60} height={60} className="mr-4" />
+                  <Image src={benefit.icon.src} alt={benefit.title} width={60} height={60} className="mr-4" data-ai-hint={benefit.icon.hint} />
                   <div>
                     <h4 className="font-bold text-lg mb-2">{benefit.title}</h4>
                     <p className="text-gray-600 text-sm">{benefit.description}</p>
@@ -217,11 +174,21 @@ export default function HomePage() {
   );
 }
 
-const PropertyCard = ({ title, location, amenities, securityDeposit, price, views, image, rating }: (typeof properties)[0]) => (
+const PropertyCard = ({ title, location, amenities, securityDeposit, price, views, image, rating }: {
+  id: number;
+  title: string;
+  location: string;
+  amenities: string;
+  securityDeposit: number;
+  price: number;
+  views: number;
+  image: { src: string; hint: string };
+  rating: number;
+}) => (
   <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
     <CardContent className="p-0">
       <div className="relative">
-        <Image src={image} alt={title} width={400} height={250} className="w-full object-cover" />
+        <Image src={image.src} alt={title} width={400} height={250} className="w-full object-cover" data-ai-hint={image.hint} />
         <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded-md flex items-center">
             <Star className="w-3 h-3 mr-1" /> {rating}
         </div>
@@ -254,3 +221,5 @@ const PropertyCard = ({ title, location, amenities, securityDeposit, price, view
     </CardContent>
   </Card>
 );
+
+    

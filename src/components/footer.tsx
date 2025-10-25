@@ -2,13 +2,15 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from './ui/button';
 import { Mail, Phone, MapPin, Youtube, Instagram, Facebook, Linkedin, Twitter } from 'lucide-react';
+import placeholderImages from '@/lib/placeholder-images.json';
+
 
 export default function Footer() {
   return (
     <footer className="bg-cyan-50 text-gray-800 pt-12">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 px-4">
         <div>
-          <Image src="/logo.png" alt="RoomLelo Logo" width={60} height={60} className="mb-4" />
+          <Image src={placeholderImages.footer.logo.src} alt="RoomLelo Logo" width={60} height={60} className="mb-4" data-ai-hint={placeholderImages.footer.logo.hint} />
           <p className="text-sm">
             RoomLelo is an online home rental aggregation platform executing tech based solutions for individuals in need of independent and comfortable living spaces...
           </p>
@@ -32,7 +34,7 @@ export default function Footer() {
         <div>
           <h4 className="font-bold mb-4">Install App</h4>
           <Link href="#">
-            <Image src="/google-play.png" alt="Get it on Google Play" width={150} height={50} />
+            <Image src={placeholderImages.footer.playStore.src} alt="Get it on Google Play" width={150} height={50} data-ai-hint={placeholderImages.footer.playStore.hint}/>
           </Link>
         </div>
       </div>
@@ -59,3 +61,5 @@ export default function Footer() {
     </footer>
   );
 }
+
+    

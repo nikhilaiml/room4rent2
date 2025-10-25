@@ -4,11 +4,11 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "User",
       "type": "object",
-      "description": "Represents a user of the ScholarSage application.",
+      "description": "Represents a user of the RoomLelo application.",
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the user."
+          "description": "Unique identifier for the user (matches Firebase Auth UID)."
         },
         "email": {
           "type": "string",
@@ -18,211 +18,134 @@
         "name": {
           "type": "string",
           "description": "Full name of the user."
+        },
+        "role": {
+          "type": "string",
+          "description": "Role of the user in the system.",
+          "enum": ["tenant", "owner", "admin"]
         }
       },
-      "required": [
-        "id",
-        "email",
-        "name"
-      ]
+      "required": ["id", "email", "name", "role"]
     },
-    "Document": {
+    "Property": {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Document",
+      "title": "Property",
       "type": "object",
-      "description": "Represents a document uploaded by a user.",
+      "description": "Represents a property listing.",
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the document."
+          "description": "Unique identifier for the property."
         },
-        "userId": {
+        "ownerId": {
           "type": "string",
-          "description": "Reference to the User who uploaded the document. (Relationship: User 1:N Document)"
+          "description": "Reference to the User who owns the property."
         },
         "title": {
           "type": "string",
-          "description": "Title of the document."
+          "description": "Title of the property listing."
         },
-        "uploadDate": {
+        "description": {
           "type": "string",
-          "description": "Date and time when the document was uploaded.",
+          "description": "Detailed description of the property."
+        },
+        "city": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string",
+          "description": "Specific locality or address."
+        },
+        "price": {
+          "type": "number",
+          "description": "Monthly rent."
+        },
+        "propertyType": {
+          "type": "string",
+          "enum": ["Room", "1BHK", "2BHK", "PG", "Hostel"]
+        },
+        "amenities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "imageUrls": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "createdAt": {
+          "type": "string",
           "format": "date-time"
-        },
-        "contentType": {
-          "type": "string",
-          "description": "MIME type of the document (e.g., application/pdf, text/plain)."
-        },
-        "contentUrl": {
-          "type": "string",
-          "description": "URL or path where the document content is stored.",
-          "format": "uri"
         }
       },
       "required": [
         "id",
-        "userId",
+        "ownerId",
         "title",
-        "uploadDate",
-        "contentType",
-        "contentUrl"
+        "city",
+        "location",
+        "price",
+        "propertyType"
       ]
     },
-    "Summary": {
+    "Enquiry": {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Summary",
+      "title": "Enquiry",
       "type": "object",
-      "description": "Represents a AI-generated summary of a document.",
+      "description": "Represents an enquiry made by a tenant for a property.",
       "properties": {
         "id": {
-          "type": "string",
-          "description": "Unique identifier for the document summary."
+          "type": "string"
         },
-        "documentId": {
-          "type": "string",
-          "description": "Reference to the Document the summary belongs to. (Relationship: Document 1:1 Summary)"
+        "propertyId": {
+          "type": "string"
         },
-        "content": {
-          "type": "string",
-          "description": "The actual content of the generated summary."
+        "tenantId": {
+          "type": "string"
         },
-        "generationDate": {
+        "ownerId": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "createdAt": {
           "type": "string",
-          "description": "Date and time when the summary was generated.",
           "format": "date-time"
         }
       },
-      "required": [
-        "id",
-        "documentId",
-        "content",
-        "generationDate"
-      ]
-    },
-    "Citation": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Citation",
-      "type": "object",
-      "description": "Represents a citation extracted from a document.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the citation."
-        },
-        "documentId": {
-          "type": "string",
-          "description": "Reference to the Document the citation belongs to. (Relationship: Document 1:N Citation)"
-        },
-        "content": {
-          "type": "string",
-          "description": "The citation text extracted from the document."
-        },
-        "context": {
-          "type": "string",
-          "description": "The context of the citation in the document."
-        }
-      },
-      "required": [
-        "id",
-        "documentId",
-        "content",
-        "context"
-      ]
+      "required": ["id", "propertyId", "tenantId", "ownerId", "message", "createdAt"]
     }
   },
   "auth": {
     "providers": [
-      "password",
-      "anonymous"
+      "password"
     ]
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/users/{userId}",
-        "definition": {
-          "entityName": "User",
-          "schema": {
-            "$ref": "#/backend/entities/User"
-          },
-          "description": "Stores user profiles.  Owned by the user.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user."
-            }
-          ]
-        }
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/User"
       },
-      {
-        "path": "/users/{userId}/documents/{documentId}",
-        "definition": {
-          "entityName": "Document",
-          "schema": {
-            "$ref": "#/backend/entities/Document"
-          },
-          "description": "Stores documents uploaded by a specific user.  Owned by the user.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user."
-            },
-            {
-              "name": "documentId",
-              "description": "The unique identifier of the document."
-            }
-          ]
-        }
+      "description": "Stores user profile information."
+    },
+    "/properties/{propertyId}": {
+      "schema": {
+        "$ref": "#/entities/Property"
       },
-      {
-        "path": "/users/{userId}/documents/{documentId}/summaries/{summaryId}",
-        "definition": {
-          "entityName": "Summary",
-          "schema": {
-            "$ref": "#/backend/entities/Summary"
-          },
-          "description": "Stores AI-generated summaries for a specific document.  Owned by the user who owns the parent document.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user."
-            },
-            {
-              "name": "documentId",
-              "description": "The unique identifier of the document."
-            },
-            {
-              "name": "summaryId",
-              "description": "The unique identifier of the summary."
-            }
-          ]
-        }
+      "description": "Stores all property listings."
+    },
+    "/properties/{propertyId}/enquiries/{enquiryId}": {
+      "schema": {
+        "$ref": "#/entities/Enquiry"
       },
-      {
-        "path": "/users/{userId}/documents/{documentId}/citations/{citationId}",
-        "definition": {
-          "entityName": "Citation",
-          "schema": {
-            "$ref": "#/backend/entities/Citation"
-          },
-          "description": "Stores citations extracted from a specific document.  Owned by the user who owns the parent document.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user."
-            },
-            {
-              "name": "documentId",
-              "description": "The unique identifier of the document."
-            },
-            {
-              "name": "citationId",
-              "description": "The unique identifier of the citation."
-            }
-          ]
-        }
-      }
-    ],
-    "reasoning": "The Firestore structure is designed to ensure Authorization Independence, support QAPs, and maintain data integrity. User data and their associated documents, summaries, and citations are organized under user-specific collections for enhanced security and scalability. Denormalization is employed to avoid complex `get()` calls in security rules, promoting atomic operations and easier debugging.\n\nSpecifically, documents are stored under `/users/{userId}/documents/{documentId}`. This enables simple, path-based authorization rules to ensure only the owner can access a document. The Summary and Citation subcollections under each document (`/users/{userId}/documents/{documentId}/summaries/{summaryId}`, `/users/{userId}/documents/{documentId}/citations/{citationId}`) inherit the document's access control, maintaining the user's ownership context without needing complex rule logic.\n\nThis structure effectively segregates user data, preventing unauthorized access and supporting efficient QAPs. List operations are secure because each user can only list documents and related subcollections within their own user path. There is no need for filtering in rules since the structure inherently limits access based on the authenticated user's ID."
+      "description": "Stores enquiries for a specific property."
+    }
   }
 }
+
+    

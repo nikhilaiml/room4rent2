@@ -1,0 +1,153 @@
+{
+  "hero": {
+    "src": "https://picsum.photos/seed/hero/1200/400",
+    "hint": "apartment building exterior"
+  },
+  "cities": [
+    {
+      "name": "Varanasi",
+      "img": {
+        "src": "https://picsum.photos/seed/varanasi/200/200",
+        "hint": "Varanasi ghat"
+      }
+    },
+    {
+      "name": "Lucknow",
+      "img": {
+        "src": "https://picsum.photos/seed/lucknow/200/200",
+        "hint": "Lucknow architecture"
+      }
+    },
+    {
+      "name": "Prayagraj",
+      "img": {
+        "src": "https://picsum.photos/seed/prayagraj/200/200",
+        "hint": "Prayagraj bridge"
+      }
+    },
+    {
+      "name": "Patna",
+      "img": {
+        "src": "https://picsum.photos/seed/patna/200/200",
+        "hint": "Patna cityscape"
+      }
+    }
+  ],
+  "properties": [
+    {
+      "id": 1,
+      "title": "Modern Apartment in Lanka",
+      "location": "Lanka, Varanasi",
+      "amenities": "With standard amenities like Bed, Mattress, Table...",
+      "securityDeposit": 20000,
+      "price": 20000,
+      "views": 268,
+      "image": {
+        "src": "https://picsum.photos/seed/prop1/400/250",
+        "hint": "modern apartment interior"
+      },
+      "rating": 4.5
+    },
+    {
+      "id": 2,
+      "title": "Cozy Flat near Assi Ghat",
+      "location": "Assi Ghat, Varanasi",
+      "amenities": "Fully Independent Furnished 2BHK Flat...",
+      "securityDeposit": 22000,
+      "price": 22000,
+      "views": 121,
+      "image": {
+        "src": "https://picsum.photos/seed/prop2/400/250",
+        "hint": "cozy apartment living room"
+      },
+      "rating": 4.2
+    },
+    {
+      "id": 3,
+      "title": "Spacious PG in Sigra",
+      "location": "Sigra, Varanasi",
+      "amenities": "Shared rooms with attached washroom and meals...",
+      "securityDeposit": 10000,
+      "price": 8000,
+      "views": 350,
+      "image": {
+        "src": "https://picsum.photos/seed/prop3/400/250",
+        "hint": "student hostel room"
+      },
+      "rating": 4
+    }
+  ],
+  "testimonials": [
+    {
+      "name": "Rajneesh Kumar",
+      "role": "Tenant in Varanasi",
+      "text": "When I moved to a completely new city from my hometown, RoomLelo really helped me to find an affordable place to live and assisted me with other requirements. Great Initiative.",
+      "avatar": {
+        "src": "https://picsum.photos/seed/avatar1/100/100",
+        "hint": "happy person"
+      }
+    },
+    {
+      "name": "Suryansh Kumar",
+      "role": "Tenant in Lucknow",
+      "text": "Cannot be more thankful to you RoomLelo for your existence. Saved my time, effort and money by simply booking the flat online from your website. Move-in was quick and easy.",
+      "avatar": {
+        "src": "https://picsum.photos/seed/avatar2/100/100",
+        "hint": "smiling student"
+      }
+    },
+    {
+      "name": "Swapnil Singh",
+      "role": "Tenant in a PG",
+      "text": "Once my fan got out of order in the late evening, they solved it within an hour. Kept their promise of quick maintenance.",
+      "avatar": {
+        "src": "https://picsum.photos/seed/avatar3/100/100",
+        "hint": "professional headshot"
+      }
+    }
+  ],
+  "benefits": [
+    {
+      "title": "Free Listing",
+      "description": "You won't have to worry about paying any amount for better audience engagement unlike other property search platforms.",
+      "icon": {
+        "src": "https://picsum.photos/seed/benefit1/60/60",
+        "hint": "free tag"
+      }
+    },
+    {
+      "title": "Rent on Time",
+      "description": "You won't have to worry about rent delays or defaults, once associated with us.",
+      "icon": {
+        "src": "https://picsum.photos/seed/benefit2/60/60",
+        "hint": "calendar money"
+      }
+    },
+    {
+      "title": "Verified tenants",
+      "description": "You won't have to worry about problematic tenants or possession of valid Identity Proof of Tenant's, once associated with us.",
+      "icon": {
+        "src": "https://picsum.photos/seed/benefit3/60/60",
+        "hint": "verified user"
+      }
+    },
+    {
+      "title": "Owners Dashboard",
+      "description": "You will get to access all relevant details from your customized dashboard on our exclusive Partners app.",
+      "icon": {
+        "src": "https://picsum.photos/seed/benefit4/60/60",
+        "hint": "dashboard chart"
+      }
+    }
+  ],
+  "footer": {
+    "logo": {
+      "src": "https://picsum.photos/seed/logo/60/60",
+      "hint": "company logo"
+    },
+    "playStore": {
+      "src": "https://picsum.photos/seed/playstore/150/50",
+      "hint": "google play"
+    }
+  }
+}

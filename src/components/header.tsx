@@ -6,6 +6,7 @@ import { useUser, useAuth } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
 import { User, LogIn, Briefcase } from 'lucide-react';
+import placeholderImages from '@/lib/placeholder-images.json';
 
 export default function Header() {
   const { user, isUserLoading } = useUser();
@@ -21,7 +22,7 @@ export default function Header() {
     <header className="bg-white border-b border-border sticky top-0 z-50">
       <div className="container mx-auto flex items-center justify-between p-4">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.png" alt="RoomLelo Logo" width={40} height={40} />
+          <Image src={placeholderImages.footer.logo.src} alt="RoomLelo Logo" width={40} height={40} data-ai-hint={placeholderImages.footer.logo.hint} />
           <span className="text-xl font-bold">RoomLelo</span>
         </Link>
         <div className="flex items-center gap-4">
@@ -55,3 +56,5 @@ export default function Header() {
     </header>
   );
 }
+
+    
