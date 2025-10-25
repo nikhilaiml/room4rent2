@@ -28,6 +28,7 @@ import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/header';
+import Footer from '@/components/footer';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -56,12 +57,10 @@ export default function RegisterPage() {
       const user = userCredential.user;
 
       if (user) {
-        // Update user profile
         await updateProfile(user, {
           displayName: values.name,
         });
 
-        // Create user document in Firestore
         const userRef = doc(firestore, 'users', user.uid);
         await setDoc(userRef, {
           id: user.uid,
@@ -88,10 +87,10 @@ export default function RegisterPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <div className="flex-grow flex items-center justify-center">
+      <div className="flex-grow flex items-center justify-center py-12">
         <Card className="w-full max-w-md mx-4">
           <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-2xl font-headline">Create an account</CardTitle>
+            <CardTitle className="text-2xl">Create an account</CardTitle>
             <CardDescription>Enter your details below to create your account</CardDescription>
           </CardHeader>
           <Form {...form}>
@@ -152,6 +151,7 @@ export default function RegisterPage() {
           </Form>
         </Card>
       </div>
+      <Footer />
     </div>
   );
 }

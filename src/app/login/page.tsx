@@ -28,6 +28,7 @@ import { useRouter } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/header';
+import Footer from '@/components/footer';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -68,10 +69,10 @@ export default function LoginPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <div className="flex-grow flex items-center justify-center">
+      <div className="flex-grow flex items-center justify-center py-12">
         <Card className="w-full max-w-md mx-4">
           <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-2xl font-headline">Login</CardTitle>
+            <CardTitle className="text-2xl">Login</CardTitle>
             <CardDescription>Enter your email below to login to your account</CardDescription>
           </CardHeader>
           <Form {...form}>
@@ -119,6 +120,7 @@ export default function LoginPage() {
           </Form>
         </Card>
       </div>
+      <Footer />
     </div>
   );
 }
