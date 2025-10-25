@@ -1,14 +1,14 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore, useCollection } from '@/firebase';
+import { useUser, useFirestore, useCollection, useDoc } from '@/firebase';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlusCircle, BedDouble, Heart, Building } from 'lucide-react';
-import { collection, query, where, doc } from 'firebase/firestore';
+import { collection, query, where, doc, documentId } from 'firebase/firestore';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -21,16 +21,15 @@ interface Property {
   propertyType: string;
 }
 
+interface UserProfile {
+    role: string;
+    favorites?: string[];
+}
+
 export default function DashboardPage() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
   const firestore = useFirestore();
-
-  // Fetch user's role from firestore
-  // This is a simplified way. Ideally, you'd use useDoc and have user profile data.
-  // For now, let's assume we get the role from the user's document.
-  // The registration process already saves this.
-  const [userProfile, setUserProfile] = useState<{ role: string, favorites?: string[] } | null>(null);
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -38,32 +37,33 @@ export default function DashboardPage() {
     }
   }, [user, isUserLoading, router]);
   
-  useEffect(() => {
-    if(user) {
-      const userDocRef = doc(firestore, 'users', user.uid);
-      const unsub = require('firebase/firestore').onSnapshot(userDocRef, (doc: any) => {
-        if (doc.exists()) {
-           setUserProfile(doc.data() as { role: string, favorites?: string[] });
-        }
-      });
-      return () => unsub();
-    }
-  }, [user, firestore]);
+  const userDocRef = useMemo(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userDocRef);
 
   const propertiesQuery = useMemo(() => {
     if (!firestore || !user || !userProfile) return null;
+
     if (userProfile.role === 'owner') {
       return query(collection(firestore, 'properties'), where('ownerId', '==', user.uid));
     }
-    if (userProfile.role === 'tenant' && userProfile.favorites && userProfile.favorites.length > 0) {
-        return query(collection(firestore, 'properties'), where(require('firebase/firestore').documentId(), 'in', userProfile.favorites));
+    if (userProfile.role === 'tenant') {
+        if (userProfile.favorites && userProfile.favorites.length > 0) {
+            return query(collection(firestore, 'properties'), where(documentId(), 'in', userProfile.favorites));
+        }
+        // Tenant with no favorites yet, return a query that finds nothing.
+        // Or return null to show the "no favorites" message immediately.
+        return null;
     }
     return null;
   }, [firestore, user, userProfile]);
 
-  const { data: properties, isLoading: isLoadingProperties } = useCollection<Property>(propertiesQuery as any);
+  const { data: properties, isLoading: isLoadingProperties } = useCollection<Property>(propertiesQuery);
 
-  if (isUserLoading || !user || !userProfile) {
+  if (isUserLoading || isProfileLoading || !userProfile) {
     return (
        <div className="flex flex-col min-h-screen">
         <Header />
