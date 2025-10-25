@@ -1,0 +1,168 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Represents a user of the application.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The user's full name."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The user's email address."
+        },
+        "role": {
+          "type": "string",
+          "description": "The role of the user.",
+          "enum": [
+            "admin",
+            "owner",
+            "tenant"
+          ]
+        }
+      },
+      "required": [
+        "name",
+        "email",
+        "role"
+      ]
+    },
+    "Property": {
+      "title": "Property",
+      "description": "Represents a property listing.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "The ID of the user who owns the property."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the property listing."
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the property."
+        },
+        "city": {
+          "type": "string",
+          "description": "The city where the property is located."
+        },
+        "locality": {
+          "type": "string",
+          "description": "The specific locality or neighborhood."
+        },
+        "rent": {
+          "type": "number",
+          "description": "The monthly rent for the property."
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of property.",
+          "enum": [
+            "room",
+            "1bhk",
+            "2bhk",
+            "pg",
+            "hostel"
+          ]
+        },
+        "genderPref": {
+          "type": "string",
+          "description": "Gender preference for tenants.",
+          "enum": [
+            "male",
+            "female",
+            "any"
+          ]
+        },
+        "availableFrom": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The date from which the property is available."
+        },
+        "photos": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          },
+          "description": "A list of URLs for property photos."
+        },
+        "status": {
+          "type": "string",
+          "default": "active",
+          "enum": [
+            "active",
+            "inactive"
+          ]
+        }
+      },
+      "required": [
+        "ownerId",
+        "title",
+        "description",
+        "city",
+        "locality",
+        "rent",
+        "type",
+        "genderPref",
+        "availableFrom"
+      ]
+    },
+    "Enquiry": {
+      "title": "Enquiry",
+      "description": "Represents an enquiry made by a tenant for a property.",
+      "type": "object",
+      "properties": {
+        "propertyId": {
+          "type": "string"
+        },
+        "tenantId": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "propertyId",
+        "tenantId",
+        "message",
+        "createdAt"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "email-password"
+    ]
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/User"
+      },
+      "description": "Stores user profile information."
+    },
+    "/properties/{propertyId}": {
+      "schema": {
+        "$ref": "#/entities/Property"
+      },
+      "description": "Stores all property listings."
+    },
+    "/properties/{propertyId}/enquiries/{enquiryId}": {
+      "schema": {
+        "$ref": "#/entities/Enquiry"
+      },
+      "description": "Stores enquiries for a specific property."
+    }
+  }
+}
