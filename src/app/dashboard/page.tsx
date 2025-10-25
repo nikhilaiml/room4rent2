@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import Header from '@/components/header';
@@ -30,7 +30,7 @@ export default function DashboardPage() {
   // This is a simplified way. Ideally, you'd use useDoc and have user profile data.
   // For now, let's assume we get the role from the user's document.
   // The registration process already saves this.
-  const [userProfile, setUserProfile] = React.useState<{ role: string, favorites?: string[] } | null>(null);
+  const [userProfile, setUserProfile] = useState<{ role: string, favorites?: string[] } | null>(null);
 
   useEffect(() => {
     if (!isUserLoading && !user) {
