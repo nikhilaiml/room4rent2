@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useUser, useAuth } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
-import { User, LogIn, Briefcase } from 'lucide-react';
+import { User, LogIn, Briefcase, LogOut } from 'lucide-react';
 import placeholderImages from '@/lib/placeholder-images.json';
 
 export default function Header() {
@@ -25,6 +25,12 @@ export default function Header() {
           <Image src={placeholderImages.footer.logo.src} alt="RoomLelo Logo" width={40} height={40} data-ai-hint={placeholderImages.footer.logo.hint} />
           <span className="text-xl font-bold">RoomLelo</span>
         </Link>
+        <nav className="hidden md:flex items-center gap-6">
+          <Link href="/" className="text-sm font-medium hover:text-primary">Home</Link>
+          <Link href="/properties" className="text-sm font-medium hover:text-primary">Properties</Link>
+          <Link href="/about" className="text-sm font-medium hover:text-primary">About Us</Link>
+          <Link href="/contact" className="text-sm font-medium hover:text-primary">Contact</Link>
+        </nav>
         <div className="flex items-center gap-4">
           {!isUserLoading && (
             <>
@@ -33,7 +39,10 @@ export default function Header() {
                   <Button variant="ghost" asChild>
                     <Link href="/dashboard">Dashboard</Link>
                   </Button>
-                  <Button variant="outline" onClick={handleSignOut}>Sign Out</Button>
+                  <Button variant="outline" onClick={handleSignOut}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign Out
+                  </Button>
                 </>
               ) : (
                 <>
@@ -56,5 +65,3 @@ export default function Header() {
     </header>
   );
 }
-
-    

@@ -22,6 +22,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useAuth, useFirestore } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
@@ -34,6 +35,9 @@ const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   email: z.string().email({ message: 'Invalid email address.' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
+  role: z.enum(['tenant', 'owner'], {
+    required_error: 'You need to select a role.',
+  }),
 });
 
 export default function RegisterPage() {
@@ -48,6 +52,7 @@ export default function RegisterPage() {
       name: '',
       email: '',
       password: '',
+      role: 'tenant',
     },
   });
 
@@ -66,6 +71,7 @@ export default function RegisterPage() {
           id: user.uid,
           name: values.name,
           email: values.email,
+          role: values.role,
         });
       }
 
@@ -130,6 +136,40 @@ export default function RegisterPage() {
                       <FormLabel>Password</FormLabel>
                       <FormControl>
                         <Input type="password" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="role"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3">
+                      <FormLabel>You are a...</FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          className="flex flex-col space-y-1"
+                        >
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="tenant" />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              Tenant (Looking for a property)
+                            </FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="owner" />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              Owner (Want to list a property)
+                            </FormLabel>
+                          </FormItem>
+                        </RadioGroup>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

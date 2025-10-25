@@ -8,9 +8,15 @@ import Footer from '@/components/footer';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, MapPin, BedDouble, Users, Star, ChevronLeft, ChevronRight, Share2, Heart, Phone, Eye } from 'lucide-react';
+import { Search, MapPin, Users, Star, Share2, Heart, Phone, Eye } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import placeholderImages from '@/lib/placeholder-images.json';
+import { useToast } from '@/hooks/use-toast';
+import { useUser, useFirestore } from '@/firebase';
+import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
 
 const cities = placeholderImages.cities;
 const properties = placeholderImages.properties;
@@ -19,6 +25,17 @@ const benefits = placeholderImages.benefits;
 
 
 export default function HomePage() {
+  const [location, setLocation] = useState('');
+  const [propertyType, setPropertyType] = useState('');
+  const router = useRouter();
+
+  const handleSearch = () => {
+    const query = new URLSearchParams();
+    if (location) query.set('location', location);
+    if (propertyType) query.set('propertyType', propertyType);
+    router.push(`/properties?${query.toString()}`);
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
@@ -40,21 +57,21 @@ export default function HomePage() {
                             <label htmlFor="location" className="text-sm font-semibold text-gray-600">Location</label>
                             <div className="relative">
                                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                                <Input id="location" placeholder="Search location, hostel..." className="pl-10" />
+                                <Input id="location" placeholder="Search location, hostel..." className="pl-10" value={location} onChange={(e) => setLocation(e.target.value)} />
                             </div>
                         </div>
                         <div>
                             <label htmlFor="property-type" className="text-sm font-semibold text-gray-600">Property Type</label>
-                            <Select>
+                            <Select onValueChange={setPropertyType}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Type Of Property" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="room">Room</SelectItem>
-                                    <SelectItem value="1bhk">1BHK</SelectItem>
-                                    <SelectItem value="2bhk">2BHK</SelectItem>
-                                    <SelectItem value="pg">PG</SelectItem>
-                                    <SelectItem value="hostel">Hostel</SelectItem>
+                                    <SelectItem value="Room">Room</SelectItem>
+                                    <SelectItem value="1BHK">1BHK</SelectItem>
+                                    <SelectItem value="2BHK">2BHK</SelectItem>
+                                    <SelectItem value="PG">PG</SelectItem>
+                                    <SelectItem value="Hostel">Hostel</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -71,7 +88,7 @@ export default function HomePage() {
                                 </SelectContent>
                             </Select>
                         </div>
-                        <Button className="w-full h-12 text-base md:mt-6">
+                        <Button className="w-full h-12 text-base md:mt-6" onClick={handleSearch}>
                             <Search className="mr-2 h-5 w-5" /> Search
                         </Button>
                     </div>
@@ -164,7 +181,9 @@ export default function HomePage() {
               ))}
             </div>
             <div className="text-center mt-12">
-              <Button variant="outline" size="lg">Lease Your Property Now &rarr;</Button>
+              <Button variant="outline" size="lg" asChild>
+                <Link href="/list-property">Lease Your Property Now &rarr;</Link>
+              </Button>
             </div>
           </div>
         </section>
@@ -174,7 +193,7 @@ export default function HomePage() {
   );
 }
 
-const PropertyCard = ({ title, location, amenities, securityDeposit, price, views, image, rating }: {
+const PropertyCard = ({ id, title, location, amenities, securityDeposit, price, views, image, rating }: {
   id: number;
   title: string;
   location: string;
@@ -184,42 +203,102 @@ const PropertyCard = ({ title, location, amenities, securityDeposit, price, view
   views: number;
   image: { src: string; hint: string };
   rating: number;
-}) => (
-  <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-    <CardContent className="p-0">
-      <div className="relative">
-        <Image src={image.src} alt={title} width={400} height={250} className="w-full object-cover" data-ai-hint={image.hint} />
-        <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded-md flex items-center">
-            <Star className="w-3 h-3 mr-1" /> {rating}
-        </div>
-      </div>
-      <div className="p-4">
-        <div className="flex justify-between items-start">
-          <h3 className="font-bold text-lg">{title}</h3>
-          <div className="flex space-x-2">
-            <Button variant="ghost" size="icon" className="w-8 h-8"><Share2 className="w-4 h-4" /></Button>
-            <Button variant="ghost" size="icon" className="w-8 h-8"><Heart className="w-4 h-4" /></Button>
-          </div>
-        </div>
-        <p className="text-sm text-muted-foreground flex items-center"><MapPin className="w-4 h-4 mr-1" /> {location}</p>
-        <p className="text-sm my-2">{amenities}</p>
-        <p className="text-sm font-semibold">Security Deposit: ₹{securityDeposit.toLocaleString()}</p>
-        <div className="flex items-center text-sm text-amber-600 my-2">
-            <Eye className="w-4 h-4 mr-1" /> {views} people already view this property, Hurr...
-        </div>
-        <div className="flex justify-between items-center mt-4">
-          <div>
-            <p className="text-xs text-muted-foreground">Starting at:</p>
-            <p className="font-bold text-lg">₹{price.toLocaleString()}/Month</p>
-          </div>
-          <div className="flex space-x-2">
-            <Button variant="outline"><Phone className="w-4 h-4 mr-2" /> Call</Button>
-            <Button>Visit</Button>
-          </div>
-        </div>
-      </div>
-    </CardContent>
-  </Card>
-);
+}) => {
+  const { toast } = useToast();
+  const { user } = useUser();
+  const firestore = useFirestore();
+  const router = useRouter();
 
-    
+  const handleShare = () => {
+    navigator.clipboard.writeText(`${window.location.origin}/properties/${id}`);
+    toast({
+      title: "Link Copied!",
+      description: "Property link has been copied to your clipboard.",
+    });
+  };
+
+  const handleCall = () => {
+    toast({
+      title: "Contact Owner",
+      description: "Functionality to call the owner will be implemented soon.",
+    });
+  };
+
+  const handleVisit = () => {
+    toast({
+      title: "Schedule Visit",
+      description: "Functionality to schedule a visit will be implemented soon.",
+    });
+  };
+  
+  const handleFavorite = async () => {
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Login Required",
+        description: "Please login to add properties to your favorites.",
+      });
+      router.push('/login');
+      return;
+    }
+    const userRef = doc(firestore, 'users', user.uid);
+    // This is a mock implementation. We need to know if the property is already a favorite.
+    // A real implementation would fetch user data and check favorites.
+    try {
+      // For this example, let's assume we are adding it.
+      // In a real app, you would check if it's already favorited and use arrayRemove if it is.
+      await updateDoc(userRef, {
+        favorites: arrayUnion(id)
+      });
+      toast({
+        title: "Added to Favorites!",
+        description: `${title} has been added to your favorites.`,
+      });
+    } catch(e: any) {
+       toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Could not add to favorites. Please try again.",
+      });
+    }
+  };
+
+
+  return (
+    <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+      <CardContent className="p-0">
+        <div className="relative">
+          <Image src={image.src} alt={title} width={400} height={250} className="w-full object-cover" data-ai-hint={image.hint} />
+          <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded-md flex items-center">
+              <Star className="w-3 h-3 mr-1" /> {rating}
+          </div>
+        </div>
+        <div className="p-4">
+          <div className="flex justify-between items-start">
+            <h3 className="font-bold text-lg">{title}</h3>
+            <div className="flex space-x-2">
+              <Button variant="ghost" size="icon" className="w-8 h-8" onClick={handleShare}><Share2 className="w-4 h-4" /></Button>
+              <Button variant="ghost" size="icon" className="w-8 h-8" onClick={handleFavorite}><Heart className="w-4 h-4" /></Button>
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground flex items-center"><MapPin className="w-4 h-4 mr-1" /> {location}</p>
+          <p className="text-sm my-2">{amenities}</p>
+          <p className="text-sm font-semibold">Security Deposit: ₹{securityDeposit.toLocaleString()}</p>
+          <div className="flex items-center text-sm text-amber-600 my-2">
+              <Eye className="w-4 h-4 mr-1" /> {views} people already view this property, Hurr...
+          </div>
+          <div className="flex justify-between items-center mt-4">
+            <div>
+              <p className="text-xs text-muted-foreground">Starting at:</p>
+              <p className="font-bold text-lg">₹{price.toLocaleString()}/Month</p>
+            </div>
+            <div className="flex space-x-2">
+              <Button variant="outline" onClick={handleCall}><Phone className="w-4 h-4 mr-2" /> Call</Button>
+              <Button onClick={handleVisit}>Visit</Button>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
