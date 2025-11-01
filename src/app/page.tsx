@@ -23,7 +23,7 @@ const PropertiesCarousel = React.lazy(() => import('@/components/PropertiesCarou
 
 export default function HomePage() {
   const [location, setLocation] = useState('');
-  const [propertyType, setPropertyType] = useState('');
+  const [propertyType, setPropertyType] = useState('all');
   const router = useRouter();
   
   const firestore = useFirestore();
@@ -37,7 +37,7 @@ export default function HomePage() {
   const handleSearch = () => {
     const queryParams = new URLSearchParams();
     if (location) queryParams.set('location', location);
-    if (propertyType) queryParams.set('propertyType', propertyType);
+    if (propertyType && propertyType !== 'all') queryParams.set('propertyType', propertyType);
     router.push(`/properties?${queryParams.toString()}`);
   };
 
@@ -72,12 +72,12 @@ export default function HomePage() {
                         </div>
                         <div>
                             <label htmlFor="property-type" className="text-sm font-semibold text-gray-600">Property Type</label>
-                            <Select onValueChange={setPropertyType}>
+                            <Select onValueChange={setPropertyType} defaultValue="all">
                                 <SelectTrigger className="text-black">
                                     <SelectValue placeholder="All Types" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="">All Types</SelectItem>
+                                    <SelectItem value="all">All Types</SelectItem>
                                     <SelectItem value="Room">Room</SelectItem>
                                     <SelectItem value="1BHK">1BHK</SelectItem>
                                     <SelectItem value="2BHK">2BHK</SelectItem>
