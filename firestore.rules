@@ -54,7 +54,8 @@ service cloud.firestore {
      * @principle Allows public read access but enforces ownership for writes.
      */
     match /properties/{propertyId} {
-      allow get, list: if true;
+      allow get: if true;
+      allow list: if isSignedIn();
       allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
       allow update: if isSignedIn() && isExistingOwner(resource.data.ownerId) && (request.resource.data.ownerId == resource.data.ownerId);
       allow delete: if isSignedIn() && isExistingOwner(resource.data.ownerId);
