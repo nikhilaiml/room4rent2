@@ -1,5 +1,5 @@
 /**
- * @file RoomLelo Firestore Security Rules
+ * @file room4rent Firestore Security Rules
  *
  * @core_philosophy This ruleset enforces a strict user-ownership model for user profiles and properties.
  *  Enquiries are secured based on property ownership and user identity. Data shape validation is relaxed for prototyping.

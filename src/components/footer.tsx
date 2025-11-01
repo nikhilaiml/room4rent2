@@ -10,9 +10,9 @@ export default function Footer() {
     <footer className="bg-cyan-50 text-gray-800 pt-12">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4">
         <div className="md:col-span-2 lg:col-span-1">
-          <Image src={placeholderImages.footer.logo.src} alt="RoomLelo Logo" width={60} height={60} className="mb-4" data-ai-hint={placeholderImages.footer.logo.hint} />
+          <Image src={placeholderImages.footer.logo.src} alt="room4rent Logo" width={60} height={60} className="mb-4" data-ai-hint={placeholderImages.footer.logo.hint} />
           <p className="text-sm">
-            RoomLelo is an online home rental aggregation platform executing tech based solutions for individuals in need of independent and comfortable living spaces.
+            room4rent is an online home rental aggregation platform executing tech based solutions for individuals in need of independent and comfortable living spaces.
           </p>
         </div>
         <div>
@@ -26,7 +26,7 @@ export default function Footer() {
         <div>
           <h4 className="font-bold mb-4">Reach Us</h4>
           <ul className="space-y-3 text-sm">
-            <li className="flex items-start gap-2"><Mail className="w-4 h-4 mt-1 flex-shrink-0 text-primary" /> contact@roomlelo.in</li>
+            <li className="flex items-start gap-2"><Mail className="w-4 h-4 mt-1 flex-shrink-0 text-primary" /> contact@room4rent.in</li>
             <li className="flex items-start gap-2"><Phone className="w-4 h-4 mt-1 flex-shrink-0 text-primary" /> +91-76676 51878</li>
             <li className="flex items-start gap-2"><MapPin className="w-4 h-4 mt-1 flex-shrink-0 text-primary" /> D-63/319c, Laharatara, Varanasi</li>
           </ul>
@@ -47,7 +47,7 @@ export default function Footer() {
       </div>
       <div className="mt-8 py-4 border-t border-gray-300">
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center text-sm px-4 text-center md:text-left">
-          <p>&copy; 2025 RoomLelo. All rights reserved</p>
+          <p>&copy; 2025 room4rent. All rights reserved</p>
           <div className="flex space-x-4 mt-2 md:mt-0">
             <Link href="#" className="hover:text-primary">Booking Policy</Link>
             <Link href="#" className="hover:text-primary">Privacy Policy</Link>

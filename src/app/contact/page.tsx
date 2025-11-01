@@ -76,7 +76,7 @@ export default function ContactPage() {
                             <Mail className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
                             <div>
                                 <h3 className="font-semibold">Email Us</h3>
-                                <a href="mailto:contact@roomlelo.in" className="text-muted-foreground hover:text-primary">contact@roomlelo.in</a>
+                                <a href="mailto:contact@room4rent.in" className="text-muted-foreground hover:text-primary">contact@room4rent.in</a>
                             </div>
                         </div>
                          <div className="flex items-start gap-4">

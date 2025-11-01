@@ -24,7 +24,7 @@ export default function AboutPage() {
           />
           <div className="absolute inset-0 bg-black bg-opacity-50"></div>
           <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
-            <h1 className="text-4xl md:text-5xl font-bold">About RoomLelo</h1>
+            <h1 className="text-4xl md:text-5xl font-bold">About room4rent</h1>
             <p className="mt-4 text-lg md:text-xl max-w-2xl">
               Your trusted partner in finding the perfect home away from home.
             </p>
@@ -38,7 +38,7 @@ export default function AboutPage() {
               <div>
                 <h2 className="text-3xl font-bold mb-4">Who We Are</h2>
                 <p className="text-muted-foreground mb-4">
-                  RoomLelo is an online home rental aggregation platform executing tech-based solutions for individuals in need of independent and comfortable living spaces. We are a team of passionate individuals dedicated to simplifying the rental experience for both tenants and property owners.
+                  room4rent is an online home rental aggregation platform executing tech-based solutions for individuals in need of independent and comfortable living spaces. We are a team of passionate individuals dedicated to simplifying the rental experience for both tenants and property owners.
                 </p>
                 <p className="text-muted-foreground">
                   Founded with the vision to bridge the gap between property seekers and providers, we leverage technology to create a seamless, transparent, and efficient ecosystem. Our platform is designed to cater to the diverse needs of students, professionals, and families looking for their next home.

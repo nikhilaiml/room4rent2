@@ -4,7 +4,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "User",
       "type": "object",
-      "description": "Represents a user of the RoomLelo application.",
+      "description": "Represents a user of the room4rent application.",
       "properties": {
         "id": {
           "type": "string",
@@ -147,5 +147,3 @@
     }
   }
 }
-
-    
