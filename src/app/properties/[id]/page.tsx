@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
@@ -32,7 +32,11 @@ function PropertyDetails() {
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  const propertyRef = doc(firestore, 'properties', id as string);
+  const propertyRef = useMemo(() => {
+    if (!firestore || !id) return null;
+    return doc(firestore, 'properties', id as string);
+  }, [firestore, id]);
+
   const { data: property, isLoading, error } = useDoc<Property>(propertyRef);
 
   if (isLoading) {
