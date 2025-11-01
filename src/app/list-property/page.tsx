@@ -67,15 +67,20 @@ export default function ListPropertyPage() {
     const files = event.target.files;
     if (files) {
       const newFiles = Array.from(files);
-      setImageFiles(prev => [...prev, ...newFiles]);
+      // For simplicity, we are not actually uploading files, but using Unsplash placeholders.
+      // In a real app, you would upload `newFiles` to Firebase Storage.
+      
+      const newPreviews = newFiles.map((file, index) => {
+        // Create a semi-random seed for Unsplash based on file name and size
+        const seed = file.name.replace(/[^a-zA-Z0-9]/g, '') + file.size + index;
+        return `https://images.unsplash.com/photo-1576941089067-2de3c901e126?q=80&w=1200&h=750&auto=format&fit=crop&seed=${seed}`;
+      });
 
-      const newPreviews = newFiles.map(file => URL.createObjectURL(file));
       setImagePreviews(prev => [...prev, ...newPreviews]);
     }
   };
   
   const removeImage = (index: number) => {
-    setImageFiles(prev => prev.filter((_, i) => i !== index));
     setImagePreviews(prev => prev.filter((_, i) => i !== index));
   }
 
@@ -85,25 +90,15 @@ export default function ListPropertyPage() {
       return;
     }
     
-    if (imageFiles.length < 2) {
+    if (imagePreviews.length < 2) {
       toast({
         variant: 'destructive',
         title: 'Upload Error',
-        description: 'Please upload at least 2 photos of your property.',
+        description: 'Please "upload" at least 2 photos of your property.',
       });
       return;
     }
     
-    // In a real app, you'd upload `imageFiles` to Firebase Storage
-    // and get the URLs to save in Firestore. For now, we'll use placeholders.
-    // The first uploaded image will be the cover image.
-    const imageUrls = imagePreviews.length > 0 
-      ? imagePreviews 
-      : [
-          'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=800&h=500&auto=format&fit=crop',
-          'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&h=500&auto=format&fit=crop'
-        ];
-
     try {
       await addDoc(collection(firestore, 'properties'), {
         ...values,
@@ -111,7 +106,7 @@ export default function ListPropertyPage() {
         location: values.location.toLowerCase(),
         ownerId: user.uid,
         createdAt: serverTimestamp(),
-        imageUrls: imageUrls,
+        imageUrls: imagePreviews, // Use the Unsplash URLs
       });
       toast({
         title: 'Property Listed!',
@@ -272,5 +267,3 @@ export default function ListPropertyPage() {
     </div>
   );
 }
-
-    
