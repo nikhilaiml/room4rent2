@@ -38,17 +38,20 @@ function PropertiesList() {
         let conditions = [];
         if (location) {
             const searchLocation = location.toLowerCase();
-            conditions.push(where('location', '>=', searchLocation));
-            conditions.push(where('location', '<=', searchLocation + '\uf8ff'));
+            // Using '==' for exact match. For more advanced search, 
+            // you might need a different data structure or a third-party search service.
+            conditions.push(where('location', '==', searchLocation));
         }
         if (propertyType) {
             conditions.push(where('propertyType', '==', propertyType));
         }
 
+        // If there are any search conditions, apply them
         if (conditions.length > 0) {
             return query(baseQuery, ...conditions);
         }
 
+        // Otherwise, return all properties ordered by creation date
         return query(baseQuery, orderBy('createdAt', 'desc'));
 
     }, [firestore, location, propertyType]);
