@@ -55,7 +55,7 @@ service cloud.firestore {
      */
     match /properties/{propertyId} {
       allow get: if true;
-      allow list: if isSignedIn();
+      allow list: if true;
       allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
       allow update: if isSignedIn() && isExistingOwner(resource.data.ownerId) && (request.resource.data.ownerId == resource.data.ownerId);
       allow delete: if isSignedIn() && isExistingOwner(resource.data.ownerId);
