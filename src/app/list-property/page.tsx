@@ -71,8 +71,8 @@ export default function ListPropertyPage() {
       // In a real app, you would upload `newFiles` to Firebase Storage.
       
       const newPreviews = newFiles.map((file, index) => {
-        // Create a semi-random seed for Unsplash based on file name and size
-        const seed = file.name.replace(/[^a-zA-Z0-9]/g, '') + file.size + index;
+        // Create a unique seed for Unsplash for each image
+        const seed = `${file.name}-${file.size}-${Date.now()}-${index}`;
         return `https://images.unsplash.com/photo-1576941089067-2de3c901e126?q=80&w=1200&h=750&auto=format&fit=crop&seed=${seed}`;
       });
 
