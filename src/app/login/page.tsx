@@ -73,8 +73,8 @@ export default function LoginPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <div className="flex-grow flex items-center justify-center py-12">
-        <Card className="w-full max-w-md mx-4">
+      <div className="flex-grow flex items-center justify-center p-4">
+        <Card className="w-full max-w-md mx-auto">
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-2xl">Login</CardTitle>
             <CardDescription>Enter your email below to login to your account</CardDescription>

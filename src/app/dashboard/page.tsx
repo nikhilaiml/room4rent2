@@ -77,7 +77,7 @@ export default function DashboardPage() {
 
   const renderOwnerDashboard = () => (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <CardTitle>My Properties</CardTitle>
           <CardDescription>Here are the properties you have listed.</CardDescription>
@@ -92,21 +92,21 @@ export default function DashboardPage() {
       <CardContent>
         {isLoadingProperties && <p>Loading properties...</p>}
         {!isLoadingProperties && (!properties || properties.length === 0) && (
-          <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-border rounded-lg">
+          <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-border rounded-lg text-center">
             <Building className="w-12 h-12 text-muted-foreground mb-4" />
             <p className="text-muted-foreground mb-4">You haven't listed any properties yet.</p>
             <p className="text-sm text-muted-foreground">Click the button above to get started.</p>
           </div>
         )}
         {!isLoadingProperties && properties && properties.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {properties.map(prop => (
                <Link key={prop.id} href={`/properties/${prop.id}`}>
                 <Card className="overflow-hidden h-full hover:shadow-lg transition-shadow">
                   <Image src={prop.imageUrls?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop'} alt={prop.title} width={400} height={250} className="w-full h-48 object-cover"/>
                   <div className="p-4">
-                    <h3 className="font-bold">{prop.title}</h3>
-                    <p className="text-sm text-muted-foreground">{prop.location}</p>
+                    <h3 className="font-bold truncate">{prop.title}</h3>
+                    <p className="text-sm text-muted-foreground truncate">{prop.location}</p>
                     <p className="font-semibold mt-2">₹{prop.price}/month</p>
                   </div>
                 </Card>
@@ -127,7 +127,7 @@ export default function DashboardPage() {
       <CardContent>
       {isLoadingProperties && <p>Loading favorites...</p>}
         {!isLoadingProperties && (!properties || properties.length === 0) && (
-          <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-border rounded-lg">
+          <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-border rounded-lg text-center">
               <Heart className="w-12 h-12 text-muted-foreground mb-4" />
               <p className="text-muted-foreground mb-4">You haven't favorited any properties yet.</p>
               <Button variant="outline" asChild>
@@ -136,14 +136,14 @@ export default function DashboardPage() {
           </div>
         )}
         {!isLoadingProperties && properties && properties.length > 0 && (
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {properties.map(prop => (
               <Link key={prop.id} href={`/properties/${prop.id}`}>
                <Card className="overflow-hidden h-full hover:shadow-lg transition-shadow">
                  <Image src={prop.imageUrls?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop'} alt={prop.title} width={400} height={250} className="w-full h-48 object-cover"/>
                  <div className="p-4">
-                   <h3 className="font-bold">{prop.title}</h3>
-                   <p className="text-sm text-muted-foreground">{prop.location}</p>
+                   <h3 className="font-bold truncate">{prop.title}</h3>
+                   <p className="text-sm text-muted-foreground truncate">{prop.location}</p>
                    <p className="font-semibold mt-2">₹{prop.price}/month</p>
                  </div>
                </Card>
@@ -187,4 +187,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-    

@@ -89,12 +89,12 @@ function PropertyDetails() {
         <div className="max-w-6xl mx-auto">
             <Card className="overflow-hidden">
                  <CardHeader>
-                    <div className="flex justify-between items-start">
+                    <div className="flex flex-col md:flex-row justify-between items-start">
                         <div>
-                            <CardTitle className="text-3xl font-bold">{property.title}</CardTitle>
+                            <CardTitle className="text-2xl md:text-3xl font-bold">{property.title}</CardTitle>
                             <CardDescription className="text-md text-muted-foreground mt-2">{property.location}, {property.city}</CardDescription>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 mt-4 md:mt-0">
                              <Button variant="outline" size="icon"><Heart className="w-5 h-5" /></Button>
                              <Button variant="outline" size="icon"><Share2 className="w-5 h-5" /></Button>
                         </div>
@@ -108,7 +108,7 @@ function PropertyDetails() {
                                 {property.imageUrls && property.imageUrls.length > 0 ? (
                                     property.imageUrls.map((url, index) => (
                                     <CarouselItem key={index}>
-                                        <Image src={url} alt={`${property.title} image ${index + 1}`} width={800} height={500} className="w-full h-auto object-cover rounded-lg"/>
+                                        <Image src={url} alt={`${property.title} image ${index + 1}`} width={800} height={500} className="w-full h-auto max-h-[500px] object-cover rounded-lg"/>
                                     </CarouselItem>
                                     ))
                                 ) : (
