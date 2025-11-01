@@ -18,7 +18,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useFirestore } from '@/firebase';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
-import { Upload } from 'lucide-react';
+import { Upload, X } from 'lucide-react';
+import Image from 'next/image';
+
 
 const propertyFormSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters'),
@@ -35,8 +37,8 @@ export default function ListPropertyPage() {
   const router = useRouter();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -62,16 +64,20 @@ export default function ListPropertyPage() {
   });
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-        setImageFile(file);
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setImagePreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+    const files = event.target.files;
+    if (files) {
+      const newFiles = Array.from(files);
+      setImageFiles(prev => [...prev, ...newFiles]);
+
+      const newPreviews = newFiles.map(file => URL.createObjectURL(file));
+      setImagePreviews(prev => [...prev, ...newPreviews]);
     }
   };
+  
+  const removeImage = (index: number) => {
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+  }
 
   async function onSubmit(values: z.infer<typeof propertyFormSchema>) {
     if (!user) {
@@ -79,10 +85,24 @@ export default function ListPropertyPage() {
       return;
     }
     
-    // For now, image upload to cloud will be a separate step.
-    // We'll just use a placeholder URL. In a real app, you'd upload `imageFile` to Firebase Storage
-    // and get a URL to save in Firestore.
-    const imageUrl = imagePreview ? 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=2070&auto=format&fit=crop' : 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2070&auto=format&fit=crop';
+    if (imageFiles.length < 2) {
+      toast({
+        variant: 'destructive',
+        title: 'Upload Error',
+        description: 'Please upload at least 2 photos of your property.',
+      });
+      return;
+    }
+    
+    // In a real app, you'd upload `imageFiles` to Firebase Storage
+    // and get the URLs to save in Firestore. For now, we'll use placeholders.
+    // The first uploaded image will be the cover image.
+    const imageUrls = imagePreviews.length > 0 
+      ? imagePreviews 
+      : [
+          'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=800&h=500&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&h=500&auto=format&fit=crop'
+        ];
 
     try {
       await addDoc(collection(firestore, 'properties'), {
@@ -91,7 +111,7 @@ export default function ListPropertyPage() {
         location: values.location.toLowerCase(),
         ownerId: user.uid,
         createdAt: serverTimestamp(),
-        imageUrls: [imageUrl],
+        imageUrls: imageUrls,
       });
       toast({
         title: 'Property Listed!',
@@ -119,28 +139,31 @@ export default function ListPropertyPage() {
         <Card className="w-full max-w-2xl mx-4">
           <CardHeader>
             <CardTitle>List Your Property</CardTitle>
-            <CardDescription>Fill out the details below to put your property on the market.</CardDescription>
+            <CardDescription>Fill out the details below to put your property on the market. Upload at least 2 photos.</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 
                 <div className="space-y-2">
-                    <Label>Property Image</Label>
-                    <div className="flex items-center justify-center w-full">
-                        <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-48 border-2 border-border border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted/50">
-                            {imagePreview ? (
-                                // eslint-disable-next-line @next/next/no-img-element
-                                <img src={imagePreview} alt="Property preview" className="w-full h-full object-cover rounded-lg" />
-                            ) : (
-                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                    <Upload className="w-8 h-8 mb-4 text-muted-foreground" />
-                                    <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                                    <p className="text-xs text-muted-foreground">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
-                                </div>
-                            )}
-                            <Input id="dropzone-file" type="file" className="hidden" onChange={handleImageChange} accept="image/*" />
-                        </label>
+                    <Label>Property Images (min. 2)</Label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {imagePreviews.map((preview, index) => (
+                        <div key={index} className="relative">
+                          <Image src={preview} alt={`Property preview ${index+1}`} width={200} height={120} className="w-full h-24 object-cover rounded-lg" />
+                          <button type="button" onClick={() => removeImage(index)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1">
+                            <X className="w-3 h-3"/>
+                          </button>
+                        </div>
+                      ))}
+                      <div className="flex items-center justify-center w-full">
+                          <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-24 border-2 border-border border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted/50">
+                              <div className="flex flex-col items-center justify-center">
+                                  <Upload className="w-8 h-8 text-muted-foreground" />
+                              </div>
+                              <Input id="dropzone-file" type="file" className="hidden" onChange={handleImageChange} accept="image/*" multiple />
+                          </label>
+                      </div>
                     </div>
                 </div>
 
@@ -249,3 +272,5 @@ export default function ListPropertyPage() {
     </div>
   );
 }
+
+    
