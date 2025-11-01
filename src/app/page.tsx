@@ -122,7 +122,7 @@ export default function HomePage() {
         <section className="py-12 bg-background">
           <div className="container mx-auto">
             <h2 className="text-3xl font-bold mb-6">Trending Properties in Varanasi</h2>
-            <Suspense fallback={<p>Loading properties...</p>}>
+            <Suspense fallback={<div className="text-center"><p>Loading properties...</p></div>}>
               <PropertiesCarousel properties={properties} isLoading={isLoadingProperties} />
             </Suspense>
           </div>
