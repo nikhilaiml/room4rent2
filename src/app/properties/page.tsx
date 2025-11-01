@@ -7,11 +7,6 @@ import { useSearchParams } from 'next/navigation';
 import { useFirestore, useCollection } from '@/firebase';
 import { collection, query, where, Query } from 'firebase/firestore';
 import { useMemo } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import Image from 'next/image';
-import { Star, MapPin, Share2, Heart, Phone, Eye } from 'lucide-react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { PropertyCard } from '@/components/PropertyCard';
 
 
@@ -42,9 +37,6 @@ function PropertiesList() {
 
         let conditions = [];
         if (location) {
-            // Using a case-insensitive approach by searching for lowercase.
-            // This requires you to store a lowercase version of the location in Firestore.
-            // For now, we will do an exact match which is case-sensitive.
             conditions.push(where('location', '>=', location));
             conditions.push(where('location', '<=', location + '\uf8ff'));
         }
@@ -96,7 +88,7 @@ function PropertiesList() {
 
 export default function PropertiesPage() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}>
             <PropertiesList />
         </Suspense>
     )
