@@ -5,7 +5,7 @@ import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { useSearchParams } from 'next/navigation';
 import { useFirestore, useCollection } from '@/firebase';
-import { collection, query, where, Query } from 'firebase/firestore';
+import { collection, query, where, Query, orderBy } from 'firebase/firestore';
 import { useMemo } from 'react';
 import { PropertyCard } from '@/components/PropertyCard';
 
@@ -37,14 +37,20 @@ function PropertiesList() {
 
         let conditions = [];
         if (location) {
-            conditions.push(where('location', '>=', location));
-            conditions.push(where('location', '<=', location + '\uf8ff'));
+            const searchLocation = location.toLowerCase();
+            conditions.push(where('location', '>=', searchLocation));
+            conditions.push(where('location', '<=', searchLocation + '\uf8ff'));
         }
         if (propertyType) {
             conditions.push(where('propertyType', '==', propertyType));
         }
 
-        return conditions.length > 0 ? query(baseQuery, ...conditions) : baseQuery;
+        if (conditions.length > 0) {
+            return query(baseQuery, ...conditions);
+        }
+
+        return query(baseQuery, orderBy('createdAt', 'desc'));
+
     }, [firestore, location, propertyType]);
 
     const { data: properties, isLoading } = useCollection<Property>(propertiesQuery as Query<Property>);

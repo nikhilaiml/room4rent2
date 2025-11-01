@@ -87,6 +87,8 @@ export default function ListPropertyPage() {
     try {
       await addDoc(collection(firestore, 'properties'), {
         ...values,
+        city: values.city.toLowerCase(),
+        location: values.location.toLowerCase(),
         ownerId: user.uid,
         createdAt: serverTimestamp(),
         imageUrls: [imageUrl],
