@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Star, MapPin, Share2, Heart, Phone, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore } from '@/firebase';
-import { doc, updateDoc, arrayUnion, arrayRemove, getDoc } from 'firebase/firestore';
+import { doc, updateDoc, arrayUnion, arrayRemove, getDoc, onSnapshot } from 'firebase/firestore';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -29,15 +29,15 @@ export const PropertyCard = ({ id, title, location, amenities, securityDeposit, 
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
-    if (user) {
+    if (user && firestore) {
       const userRef = doc(firestore, 'users', user.uid);
-      const unsub = require('firebase/firestore').onSnapshot(userRef, (docSnap: any) => {
+      const unsubscribe = onSnapshot(userRef, (docSnap) => {
         if (docSnap.exists()) {
           const userData = docSnap.data();
           setIsFavorite(userData.favorites && userData.favorites.includes(id));
         }
       });
-      return () => unsub();
+      return () => unsubscribe();
     }
   }, [user, firestore, id]);
 
