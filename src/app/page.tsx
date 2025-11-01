@@ -109,7 +109,7 @@ export default function HomePage() {
             <div className="flex justify-center space-x-8">
               {cities.map(city => (
                 <div key={city.name} className="text-center">
-                  <Image src={city.img.src} alt={city.name} width={100} height={100} className="rounded-full mx-auto" data-ai-hint={city.img.hint} />
+                  <Image src={city.img.src} alt={city.name} width={100} height={100} className="rounded-full mx-auto object-cover" data-ai-hint={city.img.hint} />
                   <p className="mt-2 font-semibold">{city.name}</p>
                   {city.name !== 'Varanasi' && city.name !== 'Lucknow' && <p className="text-xs text-gray-500">(Coming Soon)</p>}
                 </div>
@@ -134,7 +134,7 @@ export default function HomePage() {
                         securityDeposit={prop.securityDeposit || 0}
                         price={prop.price}
                         views={prop.views || 0}
-                        image={{src: prop.imageUrls?.[0] || `https://picsum.photos/seed/${prop.id}/400/250`, hint: 'property'}}
+                        image={{src: prop.imageUrls?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop', hint: 'property'}}
                         rating={prop.rating || 4}
                       />
                     </CarouselItem>
@@ -156,7 +156,7 @@ export default function HomePage() {
              {isLoadingProperties ? <p>Loading...</p> : 
               <Carousel opts={{ align: "start", loop: true }}>
                 <CarouselContent>
-                  {properties?.slice(0, 3).map((prop, index) => (
+                  {(properties || placeholderImages.properties)?.slice(0, 3).map((prop, index) => (
                      <CarouselItem key={`${prop.id}-${index}`} className="md:basis-1/2 lg:basis-1/3">
                        <PropertyCard 
                         id={prop.id}
@@ -166,8 +166,8 @@ export default function HomePage() {
                         securityDeposit={prop.securityDeposit || 0}
                         price={prop.price}
                         views={prop.views || 0}
-                        image={{src: prop.imageUrls?.[0] || `https://picsum.photos/seed/${prop.id}/400/250`, hint: 'property'}}
-                        rating={prop.rating || 4}
+                        image={{src: (prop as any).image?.src || (prop as any).imageUrls?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop', hint: 'property'}}
+                        rating={(prop as any).rating || 4}
                       />
                     </CarouselItem>
                   ))}
@@ -188,7 +188,7 @@ export default function HomePage() {
                         <Card key={testimonial.name} className="bg-white text-center p-6 shadow-lg">
                             <CardContent>
                                 <p className="text-gray-600 mb-6">&quot;{testimonial.text}&quot;</p>
-                                <Image src={testimonial.avatar.src} alt={testimonial.name} width={60} height={60} className="rounded-full mx-auto mb-4" data-ai-hint={testimonial.avatar.hint} />
+                                <Image src={testimonial.avatar.src} alt={testimonial.name} width={60} height={60} className="rounded-full mx-auto mb-4 object-cover" data-ai-hint={testimonial.avatar.hint} />
                                 <h4 className="font-bold">{testimonial.name}</h4>
                                 <p className="text-sm text-gray-500">{testimonial.role}</p>
                             </CardContent>

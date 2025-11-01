@@ -15,7 +15,7 @@ export default function AboutPage() {
         {/* Hero Section */}
         <section className="relative h-64 bg-cover bg-center text-white">
           <Image
-            src="https://picsum.photos/seed/about-hero/1200/400"
+            src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&h=400&auto=format&fit=crop"
             alt="About us hero"
             fill
             style={{ objectFit: 'cover' }}
@@ -46,7 +46,7 @@ export default function AboutPage() {
               </div>
               <div>
                 <Image
-                  src="https://picsum.photos/seed/teamwork/600/400"
+                  src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=600&h=400&auto=format&fit=crop"
                   alt="Team collaboration"
                   width={600}
                   height={400}
@@ -58,7 +58,7 @@ export default function AboutPage() {
             <div className="grid md:grid-cols-2 gap-12 items-center mt-16">
               <div className="order-2 md:order-1">
                  <Image
-                  src="https://picsum.photos/seed/our-vision/600/400"
+                  src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=600&h=400&auto=format&fit=crop"
                   alt="Our Vision"
                   width={600}
                   height={400}

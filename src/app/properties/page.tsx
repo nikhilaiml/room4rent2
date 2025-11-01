@@ -81,7 +81,7 @@ function PropertiesList() {
                                     securityDeposit={prop.securityDeposit || 0}
                                     price={prop.price}
                                     views={prop.views || 0}
-                                    image={{src: prop.imageUrls?.[0] || 'https://picsum.photos/seed/prop/400/250', hint: 'property'}}
+                                    image={{src: prop.imageUrls?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop', hint: 'property'}}
                                     rating={prop.rating || 4}
                                 />
                             ))}

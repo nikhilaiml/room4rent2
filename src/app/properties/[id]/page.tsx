@@ -109,7 +109,7 @@ function PropertyDetails() {
                                     ))
                                 ) : (
                                      <CarouselItem>
-                                        <Image src={`https://picsum.photos/seed/${property.id}/800/500`} alt="Placeholder image" width={800} height={500} className="w-full h-auto object-cover rounded-lg"/>
+                                        <Image src={'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&h=500&auto=format&fit=crop'} alt="Placeholder image" width={800} height={500} className="w-full h-auto object-cover rounded-lg"/>
                                     </CarouselItem>
                                 )}
                                 </CarouselContent>

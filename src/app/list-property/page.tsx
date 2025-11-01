@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/firebase';
 import Header from '@/components/header';
@@ -18,6 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useFirestore } from '@/firebase';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
+import { Upload } from 'lucide-react';
 
 const propertyFormSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters'),
@@ -26,7 +27,6 @@ const propertyFormSchema = z.object({
   location: z.string().min(3, 'Location is required'),
   price: z.coerce.number().min(0, 'Price must be a positive number'),
   propertyType: z.enum(['Room', '1BHK', '2BHK', 'PG', 'Hostel']),
-  // Add more fields as needed
 });
 
 
@@ -35,6 +35,8 @@ export default function ListPropertyPage() {
   const router = useRouter();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -59,18 +61,35 @@ export default function ListPropertyPage() {
     },
   });
 
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+        setImageFile(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setImagePreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+    }
+  };
+
   async function onSubmit(values: z.infer<typeof propertyFormSchema>) {
     if (!user) {
       toast({ variant: 'destructive', title: 'Authentication Error', description: 'User not found.' });
       return;
     }
     
+    // For now, image upload to cloud will be a separate step.
+    // We'll just use a placeholder URL. In a real app, you'd upload `imageFile` to Firebase Storage
+    // and get a URL to save in Firestore.
+    const imageUrl = imagePreview ? 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=2070&auto=format&fit=crop' : 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2070&auto=format&fit=crop';
+
     try {
       await addDoc(collection(firestore, 'properties'), {
         ...values,
         ownerId: user.uid,
         createdAt: serverTimestamp(),
-        imageUrls: [], // Placeholder for image uploads
+        imageUrls: [imageUrl],
       });
       toast({
         title: 'Property Listed!',
@@ -103,6 +122,26 @@ export default function ListPropertyPage() {
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                
+                <div className="space-y-2">
+                    <Label>Property Image</Label>
+                    <div className="flex items-center justify-center w-full">
+                        <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-48 border-2 border-border border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted/50">
+                            {imagePreview ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={imagePreview} alt="Property preview" className="w-full h-full object-cover rounded-lg" />
+                            ) : (
+                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <Upload className="w-8 h-8 mb-4 text-muted-foreground" />
+                                    <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                                    <p className="text-xs text-muted-foreground">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
+                                </div>
+                            )}
+                            <Input id="dropzone-file" type="file" className="hidden" onChange={handleImageChange} accept="image/*" />
+                        </label>
+                    </div>
+                </div>
+
                 <FormField
                   control={form.control}
                   name="title"
@@ -196,7 +235,6 @@ export default function ListPropertyPage() {
                       )}
                     />
                 </div>
-                {/* Image upload will be added here later */}
                  <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
                   {form.formState.isSubmitting ? 'Listing...' : 'List Property'}
                 </Button>

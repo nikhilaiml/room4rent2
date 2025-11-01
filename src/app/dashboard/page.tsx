@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useFirestore, useCollection, useDoc } from '@/firebase';
 import Header from '@/components/header';
@@ -102,7 +102,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {properties.map(prop => (
                <Card key={prop.id} className="overflow-hidden">
-                 <Image src={prop.imageUrls?.[0] || 'https://picsum.photos/seed/default/400/250'} alt={prop.title} width={400} height={250} className="w-full h-48 object-cover"/>
+                 <Image src={prop.imageUrls?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop'} alt={prop.title} width={400} height={250} className="w-full h-48 object-cover"/>
                  <div className="p-4">
                    <h3 className="font-bold">{prop.title}</h3>
                    <p className="text-sm text-muted-foreground">{prop.location}</p>
@@ -138,7 +138,7 @@ export default function DashboardPage() {
             {properties.map(prop => (
               <Link key={prop.id} href={`/properties/${prop.id}`}>
                <Card className="overflow-hidden h-full hover:shadow-lg transition-shadow">
-                 <Image src={prop.imageUrls?.[0] || 'https://picsum.photos/seed/default/400/250'} alt={prop.title} width={400} height={250} className="w-full h-48 object-cover"/>
+                 <Image src={prop.imageUrls?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop'} alt={prop.title} width={400} height={250} className="w-full h-48 object-cover"/>
                  <div className="p-4">
                    <h3 className="font-bold">{prop.title}</h3>
                    <p className="text-sm text-muted-foreground">{prop.location}</p>

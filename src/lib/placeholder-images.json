@@ -1,34 +1,34 @@
 {
   "hero": {
-    "src": "https://picsum.photos/seed/hero/1200/400",
+    "src": "https://images.unsplash.com/photo-1582407947304-fd86f028f716?q=80&w=2196&auto=format&fit=crop",
     "hint": "apartment building exterior"
   },
   "cities": [
     {
       "name": "Varanasi",
       "img": {
-        "src": "https://picsum.photos/seed/varanasi/200/200",
+        "src": "https://images.unsplash.com/photo-1594482865135-a043b3558349?q=80&w=200&h=200&auto=format&fit=crop",
         "hint": "Varanasi ghat"
       }
     },
     {
       "name": "Lucknow",
       "img": {
-        "src": "https://picsum.photos/seed/lucknow/200/200",
+        "src": "https://images.unsplash.com/photo-1599834562227-265e69248279?q=80&w=200&h=200&auto=format&fit=crop",
         "hint": "Lucknow architecture"
       }
     },
     {
       "name": "Prayagraj",
       "img": {
-        "src": "https://picsum.photos/seed/prayagraj/200/200",
+        "src": "https://images.unsplash.com/photo-1627931454559-00a2f1c87a55?q=80&w=200&h=200&auto=format&fit=crop",
         "hint": "Prayagraj bridge"
       }
     },
     {
       "name": "Patna",
       "img": {
-        "src": "https://picsum.photos/seed/patna/200/200",
+        "src": "https://images.unsplash.com/photo-1616334542289-537456335532?q=80&w=200&h=200&auto=format&fit=crop",
         "hint": "Patna cityscape"
       }
     }
@@ -43,7 +43,7 @@
       "price": 20000,
       "views": 268,
       "image": {
-        "src": "https://picsum.photos/seed/prop1/400/250",
+        "src": "https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=400&h=250&auto=format&fit=crop",
         "hint": "modern apartment interior"
       },
       "rating": 4.5
@@ -57,7 +57,7 @@
       "price": 22000,
       "views": 121,
       "image": {
-        "src": "https://picsum.photos/seed/prop2/400/250",
+        "src": "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=400&h=250&auto=format&fit=crop",
         "hint": "cozy apartment living room"
       },
       "rating": 4.2
@@ -71,7 +71,7 @@
       "price": 8000,
       "views": 350,
       "image": {
-        "src": "https://picsum.photos/seed/prop3/400/250",
+        "src": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=400&h=250&auto=format&fit=crop",
         "hint": "student hostel room"
       },
       "rating": 4
@@ -83,7 +83,7 @@
       "role": "Tenant in Varanasi",
       "text": "When I moved to a completely new city from my hometown, RoomLelo really helped me to find an affordable place to live and assisted me with other requirements. Great Initiative.",
       "avatar": {
-        "src": "https://picsum.photos/seed/avatar1/100/100",
+        "src": "https://images.unsplash.com/photo-1557862921-37829c790f19?q=80&w=100&h=100&auto=format&fit=crop",
         "hint": "happy person"
       }
     },
@@ -92,7 +92,7 @@
       "role": "Tenant in Lucknow",
       "text": "Cannot be more thankful to you RoomLelo for your existence. Saved my time, effort and money by simply booking the flat online from your website. Move-in was quick and easy.",
       "avatar": {
-        "src": "https://picsum.photos/seed/avatar2/100/100",
+        "src": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=100&h=100&auto=format&fit=crop",
         "hint": "smiling student"
       }
     },
@@ -101,7 +101,7 @@
       "role": "Tenant in a PG",
       "text": "Once my fan got out of order in the late evening, they solved it within an hour. Kept their promise of quick maintenance.",
       "avatar": {
-        "src": "https://picsum.photos/seed/avatar3/100/100",
+        "src": "https://images.unsplash.com/photo-1552058544-f2b08422138a?q=80&w=100&h=100&auto=format&fit=crop",
         "hint": "professional headshot"
       }
     }
@@ -111,7 +111,7 @@
       "title": "Free Listing",
       "description": "You won't have to worry about paying any amount for better audience engagement unlike other property search platforms.",
       "icon": {
-        "src": "https://picsum.photos/seed/benefit1/60/60",
+        "src": "https://images.unsplash.com/photo-1579621970795-87f91d908377?q=80&w=60&h=60&auto=format&fit=crop",
         "hint": "free tag"
       }
     },
@@ -119,7 +119,7 @@
       "title": "Rent on Time",
       "description": "You won't have to worry about rent delays or defaults, once associated with us.",
       "icon": {
-        "src": "https://picsum.photos/seed/benefit2/60/60",
+        "src": "https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=60&h=60&auto=format&fit=crop",
         "hint": "calendar money"
       }
     },
@@ -127,7 +127,7 @@
       "title": "Verified tenants",
       "description": "You won't have to worry about problematic tenants or possession of valid Identity Proof of Tenant's, once associated with us.",
       "icon": {
-        "src": "https://picsum.photos/seed/benefit3/60/60",
+        "src": "https://images.unsplash.com/photo-1529665253569-6d01c0eaf7b6?q=80&w=60&h=60&auto=format&fit=crop",
         "hint": "verified user"
       }
     },
@@ -135,7 +135,7 @@
       "title": "Owners Dashboard",
       "description": "You will get to access all relevant details from your customized dashboard on our exclusive Partners app.",
       "icon": {
-        "src": "https://picsum.photos/seed/benefit4/60/60",
+        "src": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=60&h=60&auto=format&fit=crop",
         "hint": "dashboard chart"
       }
     }
