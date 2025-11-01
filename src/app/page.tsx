@@ -14,7 +14,7 @@ import placeholderImages from '@/lib/placeholder-images.json';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import { doc, updateDoc, arrayUnion, arrayRemove, getDoc, collection, query } from 'firebase/firestore';
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { PropertyCard } from '@/components/PropertyCard';
 
@@ -23,6 +23,7 @@ const cities = placeholderImages.cities;
 const testimonials = placeholderImages.testimonials;
 const benefits = placeholderImages.benefits;
 
+const PropertiesCarousel = React.lazy(() => import('@/components/PropertiesCarousel'));
 
 export default function HomePage() {
   const [location, setLocation] = useState('');
@@ -121,65 +122,13 @@ export default function HomePage() {
         <section className="py-12 bg-background">
           <div className="container mx-auto">
             <h2 className="text-3xl font-bold mb-6">Trending Properties in Varanasi</h2>
-            {isLoadingProperties ? <p>Loading...</p> : 
-              <Carousel opts={{ align: "start", loop: true }}>
-                <CarouselContent>
-                  {properties?.map((prop, index) => (
-                    <CarouselItem key={`${prop.id}-${index}`} className="md:basis-1/2 lg:basis-1/3">
-                      <PropertyCard 
-                        id={prop.id}
-                        title={prop.title}
-                        location={prop.location}
-                        amenities={prop.amenities || ''}
-                        securityDeposit={prop.securityDeposit || 0}
-                        price={prop.price}
-                        views={prop.views || 0}
-                        image={{src: prop.imageUrls?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop', hint: 'property'}}
-                        rating={prop.rating || 4}
-                      />
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="left-[-20px]" />
-                <CarouselNext className="right-[-20px]" />
-              </Carousel>
-            }
+            <Suspense fallback={<p>Loading properties...</p>}>
+              <PropertiesCarousel properties={properties} isLoading={isLoadingProperties} />
+            </Suspense>
           </div>
         </section>
 
         <section className="py-12 bg-white">
-          <div className="container mx-auto">
-            <h2 className="text-3xl font-bold mb-6 flex items-center">
-              <Users className="mr-3 text-primary h-8 w-8" />
-              RoomLelo Recommendations
-            </h2>
-             {isLoadingProperties ? <p>Loading...</p> : 
-              <Carousel opts={{ align: "start", loop: true }}>
-                <CarouselContent>
-                  {(properties || placeholderImages.properties)?.slice(0, 3).map((prop, index) => (
-                     <CarouselItem key={`${prop.id}-${index}`} className="md:basis-1/2 lg:basis-1/3">
-                       <PropertyCard 
-                        id={prop.id}
-                        title={prop.title}
-                        location={prop.location}
-                        amenities={prop.amenities || ''}
-                        securityDeposit={prop.securityDeposit || 0}
-                        price={prop.price}
-                        views={prop.views || 0}
-                        image={{src: (prop as any).image?.src || (prop as any).imageUrls?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop', hint: 'property'}}
-                        rating={(prop as any).rating || 4}
-                      />
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="left-[-20px]" />
-                <CarouselNext className="right-[-20px]" />
-              </Carousel>
-            }
-          </div>
-        </section>
-
-        <section className="py-12 bg-background">
             <div className="container mx-auto text-center">
                 <h2 className="text-3xl font-bold mb-2">Our Tenants Speak</h2>
                 <p className="text-muted-foreground mb-8">We have been working with clients around the Lucknow Varanasi</p>
@@ -198,7 +147,7 @@ export default function HomePage() {
             </div>
         </section>
 
-        <section className="py-16 bg-white">
+        <section className="py-16 bg-background">
           <div className="container mx-auto">
             <h2 className="text-3xl font-bold text-center mb-10">Benefits of Listing with us</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
