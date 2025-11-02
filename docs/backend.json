@@ -23,13 +23,9 @@
           "type": "string",
           "description": "Role of the user in the system.",
           "enum": ["tenant", "owner", "admin"]
-        },
-        "phoneNumber": {
-            "type": "string",
-            "description": "Phone number of the user."
         }
       },
-      "required": ["id", "email", "name", "role", "phoneNumber"]
+      "required": ["id", "email", "name", "role"]
     },
     "Property": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -127,8 +123,7 @@
   },
   "auth": {
     "providers": [
-      "password",
-      "phone"
+      "password"
     ]
   },
   "firestore": {
