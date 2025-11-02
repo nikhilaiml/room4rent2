@@ -1,9 +1,8 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from './ui/button';
-import { Mail, Phone, MapPin, Youtube, Instagram, Facebook, Linkedin, Twitter } from 'lucide-react';
-import placeholderImages from '@/lib/placeholder-images.json';
+import { Youtube, Instagram, Facebook, Linkedin, Twitter } from 'lucide-react';
 import { Input } from './ui/input';
+import { Logo } from './logo';
 
 
 export default function Footer() {
@@ -12,8 +11,7 @@ export default function Footer() {
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 px-4">
         <div className="md:col-span-2 lg:col-span-1">
           <Link href="/" className="flex items-center gap-2 mb-4">
-            <Image src={placeholderImages.footer.logo.src} alt="room4rent Logo" width={40} height={40} className="bg-white rounded-md p-1" data-ai-hint={placeholderImages.footer.logo.hint} />
-            <span className="text-xl font-bold text-white">room4rent</span>
+            <Logo className="h-12 text-white" />
           </Link>
           <p className="text-sm">
             room4rent is an online home rental aggregation platform executing tech based solutions for individuals in need of independent and comfortable living spaces.

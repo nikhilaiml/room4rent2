@@ -1,15 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useUser, useAuth } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
-import { User, LogIn, Briefcase, LogOut, Menu } from 'lucide-react';
-import placeholderImages from '@/lib/placeholder-images.json';
+import { User, LogIn, LogOut, Menu } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
+import { Logo } from './logo';
 
 
 export default function Header() {
@@ -46,8 +45,7 @@ export default function Header() {
     <header className="bg-white/80 backdrop-blur-md border-b border-border sticky top-0 z-50">
       <div className="container mx-auto flex items-center justify-between p-4 h-20">
         <Link href="/" className="flex items-center gap-2">
-          <Image src={placeholderImages.footer.logo.src} alt="room4rent Logo" width={40} height={40} className="bg-gray-800 rounded-md p-1" data-ai-hint={placeholderImages.footer.logo.hint} />
-          <span className="text-xl font-bold">room4rent</span>
+          <Logo />
         </Link>
         <nav className="hidden md:flex items-center gap-6">
           {navLinks.map(link => <NavLink key={link.href} {...link} />)}
@@ -92,8 +90,7 @@ export default function Header() {
               <nav className="grid gap-6 text-lg font-medium mt-10">
                  <SheetClose asChild>
                     <Link href="/" className="flex items-center gap-2 text-lg font-semibold mb-4">
-                      <Image src={placeholderImages.footer.logo.src} alt="room4rent Logo" width={30} height={30} data-ai-hint={placeholderImages.footer.logo.hint} />
-                      <span>room4rent</span>
+                      <Logo className="h-8"/>
                     </Link>
                  </SheetClose>
                  {navLinks.map(link => (
