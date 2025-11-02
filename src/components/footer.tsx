@@ -3,56 +3,58 @@ import Image from 'next/image';
 import { Button } from './ui/button';
 import { Mail, Phone, MapPin, Youtube, Instagram, Facebook, Linkedin, Twitter } from 'lucide-react';
 import placeholderImages from '@/lib/placeholder-images.json';
+import { Input } from './ui/input';
 
 
 export default function Footer() {
   return (
-    <footer className="bg-cyan-50 text-gray-800 pt-12">
-      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4">
+    <footer className="bg-gray-800 text-gray-300 pt-16">
+      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 px-4">
         <div className="md:col-span-2 lg:col-span-1">
-          <Image src={placeholderImages.footer.logo.src} alt="room4rent Logo" width={60} height={60} className="mb-4" data-ai-hint={placeholderImages.footer.logo.hint} />
+          <Link href="/" className="flex items-center gap-2 mb-4">
+            <Image src={placeholderImages.footer.logo.src} alt="room4rent Logo" width={40} height={40} className="bg-white rounded-md p-1" data-ai-hint={placeholderImages.footer.logo.hint} />
+            <span className="text-xl font-bold text-white">room4rent</span>
+          </Link>
           <p className="text-sm">
             room4rent is an online home rental aggregation platform executing tech based solutions for individuals in need of independent and comfortable living spaces.
           </p>
+          <div className="flex space-x-3 mt-6">
+            <Link href="#" className="p-2 bg-gray-700 rounded-full hover:bg-primary transition-colors"><Facebook className="w-5 h-5" /></Link>
+            <Link href="#" className="p-2 bg-gray-700 rounded-full hover:bg-primary transition-colors"><Twitter className="w-5 h-5" /></Link>
+            <Link href="#" className="p-2 bg-gray-700 rounded-full hover:bg-primary transition-colors"><Linkedin className="w-5 h-5" /></Link>
+            <Link href="#" className="p-2 bg-gray-700 rounded-full hover:bg-primary transition-colors"><Instagram className="w-5 h-5" /></Link>
+            <Link href="#" className="p-2 bg-gray-700 rounded-full hover:bg-primary transition-colors"><Youtube className="w-5 h-5" /></Link>
+          </div>
         </div>
         <div>
-          <h4 className="font-bold mb-4">Quick Links</h4>
+          <h4 className="font-bold text-white mb-4">Navigator</h4>
           <ul className="space-y-2 text-sm">
-            <li><Link href="/properties" className="hover:text-primary">Explore Property</Link></li>
-            <li><Link href="/contact" className="hover:text-primary">Help Center</Link></li>
-            <li><Link href="/about" className="hover:text-primary">Careers</Link></li>
+            <li><Link href="/about" className="hover:text-primary">About us</Link></li>
+            <li><Link href="/properties" className="hover:text-primary">Properties</Link></li>
+            <li><Link href="/contact" className="hover:text-primary">Contact us</Link></li>
+            <li><Link href="/dashboard" className="hover:text-primary">My Account</Link></li>
           </ul>
         </div>
         <div>
-          <h4 className="font-bold mb-4">Reach Us</h4>
-          <ul className="space-y-3 text-sm">
-            <li className="flex items-start gap-2"><Mail className="w-4 h-4 mt-1 flex-shrink-0 text-primary" /> contact@room4rent.in</li>
-            <li className="flex items-start gap-2"><Phone className="w-4 h-4 mt-1 flex-shrink-0 text-primary" /> +91-76676 51878</li>
-            <li className="flex items-start gap-2"><MapPin className="w-4 h-4 mt-1 flex-shrink-0 text-primary" /> D-63/319c, Laharatara, Varanasi</li>
+          <h4 className="font-bold text-white mb-4">Quick Links</h4>
+          <ul className="space-y-2 text-sm">
+            <li><Link href="#" className="hover:text-primary">Terms of Use</Link></li>
+            <li><Link href="#" className="hover:text-primary">Privacy Policy</Link></li>
+            <li><Link href="/list-property" className="hover:text-primary">List your property</Link></li>
           </ul>
         </div>
         <div>
-          <h4 className="font-bold mb-4">Install App</h4>
-          <Link href="#">
-            <Image src={placeholderImages.footer.playStore.src} alt="Get it on Google Play" width={150} height={50} data-ai-hint={placeholderImages.footer.playStore.hint}/>
-          </Link>
-          <div className="flex space-x-4 mt-4">
-            <Link href="#"><Instagram className="w-6 h-6 hover:text-primary" /></Link>
-            <Link href="#"><Facebook className="w-6 h-6 hover:text-primary" /></Link>
-            <Link href="#"><Linkedin className="w-6 h-6 hover:text-primary" /></Link>
-            <Link href="#"><Twitter className="w-6 h-6 hover:text-primary" /></Link>
-            <Link href="#"><Youtube className="w-6 h-6 hover:text-primary" /></Link>
+          <h4 className="font-bold text-white mb-4">Newsletter</h4>
+          <p className="text-sm mb-4">Sign up for our newsletter to get the latest news and offers.</p>
+          <div className="flex">
+            <Input type="email" placeholder="Your email..." className="bg-gray-700 border-gray-600 rounded-r-none text-white placeholder:text-gray-400" />
+            <Button type="submit" className="rounded-l-none">Subscribe</Button>
           </div>
         </div>
       </div>
-      <div className="mt-8 py-4 border-t border-gray-300">
-        <div className="container mx-auto flex flex-col md:flex-row justify-between items-center text-sm px-4 text-center md:text-left">
-          <p>&copy; 2025 room4rent. All rights reserved</p>
-          <div className="flex space-x-4 mt-2 md:mt-0">
-            <Link href="#" className="hover:text-primary">Booking Policy</Link>
-            <Link href="#" className="hover:text-primary">Privacy Policy</Link>
-            <Link href="#" className="hover:text-primary">General Policy</Link>
-          </div>
+      <div className="mt-12 py-4 border-t border-gray-700">
+        <div className="container mx-auto text-center text-sm">
+          <p>&copy; {new Date().getFullYear()} room4rent. All Rights Reserved.</p>
         </div>
       </div>
     </footer>
