@@ -92,10 +92,10 @@ export const PropertyCard = ({ id, title, location, amenities, securityDeposit, 
 
   return (
     <Link href={`/properties/${id}`} className="block h-full group">
-    <Card className="overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 h-full flex flex-col rounded-lg">
+    <Card className="overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col rounded-lg hover:-translate-y-1">
       <CardContent className="p-0 flex-grow flex flex-col">
-        <div className="relative">
-          <Image src={image.src} alt={title} width={400} height={250} className="w-full object-cover h-56 transform group-hover:scale-105 transition-transform duration-300" data-ai-hint={image.hint} />
+        <div className="relative overflow-hidden">
+          <Image src={image.src} alt={title} width={400} height={250} className="w-full object-cover h-56 transform group-hover:scale-110 transition-transform duration-500" data-ai-hint={image.hint} />
           <div className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs px-3 py-1 rounded-full font-bold">For Sale</div>
           <div className="absolute top-3 right-3 flex space-x-1">
              <Button variant="ghost" size="icon" className="w-8 h-8 bg-white/80 hover:bg-white text-gray-700" onClick={handleFavorite}>
