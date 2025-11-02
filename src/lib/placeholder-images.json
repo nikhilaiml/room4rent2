@@ -7,28 +7,28 @@
     {
       "name": "Varanasi",
       "img": {
-        "src": "https://images.unsplash.com/photo-1561361533-ebb4620a4403?q=80&w=200&h=200&auto=format&fit=crop",
+        "src": "https://images.unsplash.com/photo-1576433299403-9c595aa53b47?q=80&w=128&h=128&auto=format&fit=crop",
         "hint": "Varanasi ghat river"
       }
     },
     {
       "name": "Lucknow",
       "img": {
-        "src": "https://images.unsplash.com/photo-1618776856365-8f6a365239d7?q=80&w=200&h=200&auto=format&fit=crop",
+        "src": "https://images.unsplash.com/photo-1627896152038-484930686991?q=80&w=128&h=128&auto=format&fit=crop",
         "hint": "Lucknow architecture monument"
       }
     },
     {
       "name": "Prayagraj",
       "img": {
-        "src": "https://images.unsplash.com/photo-1627931454559-00a2f1c87a55?q=80&w=200&h=200&auto=format&fit=crop",
+        "src": "https://images.unsplash.com/photo-1623517721385-50a1eb3159c3?q=80&w=128&h=128&auto=format&fit=crop",
         "hint": "Prayagraj bridge"
       }
     },
     {
       "name": "Patna",
       "img": {
-        "src": "https://images.unsplash.com/photo-1588610534078-d9de1d418555?q=80&w=200&h=200&auto=format&fit=crop",
+        "src": "https://images.unsplash.com/photo-1620766179883-a1b4a68a5293?q=80&w=128&h=128&auto=format&fit=crop",
         "hint": "Patna monument"
       }
     }
