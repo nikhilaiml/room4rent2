@@ -17,9 +17,11 @@ import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useFirestore } from '@/firebase';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
+import { v4 as uuidv4 } from 'uuid';
 
 
 const propertyFormSchema = z.object({
@@ -39,6 +41,7 @@ export default function ListPropertyPage() {
   const { toast } = useToast();
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -92,13 +95,27 @@ export default function ListPropertyPage() {
     setImageFiles(newFiles);
   }
 
+  const uploadImages = async (files: File[]): Promise<string[]> => {
+    const storage = getStorage();
+    const uploadedImageUrls: string[] = [];
+  
+    for (const file of files) {
+      const imageRef = ref(storage, `properties/${user!.uid}/${uuidv4()}-${file.name}`);
+      await uploadBytes(imageRef, file);
+      const downloadURL = await getDownloadURL(imageRef);
+      uploadedImageUrls.push(downloadURL);
+    }
+  
+    return uploadedImageUrls;
+  };
+
   async function onSubmit(values: z.infer<typeof propertyFormSchema>) {
     if (!user) {
       toast({ variant: 'destructive', title: 'Authentication Error', description: 'User not found.' });
       return;
     }
     
-    if (imagePreviews.length < 2) {
+    if (imageFiles.length < 2) {
       toast({
         variant: 'destructive',
         title: 'Upload Error',
@@ -106,20 +123,19 @@ export default function ListPropertyPage() {
       });
       return;
     }
-    
-    // In a real app, you would upload `imageFiles` to Firebase Storage here
-    // and get back the download URLs to save in Firestore.
-    // For this demonstration, we'll save the blob URLs, which will only work locally.
-    const imageUrlsToSave = imagePreviews;
 
+    setIsUploading(true);
+    
     try {
+      const imageUrls = await uploadImages(imageFiles);
+
       await addDoc(collection(firestore, 'properties'), {
         ...values,
         city: values.city.toLowerCase(),
         location: values.location.toLowerCase(),
         ownerId: user.uid,
         createdAt: serverTimestamp(),
-        imageUrls: imageUrlsToSave, 
+        imageUrls: imageUrls, 
       });
       toast({
         title: 'Property Listed!',
@@ -133,6 +149,8 @@ export default function ListPropertyPage() {
         title: 'Listing Failed',
         description: error.message || 'Could not list your property. Please try again.',
       });
+    } finally {
+        setIsUploading(false);
     }
   }
 
@@ -268,8 +286,8 @@ export default function ListPropertyPage() {
                       )}
                     />
                 </div>
-                 <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                  {form.formState.isSubmitting ? 'Listing...' : 'List Property'}
+                 <Button type="submit" className="w-full" disabled={form.formState.isSubmitting || isUploading}>
+                  {isUploading ? 'Uploading & Listing...' : 'List Property'}
                 </Button>
               </form>
             </Form>
