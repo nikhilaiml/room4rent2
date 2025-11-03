@@ -49,7 +49,11 @@ export default function ListPropertyPage() {
       });
       router.push('/login');
     }
-  }, [user, isUserLoading, router, toast]);
+     // Cleanup object URLs on component unmount
+    return () => {
+      imagePreviews.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, [user, isUserLoading, router, toast, imagePreviews]);
 
   const form = useForm<z.infer<typeof propertyFormSchema>>({
     resolver: zodResolver(propertyFormSchema),
@@ -67,21 +71,25 @@ export default function ListPropertyPage() {
     const files = event.target.files;
     if (files) {
       const newFiles = Array.from(files);
-      // For simplicity, we are not actually uploading files, but using Unsplash placeholders.
-      // In a real app, you would upload `newFiles` to Firebase Storage.
-      
-      const newPreviews = newFiles.map((file, index) => {
-        // Create a unique seed for Unsplash for each image
-        const seed = `${file.name}-${file.size}-${Date.now()}-${index}`;
-        return `https://images.unsplash.com/photo-1576941089067-2de3c901e126?q=80&w=1200&h=750&auto=format&fit=crop&seed=${seed}`;
-      });
+      const newPreviews = newFiles.map(file => URL.createObjectURL(file));
 
+      setImageFiles(prev => [...prev, ...newFiles]);
       setImagePreviews(prev => [...prev, ...newPreviews]);
     }
   };
   
   const removeImage = (index: number) => {
-    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+    const newPreviews = [...imagePreviews];
+    const newFiles = [...imageFiles];
+    
+    // Revoke the object URL to prevent memory leaks
+    URL.revokeObjectURL(newPreviews[index]);
+
+    newPreviews.splice(index, 1);
+    newFiles.splice(index, 1);
+    
+    setImagePreviews(newPreviews);
+    setImageFiles(newFiles);
   }
 
   async function onSubmit(values: z.infer<typeof propertyFormSchema>) {
@@ -94,11 +102,16 @@ export default function ListPropertyPage() {
       toast({
         variant: 'destructive',
         title: 'Upload Error',
-        description: 'Please "upload" at least 2 photos of your property.',
+        description: 'Please upload at least 2 photos of your property.',
       });
       return;
     }
     
+    // In a real app, you would upload `imageFiles` to Firebase Storage here
+    // and get back the download URLs to save in Firestore.
+    // For this demonstration, we'll save the blob URLs, which will only work locally.
+    const imageUrlsToSave = imagePreviews;
+
     try {
       await addDoc(collection(firestore, 'properties'), {
         ...values,
@@ -106,7 +119,7 @@ export default function ListPropertyPage() {
         location: values.location.toLowerCase(),
         ownerId: user.uid,
         createdAt: serverTimestamp(),
-        imageUrls: imagePreviews, // Use the Unsplash URLs
+        imageUrls: imageUrlsToSave, 
       });
       toast({
         title: 'Property Listed!',
