@@ -31,7 +31,6 @@ const propertyFormSchema = z.object({
   location: z.string().min(3, 'Location is required'),
   price: z.coerce.number().min(0, 'Price must be a positive number'),
   propertyType: z.enum(['Room', '1BHK', '2BHK', 'PG', 'Hostel']),
-  imageUrls: z.array(z.string()).min(2, 'Please upload at least 2 photos.'),
 });
 
 
@@ -43,6 +42,7 @@ export default function ListPropertyPage() {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -68,11 +68,11 @@ export default function ListPropertyPage() {
       location: '',
       price: 0,
       propertyType: 'Room',
-      imageUrls: [],
     },
   });
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setImageError(null);
     const files = event.target.files;
     if (files) {
       const newFiles = Array.from(files);
@@ -130,6 +130,7 @@ export default function ListPropertyPage() {
     }
     
     if (imageFiles.length < 2) {
+      setImageError('Please upload at least 2 photos.');
       toast({
         variant: 'destructive',
         title: 'Upload Error',
@@ -137,7 +138,7 @@ export default function ListPropertyPage() {
       });
       return;
     }
-
+    setImageError(null);
     setIsUploading(true);
     
     try {
@@ -145,7 +146,7 @@ export default function ListPropertyPage() {
       
       const propertyData = {
         ...values,
-        imageUrls: uploadedUrls, // Use the real uploaded URLs
+        imageUrls: uploadedUrls,
         city: values.city.toLowerCase(),
         location: values.location.toLowerCase(),
         ownerId: user.uid,
@@ -188,38 +189,31 @@ export default function ListPropertyPage() {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 
-                <FormField
-                    control={form.control}
-                    name="imageUrls"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Property Images (2 to 5 images)</FormLabel>
-                            <FormControl>
-                                 <div className="grid grid-cols-3 gap-2">
-                                    {imagePreviews.map((preview, index) => (
-                                    <div key={index} className="relative">
-                                        <Image src={preview} alt={`Property preview ${index+1}`} width={200} height={120} className="w-full h-24 object-cover rounded-lg" />
-                                        <button type="button" onClick={() => removeImage(index)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1">
-                                        <X className="w-3 h-3"/>
-                                        </button>
+                <div className="space-y-2">
+                    <Label>Property Images (2 to 5 images)</Label>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                        {imagePreviews.map((preview, index) => (
+                        <div key={index} className="relative">
+                            <Image src={preview} alt={`Property preview ${index+1}`} width={200} height={120} className="w-full h-24 object-cover rounded-lg" />
+                            <button type="button" onClick={() => removeImage(index)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 leading-none">
+                            <X className="w-3 h-3"/>
+                            </button>
+                        </div>
+                        ))}
+                        {imagePreviews.length < 5 &&
+                            <div className="flex items-center justify-center w-full">
+                                <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-24 border-2 border-border border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted/50">
+                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <Upload className="w-8 h-8 text-muted-foreground" />
                                     </div>
-                                    ))}
-                                    {imagePreviews.length < 5 &&
-                                        <div className="flex items-center justify-center w-full">
-                                            <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-24 border-2 border-border border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted/50">
-                                                <div className="flex flex-col items-center justify-center">
-                                                    <Upload className="w-8 h-8 text-muted-foreground" />
-                                                </div>
-                                                <Input id="dropzone-file" type="file" className="hidden" onChange={handleImageChange} accept="image/*" multiple />
-                                            </label>
-                                        </div>
-                                    }
-                                </div>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                                    <Input id="dropzone-file" type="file" className="hidden" onChange={handleImageChange} accept="image/*" multiple />
+                                </label>
+                            </div>
+                        }
+                    </div>
+                    {imageError && <p className="text-sm font-medium text-destructive">{imageError}</p>}
+                </div>
+
 
                 <FormField
                   control={form.control}
