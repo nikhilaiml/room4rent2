@@ -18,7 +18,7 @@ const Bubbles = () => {
     const newBubble: Bubble = {
       id: Date.now() + Math.random(),
       x: Math.random() * 100,
-      y: 110,
+      y: 110, // Start below the viewport
       size: 20 + Math.random() * 60,
       duration: 10 + Math.random() * 10,
     };
@@ -31,7 +31,7 @@ const Bubbles = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (bubbles.length < 15) {
+      if (bubbles.length < 15) { // Limit the number of bubbles on screen
         createBubble();
       }
     }, 1000); // Create a new bubble every second
@@ -52,14 +52,14 @@ const Bubbles = () => {
               height: bubble.size,
             }}
             initial={{ y: '110vh', opacity: 1 }}
-            animate={{ y: '-10vh' }}
-            exit={{ scale: 1.5, opacity: 0 }}
+            animate={{ y: '-10vh' }} // Animate to a position above the viewport
+            exit={{ scale: 1.5, opacity: 0, transition: { duration: 0.3 } }}
             transition={{
               duration: bubble.duration,
               ease: 'linear',
             }}
-            onViewportLeave={() => handlePop(bubble.id)}
-            onPointerDown={() => handlePop(bubble.id)}
+            onViewportLeave={() => handlePop(bubble.id)} // Remove when it goes off-screen
+            onPointerDown={() => handlePop(bubble.id)} // "Pop" on click
           />
         ))}
       </AnimatePresence>
