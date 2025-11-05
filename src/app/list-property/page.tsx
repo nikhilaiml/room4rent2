@@ -111,16 +111,22 @@ export default function ListPropertyPage() {
   const uploadImages = async (files: File[]): Promise<string[]> => {
     if (!user) throw new Error("User not authenticated for image upload.");
     const storage = getStorage();
+    const uploadedImageUrls: string[] = [];
   
-    const uploadPromises = files.map(async (file) => {
+    // Upload images sequentially to be more robust on unstable networks
+    for (const file of files) {
       const imageRef = ref(storage, `properties/${user.uid}/${uuidv4()}-${file.name}`);
-      await uploadBytes(imageRef, file);
-      const downloadURL = await getDownloadURL(imageRef);
-      return downloadURL;
-    });
+      try {
+        await uploadBytes(imageRef, file);
+        const downloadURL = await getDownloadURL(imageRef);
+        uploadedImageUrls.push(downloadURL);
+      } catch (error) {
+        console.error(`Failed to upload image: ${file.name}`, error);
+        // Re-throw the error to be caught by the onSubmit handler
+        throw new Error(`Failed to upload ${file.name}. Please try again.`);
+      }
+    }
   
-    // Upload all images in parallel and wait for all to complete
-    const uploadedImageUrls = await Promise.all(uploadPromises);
     return uploadedImageUrls;
   };
 
