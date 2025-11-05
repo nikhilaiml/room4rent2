@@ -111,15 +111,16 @@ export default function ListPropertyPage() {
   const uploadImages = async (files: File[]): Promise<string[]> => {
     if (!user) throw new Error("User not authenticated for image upload.");
     const storage = getStorage();
-    const uploadedImageUrls: string[] = [];
   
-    for (const file of files) {
+    const uploadPromises = files.map(async (file) => {
       const imageRef = ref(storage, `properties/${user.uid}/${uuidv4()}-${file.name}`);
       await uploadBytes(imageRef, file);
       const downloadURL = await getDownloadURL(imageRef);
-      uploadedImageUrls.push(downloadURL);
-    }
+      return downloadURL;
+    });
   
+    // Upload all images in parallel and wait for all to complete
+    const uploadedImageUrls = await Promise.all(uploadPromises);
     return uploadedImageUrls;
   };
 
