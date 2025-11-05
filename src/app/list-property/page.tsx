@@ -111,23 +111,25 @@ export default function ListPropertyPage() {
   const uploadImages = async (files: File[]): Promise<string[]> => {
     if (!user) throw new Error("User not authenticated for image upload.");
     const storage = getStorage();
-    const uploadedImageUrls: string[] = [];
-  
-    // Upload images sequentially to be more robust on unstable networks
-    for (const file of files) {
+
+    const uploadPromises = files.map(async (file) => {
       const imageRef = ref(storage, `properties/${user.uid}/${uuidv4()}-${file.name}`);
-      try {
-        await uploadBytes(imageRef, file);
-        const downloadURL = await getDownloadURL(imageRef);
-        uploadedImageUrls.push(downloadURL);
-      } catch (error) {
-        console.error(`Failed to upload image: ${file.name}`, error);
-        // Re-throw the error to be caught by the onSubmit handler
-        throw new Error(`Failed to upload ${file.name}. Please try again.`);
-      }
+      // The uploadBytes function returns a promise that resolves with the upload result.
+      await uploadBytes(imageRef, file);
+      // After upload, we get the download URL.
+      const downloadURL = await getDownloadURL(imageRef);
+      return downloadURL;
+    });
+
+    try {
+      // Promise.all waits for all upload and URL retrieval promises to resolve.
+      const uploadedImageUrls = await Promise.all(uploadPromises);
+      return uploadedImageUrls;
+    } catch (error) {
+      console.error("One or more image uploads failed:", error);
+      // Re-throw a more user-friendly error to be caught by the onSubmit handler.
+      throw new Error("Failed to upload images. Please check your network connection and try again.");
     }
-  
-    return uploadedImageUrls;
   };
 
   async function onSubmit(values: z.infer<typeof propertyFormSchema>) {
