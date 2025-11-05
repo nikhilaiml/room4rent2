@@ -17,11 +17,12 @@ import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useFirestore } from '@/firebase';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
 import { v4 as uuidv4 } from 'uuid';
+import { Progress } from '@/components/ui/progress';
 
 
 const propertyFormSchema = z.object({
@@ -42,6 +43,7 @@ export default function ListPropertyPage() {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [imageError, setImageError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -108,28 +110,54 @@ export default function ListPropertyPage() {
     setImageFiles(newFiles);
   }
 
-  const uploadImages = async (files: File[]): Promise<string[]> => {
-    if (!user) throw new Error("User not authenticated for image upload.");
-    const storage = getStorage();
+  const uploadImages = (files: File[]): Promise<string[]> => {
+    return new Promise((resolve, reject) => {
+      if (!user) {
+        return reject(new Error("User not authenticated for image upload."));
+      }
+      const storage = getStorage();
+      const uploadedUrls: string[] = [];
+      let filesUploaded = 0;
+      let totalBytes = files.reduce((acc, file) => acc + file.size, 0);
+      let totalBytesTransferred = 0;
 
-    const uploadPromises = files.map(async (file) => {
-      const imageRef = ref(storage, `properties/${user.uid}/${uuidv4()}-${file.name}`);
-      // The uploadBytes function returns a promise that resolves with the upload result.
-      await uploadBytes(imageRef, file);
-      // After upload, we get the download URL.
-      const downloadURL = await getDownloadURL(imageRef);
-      return downloadURL;
+      files.forEach((file) => {
+        const imageRef = ref(storage, `properties/${user.uid}/${uuidv4()}-${file.name}`);
+        const uploadTask = uploadBytesResumable(imageRef, file);
+
+        uploadTask.on('state_changed',
+          (snapshot) => {
+            // This event fires multiple times for each file.
+            // We need to calculate the overall progress.
+            // For simplicity, we can calculate progress based on files uploaded,
+            // but a more accurate way is to use bytes transferred.
+            // The provided snapshot is only for the current file.
+          },
+          (error) => {
+            console.error("Upload failed for a file:", error);
+            // Reject the promise if any file fails to upload
+            reject(error);
+          },
+          async () => {
+            // Handle successful uploads on complete
+            try {
+              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+              uploadedUrls.push(downloadURL);
+              filesUploaded++;
+
+              // Update overall progress based on number of files
+              setUploadProgress((filesUploaded / files.length) * 100);
+
+              if (filesUploaded === files.length) {
+                resolve(uploadedUrls);
+              }
+            } catch (error) {
+               reject(error);
+            }
+          }
+        );
+      });
     });
-
-    try {
-      // Promise.all waits for all upload and URL retrieval promises to resolve.
-      const uploadedImageUrls = await Promise.all(uploadPromises);
-      return uploadedImageUrls;
-    } catch (error) {
-      console.error("One or more image uploads failed:", error);
-      // Re-throw a more user-friendly error to be caught by the onSubmit handler.
-      throw new Error("Failed to upload images. Please check your network connection and try again.");
-    }
   };
 
   async function onSubmit(values: z.infer<typeof propertyFormSchema>) {
@@ -149,6 +177,7 @@ export default function ListPropertyPage() {
     }
     setImageError(null);
     setIsUploading(true);
+    setUploadProgress(0);
     
     try {
       const uploadedUrls = await uploadImages(imageFiles);
@@ -204,18 +233,18 @@ export default function ListPropertyPage() {
                         {imagePreviews.map((preview, index) => (
                         <div key={index} className="relative">
                             <Image src={preview} alt={`Property preview ${index+1}`} width={200} height={120} className="w-full h-24 object-cover rounded-lg" />
-                            <button type="button" onClick={() => removeImage(index)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 leading-none">
+                            <button type="button" onClick={() => removeImage(index)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 leading-none" disabled={isUploading}>
                             <X className="w-3 h-3"/>
                             </button>
                         </div>
                         ))}
                         {imagePreviews.length < 5 &&
                             <div className="flex items-center justify-center w-full">
-                                <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-24 border-2 border-border border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted/50">
+                                <label htmlFor="dropzone-file" className={`flex flex-col items-center justify-center w-full h-24 border-2 border-border border-dashed rounded-lg ${isUploading ? 'cursor-not-allowed bg-muted/50' : 'cursor-pointer bg-card hover:bg-muted/50'}`}>
                                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                         <Upload className="w-8 h-8 text-muted-foreground" />
                                     </div>
-                                    <Input id="dropzone-file" type="file" className="hidden" onChange={handleImageChange} accept="image/*" multiple />
+                                    <Input id="dropzone-file" type="file" className="hidden" onChange={handleImageChange} accept="image/*" multiple disabled={isUploading} />
                                 </label>
                             </div>
                         }
@@ -231,7 +260,7 @@ export default function ListPropertyPage() {
                     <FormItem>
                       <FormLabel>Property Title</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Cozy 1BHK near city center" {...field} />
+                        <Input placeholder="e.g., Cozy 1BHK near city center" {...field} disabled={isUploading} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -244,7 +273,7 @@ export default function ListPropertyPage() {
                     <FormItem>
                       <FormLabel>Description</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Describe your property in detail..." {...field} />
+                        <Textarea placeholder="Describe your property in detail..." {...field} disabled={isUploading} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -258,7 +287,7 @@ export default function ListPropertyPage() {
                         <FormItem>
                         <FormLabel>City</FormLabel>
                         <FormControl>
-                            <Input placeholder="e.g., Varanasi" {...field} />
+                            <Input placeholder="e.g., Varanasi" {...field} disabled={isUploading} />
                         </FormControl>
                         <FormMessage />
                         </FormItem>
@@ -271,7 +300,7 @@ export default function ListPropertyPage() {
                         <FormItem>
                         <FormLabel>Location / Locality</FormLabel>
                         <FormControl>
-                            <Input placeholder="e.g., Lanka" {...field} />
+                            <Input placeholder="e.g., Lanka" {...field} disabled={isUploading} />
                         </FormControl>
                         <FormMessage />
                         </FormItem>
@@ -286,7 +315,7 @@ export default function ListPropertyPage() {
                         <FormItem>
                         <FormLabel>Rent Price (per month)</FormLabel>
                         <FormControl>
-                            <Input type="number" placeholder="e.g., 15000" {...field} />
+                            <Input type="number" placeholder="e.g., 15000" {...field} disabled={isUploading} />
                         </FormControl>
                         <FormMessage />
                         </FormItem>
@@ -298,7 +327,7 @@ export default function ListPropertyPage() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Property Type</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isUploading}>
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Select property type" />
@@ -317,8 +346,15 @@ export default function ListPropertyPage() {
                       )}
                     />
                 </div>
-                 <Button type="submit" className="w-full" disabled={form.formState.isSubmitting || isUploading}>
-                  {isUploading ? 'Uploading & Listing...' : 'List Property'}
+                {isUploading && (
+                  <div className="space-y-2">
+                    <Label>Uploading...</Label>
+                    <Progress value={uploadProgress} className="w-full" />
+                    <p className="text-sm text-muted-foreground text-center">{Math.round(uploadProgress)}% complete</p>
+                  </div>
+                )}
+                 <Button type="submit" className="w-full" disabled={isUploading}>
+                  {isUploading ? 'Uploading...' : 'List Property'}
                 </Button>
               </form>
             </Form>
