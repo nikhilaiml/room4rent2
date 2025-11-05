@@ -24,6 +24,7 @@ const PropertiesCarousel = React.lazy(() => import('@/components/PropertiesCarou
 export default function HomePage() {
   const [location, setLocation] = useState('');
   const [propertyType, setPropertyType] = useState('all');
+  const [forWhom, setForWhom] = useState('all');
   const router = useRouter();
 
   const [heroTitle, setHeroTitle] = useState('');
@@ -55,6 +56,7 @@ export default function HomePage() {
     const queryParams = new URLSearchParams();
     if (location) queryParams.set('location', location);
     if (propertyType && propertyType !== 'all') queryParams.set('propertyType', propertyType);
+    if (forWhom && forWhom !== 'all') queryParams.set('forWhom', forWhom);
     router.push(`/properties?${queryParams.toString()}`);
   };
 
@@ -77,9 +79,9 @@ export default function HomePage() {
                  <h1 className="text-4xl md:text-5xl font-bold animate-in fade-in slide-in-from-top-10 duration-700">{heroTitle}</h1>
                  <p className="mt-2 md:mt-4 text-lg md:text-xl max-w-2xl animate-in fade-in slide-in-from-top-12 duration-700 delay-500">We are a recognized real estate agency</p>
             </div>
-            <div className="relative z-10 p-4 w-full max-w-4xl mx-auto -mt-20 md:-mt-16 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
+            <div className="relative z-10 p-4 w-full max-w-5xl mx-auto -mt-20 md:-mt-16 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
                 <div className="bg-white rounded-lg shadow-2xl p-4 md:p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                         <div className="md:col-span-2">
                             <label htmlFor="location" className="text-sm font-semibold text-gray-700">Location</label>
                             <div className="relative">
@@ -99,6 +101,21 @@ export default function HomePage() {
                                     <SelectItem value="2BHK">2BHK</SelectItem>
                                     <SelectItem value="PG">PG</SelectItem>
                                     <SelectItem value="Hostel">Hostel</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div>
+                           <label htmlFor="for-whom" className="text-sm font-semibold text-gray-700">For Whom</label>
+                            <Select onValueChange={setForWhom} defaultValue="all">
+                                <SelectTrigger className="text-black">
+                                    <SelectValue placeholder="Anyone" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">Anyone</SelectItem>
+                                    <SelectItem value="Male">Male</SelectItem>
+                                    <SelectItem value="Female">Female</SelectItem>
+                                    <SelectItem value="Student">Student</SelectItem>
+                                    <SelectItem value="Family">Family</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

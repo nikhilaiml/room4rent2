@@ -64,6 +64,11 @@
           "type": "string",
           "enum": ["Room", "1BHK", "2BHK", "PG", "Hostel"]
         },
+        "forWhom": {
+          "type": "string",
+          "enum": ["Male", "Female", "Student", "Family", "Anyone"],
+          "description": "Target audience for the property."
+        },
         "amenities": {
           "type": "array",
           "items": {

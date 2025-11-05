@@ -17,6 +17,7 @@ interface Property {
     price: number;
     imageUrls: string[];
     propertyType: string;
+    forWhom: string;
     amenities: string;
     securityDeposit: number;
     views: number;
@@ -30,33 +31,44 @@ function PropertiesList() {
     
     const location = searchParams.get('location');
     const propertyType = searchParams.get('propertyType');
+    const forWhom = searchParams.get('forWhom');
 
     const propertiesQuery = useMemo(() => {
         if (!firestore) return null;
-        const baseQuery = collection(firestore, 'properties');
+        let q: Query<Property> = collection(firestore, 'properties') as Query<Property>;
 
         let conditions = [];
         if (location) {
             const searchLocation = location.toLowerCase();
-            // Using '==' for exact match. For more advanced search, 
-            // you might need a different data structure or a third-party search service.
             conditions.push(where('location', '==', searchLocation));
         }
         if (propertyType) {
             conditions.push(where('propertyType', '==', propertyType));
         }
+        if (forWhom) {
+             conditions.push(where('forWhom', '==', forWhom));
+        }
 
         // If there are any search conditions, apply them
         if (conditions.length > 0) {
-            return query(baseQuery, ...conditions);
+            q = query(q, ...conditions);
+        } else {
+            // Otherwise, return all properties ordered by creation date
+            q = query(q, orderBy('createdAt', 'desc'));
         }
 
-        // Otherwise, return all properties ordered by creation date
-        return query(baseQuery, orderBy('createdAt', 'desc'));
+        return q;
 
-    }, [firestore, location, propertyType]);
+    }, [firestore, location, propertyType, forWhom]);
 
     const { data: properties, isLoading } = useCollection<Property>(propertiesQuery as Query<Property>);
+
+    const getTitle = () => {
+        if (location || propertyType || forWhom) {
+            return 'Properties matching your search';
+        }
+        return 'All Properties';
+    }
 
     return (
         <div className="flex flex-col min-h-screen bg-background">
@@ -64,7 +76,7 @@ function PropertiesList() {
             <main className="flex-grow p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
                     <h1 className="text-3xl font-bold mb-6">
-                        {location || propertyType ? `Properties matching your search` : 'All Properties'}
+                        {getTitle()}
                     </h1>
                     {isLoading && <p>Loading properties...</p>}
                     {!isLoading && (!properties || properties.length === 0) && (
