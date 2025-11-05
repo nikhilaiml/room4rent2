@@ -14,6 +14,7 @@ import { useFirestore, useCollection } from '@/firebase';
 import { collection, query } from 'firebase/firestore';
 import React, { useState, useMemo, Suspense, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Bubbles from '@/components/Bubbles';
 
 const cities = placeholderImages.cities;
 const testimonials = placeholderImages.testimonials;
@@ -75,6 +76,7 @@ export default function HomePage() {
               data-ai-hint="bright modern living room"
             />
             <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+            <Bubbles />
             <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
                  <h1 className="text-4xl md:text-5xl font-bold animate-in fade-in slide-in-from-top-10 duration-700">{heroTitle}</h1>
                  <p className="mt-2 md:mt-4 text-lg md:text-xl max-w-2xl animate-in fade-in slide-in-from-top-12 duration-700 delay-500">We are a recognized real estate agency</p>
