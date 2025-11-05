@@ -31,6 +31,7 @@ const propertyFormSchema = z.object({
   location: z.string().min(3, 'Location is required'),
   price: z.coerce.number().min(0, 'Price must be a positive number'),
   propertyType: z.enum(['Room', '1BHK', '2BHK', 'PG', 'Hostel']),
+  imageUrls: z.array(z.string()).min(2, 'Please upload at least 2 photos.'),
 });
 
 
@@ -67,6 +68,7 @@ export default function ListPropertyPage() {
       location: '',
       price: 0,
       propertyType: 'Room',
+      imageUrls: [],
     },
   });
 
@@ -74,10 +76,22 @@ export default function ListPropertyPage() {
     const files = event.target.files;
     if (files) {
       const newFiles = Array.from(files);
+      const currentFilesCount = imageFiles.length;
+      const totalFiles = currentFilesCount + newFiles.length;
+
+      if (totalFiles > 5) {
+          toast({
+              variant: 'destructive',
+              title: 'Upload Limit Exceeded',
+              description: 'You can upload a maximum of 5 images.',
+          });
+          return;
+      }
+      
       const newPreviews = newFiles.map(file => URL.createObjectURL(file));
 
-      setImageFiles(prev => [...prev, ...newFiles]);
-      setImagePreviews(prev => [...prev, ...newPreviews]);
+      setImageFiles(prev => [...prev.slice(0, 5 - newFiles.length), ...newFiles]);
+      setImagePreviews(prev => [...prev.slice(0, 5 - newPreviews.length), ...newPreviews]);
     }
   };
   
@@ -85,7 +99,6 @@ export default function ListPropertyPage() {
     const newPreviews = [...imagePreviews];
     const newFiles = [...imageFiles];
     
-    // Revoke the object URL to prevent memory leaks
     URL.revokeObjectURL(newPreviews[index]);
 
     newPreviews.splice(index, 1);
@@ -96,11 +109,12 @@ export default function ListPropertyPage() {
   }
 
   const uploadImages = async (files: File[]): Promise<string[]> => {
+    if (!user) throw new Error("User not authenticated for image upload.");
     const storage = getStorage();
     const uploadedImageUrls: string[] = [];
   
     for (const file of files) {
-      const imageRef = ref(storage, `properties/${user!.uid}/${uuidv4()}-${file.name}`);
+      const imageRef = ref(storage, `properties/${user.uid}/${uuidv4()}-${file.name}`);
       await uploadBytes(imageRef, file);
       const downloadURL = await getDownloadURL(imageRef);
       uploadedImageUrls.push(downloadURL);
@@ -127,16 +141,19 @@ export default function ListPropertyPage() {
     setIsUploading(true);
     
     try {
-      const imageUrls = await uploadImages(imageFiles);
-
-      await addDoc(collection(firestore, 'properties'), {
+      const uploadedUrls = await uploadImages(imageFiles);
+      
+      const propertyData = {
         ...values,
+        imageUrls: uploadedUrls, // Use the real uploaded URLs
         city: values.city.toLowerCase(),
         location: values.location.toLowerCase(),
         ownerId: user.uid,
         createdAt: serverTimestamp(),
-        imageUrls: imageUrls, 
-      });
+      };
+
+      await addDoc(collection(firestore, 'properties'), propertyData);
+
       toast({
         title: 'Property Listed!',
         description: 'Your property has been successfully listed.',
@@ -171,27 +188,38 @@ export default function ListPropertyPage() {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 
-                <div className="space-y-2">
-                    <Label>Property Images (min. 2)</Label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {imagePreviews.map((preview, index) => (
-                        <div key={index} className="relative">
-                          <Image src={preview} alt={`Property preview ${index+1}`} width={200} height={120} className="w-full h-24 object-cover rounded-lg" />
-                          <button type="button" onClick={() => removeImage(index)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1">
-                            <X className="w-3 h-3"/>
-                          </button>
-                        </div>
-                      ))}
-                      <div className="flex items-center justify-center w-full">
-                          <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-24 border-2 border-border border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted/50">
-                              <div className="flex flex-col items-center justify-center">
-                                  <Upload className="w-8 h-8 text-muted-foreground" />
-                              </div>
-                              <Input id="dropzone-file" type="file" className="hidden" onChange={handleImageChange} accept="image/*" multiple />
-                          </label>
-                      </div>
-                    </div>
-                </div>
+                <FormField
+                    control={form.control}
+                    name="imageUrls"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Property Images (2 to 5 images)</FormLabel>
+                            <FormControl>
+                                 <div className="grid grid-cols-3 gap-2">
+                                    {imagePreviews.map((preview, index) => (
+                                    <div key={index} className="relative">
+                                        <Image src={preview} alt={`Property preview ${index+1}`} width={200} height={120} className="w-full h-24 object-cover rounded-lg" />
+                                        <button type="button" onClick={() => removeImage(index)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1">
+                                        <X className="w-3 h-3"/>
+                                        </button>
+                                    </div>
+                                    ))}
+                                    {imagePreviews.length < 5 &&
+                                        <div className="flex items-center justify-center w-full">
+                                            <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-24 border-2 border-border border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted/50">
+                                                <div className="flex flex-col items-center justify-center">
+                                                    <Upload className="w-8 h-8 text-muted-foreground" />
+                                                </div>
+                                                <Input id="dropzone-file" type="file" className="hidden" onChange={handleImageChange} accept="image/*" multiple />
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
 
                 <FormField
                   control={form.control}

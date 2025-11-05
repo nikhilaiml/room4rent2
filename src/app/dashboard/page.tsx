@@ -101,7 +101,7 @@ export default function DashboardPage() {
         {!isLoadingProperties && properties && properties.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {properties.map(prop => {
-               const imageUrl = prop.imageUrls?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop';
+               const imageUrl = (prop.imageUrls && prop.imageUrls.length > 0) ? prop.imageUrls[0] : 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop';
               
               return (
                <Link key={prop.id} href={`/properties/${prop.id}`}>
@@ -142,7 +142,7 @@ export default function DashboardPage() {
         {!isLoadingProperties && properties && properties.length > 0 && (
            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {properties.map(prop => {
-                 const imageUrl = prop.imageUrls?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop';
+                 const imageUrl = (prop.imageUrls && prop.imageUrls.length > 0) ? prop.imageUrls[0] : 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop';
               return (
               <Link key={prop.id} href={`/properties/${prop.id}`}>
                <Card className="overflow-hidden h-full hover:shadow-lg transition-shadow">
