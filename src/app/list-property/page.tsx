@@ -175,10 +175,14 @@ export default function ListPropertyPage() {
 
   async function onSubmit(values: z.infer<typeof propertyFormSchema>) {
     if (!user) {
-      toast({ variant: 'destructive', title: 'Authentication Error', description: 'User not found.' });
+      toast({
+        variant: 'destructive',
+        title: 'Authentication Error',
+        description: 'User not found.',
+      });
       return;
     }
-    
+  
     if (imageFiles.length < 2) {
       setImageError('Please upload at least 2 photos.');
       toast({
@@ -188,38 +192,57 @@ export default function ListPropertyPage() {
       });
       return;
     }
+  
     setImageError(null);
     setIsUploading(true);
     setUploadProgress(0);
-    
+  
     try {
+      // ✅ Upload images first
       const uploadedUrls = await uploadImages(imageFiles);
-      
+  
+      // ✅ Safely fetch authenticated user ID
+      const {
+        data: { user: authUser },
+        error: userFetchError,
+      } = await supabase.auth.getUser();
+  
+      if (userFetchError || !authUser) {
+        throw new Error('Could not fetch authenticated user. Please re-login.');
+      }
+  
+      // ✅ Prepare property data
       const propertyData = {
         ...values,
-        imageUrls: uploadedUrls,
+        imageUrls: uploadedUrls, // array of public image URLs
         city: values.city.toLowerCase(),
         location: values.location.toLowerCase(),
-        ownerId: user.id,
+        ownerId: authUser.id, // ensures UUID is valid for RLS
         createdAt: new Date().toISOString(),
       };
-
-      const { error } = await supabase
+  
+      // ✅ Insert into Supabase table
+      const { data, error } = await supabase
         .from('properties')
-        .insert(propertyData);
-
+        .insert([propertyData])
+        .select();
+  
+      console.log('Insert result:', { data, error }); // optional debug
+  
       if (error) throw error;
-
+  
       toast({
         title: 'Property Listed!',
         description: 'Your property has been successfully listed.',
       });
+  
       router.push('/dashboard');
     } catch (error: any) {
-      console.error("Error listing property: ", error);
+      console.error('Error listing property: ', error);
       const raw = String(error?.message || '');
       let friendly = raw;
-      // Map common Supabase errors to actionable messages
+  
+      // 🔍 Friendly readable messages
       if (/relation\s+"?properties"?\s+does not exist/i.test(raw)) {
         friendly = 'Table "public.properties" does not exist. Create it in Supabase.';
       } else if (/column\s+"?imageurls"?\s+does not exist/i.test(raw)) {
@@ -231,20 +254,22 @@ export default function ListPropertyPage() {
       } else if (/bucket.*not.*found/i.test(raw)) {
         friendly = 'Storage bucket "properties" not found. Create it and set Public: ON.';
       } else if (/invalid input syntax for type uuid/i.test(raw)) {
-        friendly = 'ownerId must be UUID. Ensure you are logged in and using auth.uid().' ;
+        friendly = 'ownerId must be UUID. Ensure you are logged in and using auth.uid().';
       } else if (!raw) {
         friendly = 'Unknown error occurred.';
       }
+  
       toast({
         variant: 'destructive',
         title: 'Listing Failed',
         description: friendly,
       });
     } finally {
-        setIsUploading(false);
-        setUploadProgress(0);
+      setIsUploading(false);
+      setUploadProgress(0);
     }
   }
+  
 
   if (isUserLoading || !user) {
     return <p>Loading...</p>;
