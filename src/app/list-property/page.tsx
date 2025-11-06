@@ -17,13 +17,11 @@ import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useFirestore } from '@/firebase';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
 import { v4 as uuidv4 } from 'uuid';
-import { Progress } from '@/components/ui/progress';
-
 
 const propertyFormSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters'),
@@ -43,7 +41,6 @@ export default function ListPropertyPage() {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
   const [imageError, setImageError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -110,54 +107,26 @@ export default function ListPropertyPage() {
     setImageFiles(newFiles);
   }
 
-  const uploadImages = (files: File[]): Promise<string[]> => {
-    return new Promise((resolve, reject) => {
-      if (!user) {
-        return reject(new Error("User not authenticated for image upload."));
+  const uploadImages = async (files: File[]): Promise<string[]> => {
+    if (!user) {
+      throw new Error("User not authenticated for image upload.");
+    }
+    const storage = getStorage();
+    const uploadedUrls: string[] = [];
+    
+    for (const file of files) {
+      const imageRef = ref(storage, `properties/${user.uid}/${uuidv4()}-${file.name}`);
+      try {
+        const snapshot = await uploadBytes(imageRef, file);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        uploadedUrls.push(downloadURL);
+      } catch (error) {
+        console.error(`Upload failed for file: ${file.name}`, error);
+        throw new Error(`Failed to upload ${file.name}. Please try again.`);
       }
-      const storage = getStorage();
-      const uploadedUrls: string[] = [];
-      let filesUploaded = 0;
-      let totalBytes = files.reduce((acc, file) => acc + file.size, 0);
-      let totalBytesTransferred = 0;
-
-      files.forEach((file) => {
-        const imageRef = ref(storage, `properties/${user.uid}/${uuidv4()}-${file.name}`);
-        const uploadTask = uploadBytesResumable(imageRef, file);
-
-        uploadTask.on('state_changed',
-          (snapshot) => {
-            // This event fires multiple times for each file.
-            // We need to calculate the overall progress.
-            // For simplicity, we can calculate progress based on files uploaded,
-            // but a more accurate way is to use bytes transferred.
-            // The provided snapshot is only for the current file.
-          },
-          (error) => {
-            console.error("Upload failed for a file:", error);
-            // Reject the promise if any file fails to upload
-            reject(error);
-          },
-          async () => {
-            // Handle successful uploads on complete
-            try {
-              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-              uploadedUrls.push(downloadURL);
-              filesUploaded++;
-
-              // Update overall progress based on number of files
-              setUploadProgress((filesUploaded / files.length) * 100);
-
-              if (filesUploaded === files.length) {
-                resolve(uploadedUrls);
-              }
-            } catch (error) {
-               reject(error);
-            }
-          }
-        );
-      });
-    });
+    }
+    
+    return uploadedUrls;
   };
 
   async function onSubmit(values: z.infer<typeof propertyFormSchema>) {
@@ -177,7 +146,6 @@ export default function ListPropertyPage() {
     }
     setImageError(null);
     setIsUploading(true);
-    setUploadProgress(0);
     
     try {
       const uploadedUrls = await uploadImages(imageFiles);
@@ -346,13 +314,7 @@ export default function ListPropertyPage() {
                       )}
                     />
                 </div>
-                {isUploading && (
-                  <div className="space-y-2">
-                    <Label>Uploading...</Label>
-                    <Progress value={uploadProgress} className="w-full" />
-                    <p className="text-sm text-muted-foreground text-center">{Math.round(uploadProgress)}% complete</p>
-                  </div>
-                )}
+                
                  <Button type="submit" className="w-full" disabled={isUploading}>
                   {isUploading ? 'Uploading...' : 'List Property'}
                 </Button>
