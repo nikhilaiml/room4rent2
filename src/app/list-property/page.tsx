@@ -217,10 +217,28 @@ export default function ListPropertyPage() {
       router.push('/dashboard');
     } catch (error: any) {
       console.error("Error listing property: ", error);
+      const raw = String(error?.message || '');
+      let friendly = raw;
+      // Map common Supabase errors to actionable messages
+      if (/relation\s+"?properties"?\s+does not exist/i.test(raw)) {
+        friendly = 'Table "public.properties" does not exist. Create it in Supabase.';
+      } else if (/column\s+"?imageurls"?\s+does not exist/i.test(raw)) {
+        friendly = 'Column "imageUrls" is missing in table "public.properties".';
+      } else if (/violates row-level security policy|row level security/i.test(raw)) {
+        friendly = 'RLS blocked the insert. Add an INSERT policy: ownerId = auth.uid().';
+      } else if (/permission denied/i.test(raw)) {
+        friendly = 'Permission denied by RLS. Check table policies for INSERT/SELECT.';
+      } else if (/bucket.*not.*found/i.test(raw)) {
+        friendly = 'Storage bucket "properties" not found. Create it and set Public: ON.';
+      } else if (/invalid input syntax for type uuid/i.test(raw)) {
+        friendly = 'ownerId must be UUID. Ensure you are logged in and using auth.uid().' ;
+      } else if (!raw) {
+        friendly = 'Unknown error occurred.';
+      }
       toast({
         variant: 'destructive',
         title: 'Listing Failed',
-        description: error?.message || 'Could not list your property. Please try again.',
+        description: friendly,
       });
     } finally {
         setIsUploading(false);
