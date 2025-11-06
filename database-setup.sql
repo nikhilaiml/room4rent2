@@ -64,13 +64,23 @@ CREATE TABLE IF NOT EXISTS public.properties (
     city TEXT NOT NULL,
     location TEXT NOT NULL,
     price NUMERIC NOT NULL,
-    property_type TEXT NOT NULL CHECK (property_type IN ('Room', '1BHK', '2BHK', 'PG', 'Hostel')),
-    for_whom TEXT DEFAULT 'Anyone' CHECK (for_whom IN ('Male', 'Female', 'Student', 'Family', 'Anyone')),
+    "propertyType" TEXT NOT NULL CHECK ("propertyType" IN ('Room', '1BHK', '2BHK', 'PG', 'Hostel')),
+    "forWhom" TEXT DEFAULT 'Anyone' CHECK ("forWhom" IN ('Male', 'Female', 'Student', 'Family', 'Anyone')),
     amenities TEXT[] DEFAULT '{}',
     "imageUrls" TEXT[] DEFAULT '{}',
     "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
     "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
+
+-- Add missing columns if table already exists
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS "propertyType" TEXT;
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS "forWhom" TEXT DEFAULT 'Anyone';
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS amenities TEXT[] DEFAULT '{}';
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS "imageUrls" TEXT[] DEFAULT '{}';
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW());
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW());
+
+-- Note: Constraints are already defined in CREATE TABLE
 
 -- Enable RLS on properties
 ALTER TABLE public.properties ENABLE ROW LEVEL SECURITY;
