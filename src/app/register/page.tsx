@@ -101,6 +101,13 @@ export default function RegisterPage() {
       router.push('/dashboard');
     } catch (error: any) {
       console.error('Registration failed:', error);
+      console.error('Error details:', {
+        message: error?.message,
+        status: error?.status,
+        code: error?.code,
+        details: error?.details,
+        hint: error?.hint
+      });
       let errorMessage = 'An unexpected error occurred.';
       const msg = String(error?.message || '').toLowerCase();
       if (msg.includes('already registered') || msg.includes('user already registered') || msg.includes('exists')) {
@@ -115,6 +122,10 @@ export default function RegisterPage() {
         errorMessage = 'Network error. Check your connection and try again.';
       } else if (msg.includes('invalid') && msg.includes('uuid')) {
         errorMessage = 'Invalid user ID format. Try logging out and back in.';
+      } else if (msg.includes('violates check constraint')) {
+        errorMessage = 'Invalid data provided. Check your input values.';
+      } else if (msg.includes('duplicate key value')) {
+        errorMessage = 'User profile already exists. Try logging in instead.';
       }
       toast({
         variant: 'destructive',
