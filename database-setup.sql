@@ -1,3 +1,8 @@
+-- Drop existing tables to recreate with correct schema
+DROP TABLE IF EXISTS public.enquiries CASCADE;
+DROP TABLE IF EXISTS public.properties CASCADE;
+DROP TABLE IF EXISTS public.users CASCADE;
+
 -- Create storage bucket for property images
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('properties', 'properties', true)
