@@ -112,14 +112,18 @@ export default function ListPropertyPage() {
     }
 
     // Preflight: verify bucket exists and is accessible for this user
-    try {
-      await supabase.storage.from('properties').list('', { limit: 1 });
-    } catch (e: any) {
-      const msg = e?.message || '';
-      if (msg.toLowerCase().includes('not found')) {
+    const { error: bucketListError } = await supabase.storage
+      .from('properties')
+      .list('', { limit: 1 });
+    if (bucketListError) {
+      const msg = String(bucketListError.message || '').toLowerCase();
+      if (msg.includes('not found')) {
         throw new Error('Storage bucket "properties" not found. Create it and set Public: ON.');
       }
-      // continue; list failures shouldn't block if upload works
+      if (msg.includes('permission denied') || msg.includes('unauthorized')) {
+        throw new Error('No permission to access storage bucket. Add storage policies for authenticated users.');
+      }
+      // Non-fatal, proceed to attempt upload which will produce a clearer error
     }
 
     const uploadedPublicUrls: string[] = [];
