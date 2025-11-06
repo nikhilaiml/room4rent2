@@ -107,8 +107,14 @@ export default function RegisterPage() {
         errorMessage = 'This email is already registered. Please log in.';
       } else if (msg.includes('row level security') || msg.includes('permission denied')) {
         errorMessage = 'Permission denied by RLS while creating profile. Ensure an INSERT policy on table users where id = auth.uid().';
+      } else if (msg.includes('relation') && msg.includes('does not exist')) {
+        errorMessage = 'Database table "users" does not exist. Run the database-setup.sql in Supabase SQL Editor.';
+      } else if (msg.includes('column') && msg.includes('does not exist')) {
+        errorMessage = 'Database schema mismatch. Check table columns match the expected schema.';
       } else if (msg.includes('network') || msg.includes('fetch')) {
         errorMessage = 'Network error. Check your connection and try again.';
+      } else if (msg.includes('invalid') && msg.includes('uuid')) {
+        errorMessage = 'Invalid user ID format. Try logging out and back in.';
       }
       toast({
         variant: 'destructive',
