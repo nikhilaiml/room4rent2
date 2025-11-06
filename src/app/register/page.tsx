@@ -69,16 +69,27 @@ export default function RegisterPage() {
 
       if (signUpError) throw signUpError;
 
+      // Ensure we have a session before inserting into RLS-protected table
+      let session = userData.session;
+      if (!session) {
+        const { data: signInData, error: signInError } = await auth.signInWithPassword({
+          email: values.email,
+          password: values.password,
+        });
+        if (signInError) throw signInError;
+        session = signInData.session;
+      }
+
       if (userData?.user) {
-        // Create user profile in users table
+        // Upsert user profile in users table
         const { error: profileError } = await supabase
           .from('users')
-          .insert({
+          .upsert({
             id: userData.user.id,
             name: values.name,
             email: values.email,
             role: values.role,
-          });
+          }, { onConflict: 'id' });
 
         if (profileError) throw profileError;
       }
@@ -91,8 +102,13 @@ export default function RegisterPage() {
     } catch (error: any) {
       console.error('Registration failed:', error);
       let errorMessage = 'An unexpected error occurred.';
-      if (error.message?.includes('already registered') || error.message?.includes('User already registered')) {
+      const msg = String(error?.message || '').toLowerCase();
+      if (msg.includes('already registered') || msg.includes('user already registered') || msg.includes('exists')) {
         errorMessage = 'This email is already registered. Please log in.';
+      } else if (msg.includes('row level security') || msg.includes('permission denied')) {
+        errorMessage = 'Permission denied by RLS while creating profile. Ensure an INSERT policy on table users where id = auth.uid().';
+      } else if (msg.includes('network') || msg.includes('fetch')) {
+        errorMessage = 'Network error. Check your connection and try again.';
       }
       toast({
         variant: 'destructive',
