@@ -1,5 +1,5 @@
 export const supabaseConfig = {
-  url: 'https://xsxnsemffseuhioajzhn.supabase.co',
-  anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzeG5zZW1mZnNldWhpb2FqemhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI0MTc2NjcsImV4cCI6MjA3Nzk5MzY2N30.oubF5qzIYTdW5hUS_ydKX8Vw7KJH6BLE3yFQ-f0kyaA'
+  url: 'https://rgonimamoyjnyjltohpe.supabase.co',
+  anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnb25pbWFtb3lqbnlqbHRvaHBlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI0MzY4NjQsImV4cCI6MjA3ODAxMjg2NH0.W0wKQL1wKU__BAPRdvX25rrB05SJfoS2-4lMRA8kh_0'
 };
 
