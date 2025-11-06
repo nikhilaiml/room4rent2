@@ -111,6 +111,17 @@ export default function ListPropertyPage() {
       throw new Error('User not authenticated for image upload.');
     }
 
+    // Preflight: verify bucket exists and is accessible for this user
+    try {
+      await supabase.storage.from('properties').list('', { limit: 1 });
+    } catch (e: any) {
+      const msg = e?.message || '';
+      if (msg.toLowerCase().includes('not found')) {
+        throw new Error('Storage bucket "properties" not found. Create it and set Public: ON.');
+      }
+      // continue; list failures shouldn't block if upload works
+    }
+
     const uploadedPublicUrls: string[] = [];
 
     for (let index = 0; index < files.length; index++) {
@@ -119,12 +130,22 @@ export default function ListPropertyPage() {
       const fileName = `${uuidv4()}-${safeBaseName}`;
       const filePath = `properties/${user.id}/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
+      // Add a 25s timeout so UI doesn't hang forever
+      const timeoutMs = 25000;
+      const uploadPromise = supabase.storage
         .from('properties')
         .upload(filePath, file, {
           contentType: file.type || 'application/octet-stream',
           upsert: true,
         });
+      const timeoutPromise = new Promise<{ error: any }>((_resolve, reject) => {
+        const id = setTimeout(() => {
+          clearTimeout(id);
+          reject(new Error('Image upload timed out. Check bucket policies and network.'));
+        }, timeoutMs);
+      });
+
+      const { error: uploadError } = await Promise.race([uploadPromise as any, timeoutPromise as any]);
 
       if (uploadError) {
         // Surface clearer guidance for common misconfigurations
