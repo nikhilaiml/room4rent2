@@ -7,7 +7,7 @@ import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PlusCircle, BedDouble, Heart, Building } from 'lucide-react';
+import { PlusCircle, BedDouble, Heart, Building, User as UserIcon, Mail, Shield } from 'lucide-react';
 import { collection, query, where, doc, documentId } from 'firebase/firestore';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -22,6 +22,8 @@ interface Property {
 }
 
 interface UserProfile {
+    name: string;
+    email: string;
     role: string;
     favorites?: string[];
 }
@@ -54,8 +56,6 @@ export default function DashboardPage() {
         if (userProfile.favorites && userProfile.favorites.length > 0) {
             return query(collection(firestore, 'properties'), where(documentId(), 'in', userProfile.favorites));
         }
-        // Tenant with no favorites yet, return a query that finds nothing.
-        // Or return null to show the "no favorites" message immediately.
         return null;
     }
     return null;
@@ -74,6 +74,38 @@ export default function DashboardPage() {
       </div>
     );
   }
+  
+  const renderProfileCard = () => (
+     <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Profile Information</CardTitle>
+          <CardDescription>Your registered details.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-4">
+              <UserIcon className="w-5 h-5 text-muted-foreground"/>
+              <div>
+                  <p className="text-sm text-muted-foreground">Name</p>
+                  <p className="font-medium">{userProfile.name}</p>
+              </div>
+          </div>
+          <div className="flex items-center gap-4">
+              <Mail className="w-5 h-5 text-muted-foreground"/>
+              <div>
+                  <p className="text-sm text-muted-foreground">Email</p>
+                  <p className="font-medium">{userProfile.email}</p>
+              </div>
+          </div>
+          <div className="flex items-center gap-4">
+              <Shield className="w-5 h-5 text-muted-foreground"/>
+              <div>
+                  <p className="text-sm text-muted-foreground">Role</p>
+                  <p className="font-medium capitalize">{userProfile.role}</p>
+              </div>
+          </div>
+        </CardContent>
+     </Card>
+  );
 
   const renderOwnerDashboard = () => (
     <Card>
@@ -168,6 +200,7 @@ export default function DashboardPage() {
           <CardDescription>Manage users and properties.</CardDescription>
         </CardHeader>
         <CardContent>
+           <p>Welcome, {userProfile.name}!</p>
           <p>Admin features coming soon!</p>
         </CardContent>
       </Card>
@@ -179,10 +212,14 @@ export default function DashboardPage() {
       <Header />
       <main className="flex-grow p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold mb-6">
-            Dashboard
-          </h1>
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-3xl font-bold">
+              Dashboard
+            </h1>
+          </div>
           
+          {renderProfileCard()}
+
           {userProfile.role === 'owner' && renderOwnerDashboard()}
           {userProfile.role === 'tenant' && renderTenantDashboard()}
           {userProfile.role === 'admin' && renderAdminDashboard()}
