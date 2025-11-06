@@ -132,7 +132,8 @@ export default function ListPropertyPage() {
       const file = files[index];
       const safeBaseName = file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
       const fileName = `${uuidv4()}-${safeBaseName}`;
-      const filePath = `properties/${user.id}/${fileName}`;
+      // Path is inside the 'properties' bucket, do not repeat bucket name
+      const filePath = `${user.id}/${fileName}`;
 
       // Add a 25s timeout so UI doesn't hang forever
       const timeoutMs = 25000;
@@ -165,6 +166,16 @@ export default function ListPropertyPage() {
 
       if (!publicUrlData?.publicUrl) {
         throw new Error('Could not generate public URL for the uploaded image.');
+      }
+
+      // Verify the URL is actually reachable (helps catch policy misconfig)
+      try {
+        const headResponse = await fetch(publicUrlData.publicUrl, { method: 'HEAD' });
+        if (!headResponse.ok) {
+          throw new Error(`Uploaded image not publicly accessible (HTTP ${headResponse.status}). Check bucket public setting and SELECT policy.`);
+        }
+      } catch (e: any) {
+        throw new Error(e?.message || 'Uploaded image not publicly accessible.');
       }
 
       uploadedPublicUrls.push(publicUrlData.publicUrl);
