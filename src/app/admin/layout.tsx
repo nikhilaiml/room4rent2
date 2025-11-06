@@ -1,7 +1,6 @@
 'use client';
 
-import { useUser, useFirestore } from '@/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { useUser, useSupabaseClient } from '@/supabase';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { LayoutDashboard, Building, Users, MessageSquare, Settings, ShieldAlert, LogOut } from 'lucide-react';
@@ -9,6 +8,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/logo';
+import { Button } from '@/components/ui/button';
 
 interface UserProfile {
   role: string;
@@ -62,7 +62,7 @@ const AdminSidebar = () => {
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
-  const firestore = useFirestore();
+  const supabase = useSupabaseClient();
   const router = useRouter();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -79,11 +79,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     const checkAdminRole = async () => {
       try {
-        const userDocRef = doc(firestore, 'users', user.uid);
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-          const userData = userDoc.data() as UserProfile;
-          if (userData.role === 'admin') {
+        const { data: userData, error } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+
+        if (error) throw error;
+
+        if (userData) {
+          const userProfile = userData as UserProfile;
+          if (userProfile.role === 'admin') {
             setIsAdmin(true);
           } else {
             setIsAdmin(false);
@@ -100,7 +106,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     };
 
     checkAdminRole();
-  }, [user, isUserLoading, firestore, router]);
+  }, [user, isUserLoading, supabase, router]);
 
   if (isLoading || isUserLoading) {
     return (

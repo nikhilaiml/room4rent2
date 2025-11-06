@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser } from '@/firebase';
+import { useUser, useSupabaseClient } from '@/supabase';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { Button } from '@/components/ui/button';
@@ -15,9 +15,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { useFirestore } from '@/firebase';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL, UploadTaskSnapshot } from 'firebase/storage';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
@@ -37,7 +34,7 @@ const propertyFormSchema = z.object({
 export default function ListPropertyPage() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
-  const firestore = useFirestore();
+  const supabase = useSupabaseClient();
   const { toast } = useToast();
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -109,95 +106,98 @@ export default function ListPropertyPage() {
     setImageFiles(newFiles);
   }
 
-  const uploadImages = (files: File[]): Promise<string[]> => {
-    return new Promise((resolve, reject) => {
-        if (!user) {
-          return reject(new Error("User not authenticated for image upload."));
+  const uploadImages = async (files: File[]): Promise<string[]> => {
+    if (!user) {
+      throw new Error('User not authenticated for image upload.');
+    }
+
+    // Preflight: verify bucket exists and is accessible for this user
+    const { error: bucketListError } = await supabase.storage
+      .from('properties')
+      .list('', { limit: 1 });
+    if (bucketListError) {
+      const msg = String(bucketListError.message || '').toLowerCase();
+      if (msg.includes('not found')) {
+        throw new Error('Storage bucket "properties" not found. Create it and set Public: ON.');
+      }
+      if (msg.includes('permission denied') || msg.includes('unauthorized')) {
+        throw new Error('No permission to access storage bucket. Add storage policies for authenticated users.');
+      }
+      // Non-fatal, proceed to attempt upload which will produce a clearer error
+    }
+
+    const uploadedPublicUrls: string[] = [];
+
+    for (let index = 0; index < files.length; index++) {
+      const file = files[index];
+      const safeBaseName = file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
+      const fileName = `${uuidv4()}-${safeBaseName}`;
+      // Path is inside the 'properties' bucket, do not repeat bucket name
+      const filePath = `${user.id}/${fileName}`;
+
+      // Add a 25s timeout so UI doesn't hang forever
+      const timeoutMs = 25000;
+      const uploadPromise = supabase.storage
+        .from('properties')
+        .upload(filePath, file, {
+          contentType: file.type || 'application/octet-stream',
+          upsert: true,
+        });
+      const timeoutPromise = new Promise<{ error: any }>((_resolve, reject) => {
+        const id = setTimeout(() => {
+          clearTimeout(id);
+          reject(new Error('Image upload timed out. Check bucket policies and network.'));
+        }, timeoutMs);
+      });
+
+      const { error: uploadError } = await Promise.race([uploadPromise as any, timeoutPromise as any]);
+
+      if (uploadError) {
+        // Surface clearer guidance for common misconfigurations
+        const hint = uploadError.message?.includes('Not Found') || uploadError.message?.includes('not found')
+          ? 'Storage bucket "properties" is missing in Supabase project.'
+          : uploadError.message;
+        throw new Error(hint || 'Image upload failed.');
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from('properties')
+        .getPublicUrl(filePath);
+
+      if (!publicUrlData?.publicUrl) {
+        throw new Error('Could not generate public URL for the uploaded image.');
+      }
+
+      // Verify the URL is actually reachable (helps catch policy misconfig)
+      try {
+        const headResponse = await fetch(publicUrlData.publicUrl, { method: 'HEAD' });
+        if (!headResponse.ok) {
+          throw new Error(`Uploaded image not publicly accessible (HTTP ${headResponse.status}). Check bucket public setting and SELECT policy.`);
         }
-        const storage = getStorage();
-        const promises: Promise<string>[] = [];
-        let totalBytesTransferred = 0;
-        const totalBytes = files.reduce((acc, file) => acc + file.size, 0);
+      } catch (e: any) {
+        throw new Error(e?.message || 'Uploaded image not publicly accessible.');
+      }
 
-        files.forEach(file => {
-            const imageRef = ref(storage, `properties/${user.uid}/${uuidv4()}-${file.name}`);
-            const uploadTask = uploadBytesResumable(imageRef, file);
-            
-            promises.push(new Promise<string>((resolveTask, rejectTask) => {
-                uploadTask.on('state_changed',
-                    (snapshot: UploadTaskSnapshot) => {
-                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        // This will be noisy if we aggregate like this, better to calculate total progress
-                    },
-                    (error) => {
-                        console.error(`Upload failed for file: ${file.name}`, error);
-                        rejectTask(error);
-                    },
-                    async () => {
-                        try {
-                            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                            resolveTask(downloadURL);
-                        } catch (error) {
-                            rejectTask(error);
-                        }
-                    }
-                );
-            }));
+      uploadedPublicUrls.push(publicUrlData.publicUrl);
 
-            // Track total progress
-            uploadTask.on('state_changed', (snapshot) => {
-                // This is not perfect as it doesn't account for already transferred bytes of other files
-                // but it's a way to show progress. A better approach would be to track each file's progress.
-                // Let's try a simpler aggregation.
-            });
-        });
-        
-        // A better way to calculate progress
-        const allTasks = files.map(file => {
-            const imageRef = ref(storage, `properties/${user.uid}/${uuidv4()}-${file.name}`);
-            return uploadBytesResumable(imageRef, file);
-        });
+      const progressValue = ((index + 1) / files.length) * 100;
+      setUploadProgress(progressValue);
+    }
 
-        let uploadedBytes = 0;
-        const totalSize = allTasks.reduce((acc, task) => acc + task.snapshot.totalBytes, 0);
-
-        allTasks.forEach(task => {
-            task.on('state_changed',
-                (snapshot) => {
-                    // This is not quite right, it doesn't aggregate progress
-                }
-            );
-        });
-
-        // Let's stick to the Promise.all approach which is simpler to reason about for completion
-        Promise.all(allTasks.map(task => new Promise<string>((resolveTask, rejectTask) => {
-             task.on('state_changed', 
-                (snapshot) => {
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    // We can't easily aggregate progress this way without more complex state management
-                    // A simple approximation:
-                    const totalProgress = allTasks.reduce((acc, t) => acc + (t.snapshot.bytesTransferred / t.snapshot.totalBytes), 0);
-                    setUploadProgress((totalProgress / allTasks.length) * 100);
-                },
-                (error) => rejectTask(error),
-                async () => {
-                    const downloadURL = await getDownloadURL(task.snapshot.ref);
-                    resolveTask(downloadURL);
-                }
-            );
-        })))
-        .then(urls => resolve(urls))
-        .catch(error => reject(error));
-    });
-};
+    return uploadedPublicUrls;
+  };
 
 
   async function onSubmit(values: z.infer<typeof propertyFormSchema>) {
     if (!user) {
-      toast({ variant: 'destructive', title: 'Authentication Error', description: 'User not found.' });
+      toast({
+        variant: 'destructive',
+        title: 'Authentication Error',
+        description: 'User not found.',
+      });
       return;
     }
-    
+  
     if (imageFiles.length < 2) {
       setImageError('Please upload at least 2 photos.');
       toast({
@@ -207,41 +207,84 @@ export default function ListPropertyPage() {
       });
       return;
     }
+  
     setImageError(null);
     setIsUploading(true);
     setUploadProgress(0);
-    
+  
     try {
+      // ✅ Upload images first
       const uploadedUrls = await uploadImages(imageFiles);
-      
+  
+      // ✅ Safely fetch authenticated user ID
+      const {
+        data: { user: authUser },
+        error: userFetchError,
+      } = await supabase.auth.getUser();
+  
+      if (userFetchError || !authUser) {
+        throw new Error('Could not fetch authenticated user. Please re-login.');
+      }
+  
+      // ✅ Prepare property data
       const propertyData = {
         ...values,
-        imageUrls: uploadedUrls,
+        imageUrls: uploadedUrls, // array of public image URLs
         city: values.city.toLowerCase(),
         location: values.location.toLowerCase(),
-        ownerId: user.uid,
-        createdAt: serverTimestamp(),
+        ownerId: authUser.id, // ensures UUID is valid for RLS
+        createdAt: new Date().toISOString(),
       };
-
-      await addDoc(collection(firestore, 'properties'), propertyData);
-
+  
+      // ✅ Insert into Supabase table
+      const { data, error } = await supabase
+        .from('properties')
+        .insert([propertyData])
+        .select();
+  
+      console.log('Insert result:', { data, error }); // optional debug
+  
+      if (error) throw error;
+  
       toast({
         title: 'Property Listed!',
         description: 'Your property has been successfully listed.',
       });
+  
       router.push('/dashboard');
     } catch (error: any) {
-      console.error("Error listing property: ", error);
+      console.error('Error listing property: ', error);
+      const raw = String(error?.message || '');
+      let friendly = raw;
+  
+      // 🔍 Friendly readable messages
+      if (/relation\s+"?properties"?\s+does not exist/i.test(raw)) {
+        friendly = 'Table "public.properties" does not exist. Create it in Supabase.';
+      } else if (/column\s+"?imageurls"?\s+does not exist/i.test(raw)) {
+        friendly = 'Column "imageUrls" is missing in table "public.properties".';
+      } else if (/violates row-level security policy|row level security/i.test(raw)) {
+        friendly = 'RLS blocked the insert. Add an INSERT policy: ownerId = auth.uid().';
+      } else if (/permission denied/i.test(raw)) {
+        friendly = 'Permission denied by RLS. Check table policies for INSERT/SELECT.';
+      } else if (/bucket.*not.*found/i.test(raw)) {
+        friendly = 'Storage bucket "properties" not found. Create it and set Public: ON.';
+      } else if (/invalid input syntax for type uuid/i.test(raw)) {
+        friendly = 'ownerId must be UUID. Ensure you are logged in and using auth.uid().';
+      } else if (!raw) {
+        friendly = 'Unknown error occurred.';
+      }
+  
       toast({
         variant: 'destructive',
         title: 'Listing Failed',
-        description: error.message || 'Could not list your property. Please try again.',
+        description: friendly,
       });
     } finally {
-        setIsUploading(false);
-        setUploadProgress(0);
+      setIsUploading(false);
+      setUploadProgress(0);
     }
   }
+  
 
   if (isUserLoading || !user) {
     return <p>Loading...</p>;

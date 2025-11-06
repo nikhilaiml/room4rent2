@@ -4,8 +4,7 @@ import { Suspense, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
-import { useFirestore, useDoc } from '@/firebase';
-import { doc, DocumentData } from 'firebase/firestore';
+import { useDoc } from '@/supabase';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -14,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Share2, Heart, Phone, ShieldCheck, Wifi, BedDouble, Bath } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-interface Property extends DocumentData {
+interface Property {
   id: string;
   title: string;
   description: string;
@@ -29,13 +28,16 @@ interface Property extends DocumentData {
 function PropertyDetails() {
   const params = useParams();
   const { id } = params;
-  const firestore = useFirestore();
   const { toast } = useToast();
 
   const propertyRef = useMemo(() => {
-    if (!firestore || !id) return null;
-    return doc(firestore, 'properties', id as string);
-  }, [firestore, id]);
+    if (!id) return null;
+    return {
+      table: 'properties',
+      id: id as string,
+      realtime: true,
+    };
+  }, [id]);
 
   const { data: property, isLoading, error } = useDoc<Property>(propertyRef);
 

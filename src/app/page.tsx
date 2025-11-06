@@ -10,8 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, MapPin } from 'lucide-react';
 import placeholderImages from '@/lib/placeholder-images.json';
-import { useFirestore, useCollection } from '@/firebase';
-import { collection, query } from 'firebase/firestore';
+import { useCollection } from '@/supabase';
 import React, { useState, useMemo, Suspense, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Bubbles from '@/components/Bubbles';
@@ -45,13 +44,14 @@ export default function HomePage() {
     return () => clearInterval(typingInterval);
   }, []);
   
-  const firestore = useFirestore();
   const propertiesQuery = useMemo(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'properties'));
-  }, [firestore]);
+    return {
+      table: 'properties',
+      realtime: true,
+    };
+  }, []);
 
-  const { data: properties, isLoading: isLoadingProperties } = useCollection(propertiesQuery as any);
+  const { data: properties, isLoading: isLoadingProperties } = useCollection(propertiesQuery);
 
   const handleSearch = () => {
     const queryParams = new URLSearchParams();

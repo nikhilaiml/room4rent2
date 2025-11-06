@@ -6,8 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star, MapPin, Share2, Heart, Phone, Eye, Bed, Bath, Car } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useUser, useFirestore } from '@/firebase';
-import { doc, updateDoc, arrayUnion, arrayRemove, onSnapshot } from 'firebase/firestore';
+import { useUser, useSupabaseClient } from '@/supabase';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -24,22 +23,47 @@ export const PropertyCard = ({ id, title, location, amenities, securityDeposit, 
 }) => {
   const { toast } = useToast();
   const { user } = useUser();
-  const firestore = useFirestore();
+  const supabase = useSupabaseClient();
   const router = useRouter();
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
-    if (user && firestore) {
-      const userRef = doc(firestore, 'users', user.uid);
-      const unsubscribe = onSnapshot(userRef, (docSnap) => {
-        if (docSnap.exists()) {
-          const userData = docSnap.data();
-          setIsFavorite(userData.favorites && userData.favorites.includes(id));
-        }
-      });
-      return () => unsubscribe();
+    if (user && supabase) {
+      // Fetch user data
+      supabase
+        .from('users')
+        .select('favorites')
+        .eq('id', user.id)
+        .single()
+        .then(({ data, error }) => {
+          if (!error && data) {
+            setIsFavorite(data.favorites && data.favorites.includes(id));
+          }
+        });
+
+      // Subscribe to changes
+      const channel = supabase
+        .channel(`user_${user.id}_favorites`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'users',
+            filter: `id=eq.${user.id}`,
+          },
+          (payload) => {
+            const newData = payload.new as { favorites?: string[] };
+            setIsFavorite(newData.favorites?.includes(id) || false);
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
-  }, [user, firestore, id]);
+  }, [user, supabase, id]);
 
   const handleShare = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -63,23 +87,37 @@ export const PropertyCard = ({ id, title, location, amenities, securityDeposit, 
       router.push('/login');
       return;
     }
-    const userRef = doc(firestore, 'users', user.uid);
     try {
+      // Get current user data
+      const { data: userData, error: fetchError } = await supabase
+        .from('users')
+        .select('favorites')
+        .eq('id', user.id)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      const currentFavorites = (userData?.favorites || []) as string[];
+      let newFavorites: string[];
+
       if (isFavorite) {
-        await updateDoc(userRef, {
-          favorites: arrayRemove(id)
-        });
+        newFavorites = currentFavorites.filter(favId => favId !== id);
         toast({
           title: "Removed from Favorites",
         });
       } else {
-        await updateDoc(userRef, {
-          favorites: arrayUnion(id)
-        });
+        newFavorites = [...currentFavorites, id];
         toast({
           title: "Added to Favorites!",
         });
       }
+
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ favorites: newFavorites })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
     } catch(err: any) {
        console.error("Favorite toggle error: ", err);
        toast({
