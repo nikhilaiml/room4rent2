@@ -108,28 +108,47 @@ export default function ListPropertyPage() {
 
   const uploadImages = async (files: File[]): Promise<string[]> => {
     if (!user) {
-      throw new Error("User not authenticated for image upload.");
+      throw new Error('User not authenticated for image upload.');
     }
 
-    const uploadPromises = files.map(async (file) => {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${uuidv4()}-${file.name}`;
+    const uploadedPublicUrls: string[] = [];
+
+    for (let index = 0; index < files.length; index++) {
+      const file = files[index];
+      const safeBaseName = file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
+      const fileName = `${uuidv4()}-${safeBaseName}`;
       const filePath = `properties/${user.id}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('properties')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          contentType: file.type || 'application/octet-stream',
+          upsert: true,
+        });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        // Surface clearer guidance for common misconfigurations
+        const hint = uploadError.message?.includes('Not Found') || uploadError.message?.includes('not found')
+          ? 'Storage bucket "properties" is missing in Supabase project.'
+          : uploadError.message;
+        throw new Error(hint || 'Image upload failed.');
+      }
 
-      const { data: { publicUrl } } = supabase.storage
+      const { data: publicUrlData } = supabase.storage
         .from('properties')
         .getPublicUrl(filePath);
 
-      return publicUrl;
-    });
+      if (!publicUrlData?.publicUrl) {
+        throw new Error('Could not generate public URL for the uploaded image.');
+      }
 
-    return Promise.all(uploadPromises);
+      uploadedPublicUrls.push(publicUrlData.publicUrl);
+
+      const progressValue = ((index + 1) / files.length) * 100;
+      setUploadProgress(progressValue);
+    }
+
+    return uploadedPublicUrls;
   };
 
 
@@ -180,7 +199,7 @@ export default function ListPropertyPage() {
       toast({
         variant: 'destructive',
         title: 'Listing Failed',
-        description: error.message || 'Could not list your property. Please try again.',
+        description: error?.message || 'Could not list your property. Please try again.',
       });
     } finally {
         setIsUploading(false);
