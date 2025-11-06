@@ -46,7 +46,7 @@ CREATE POLICY "Users can delete their own profile" ON public.users
 -- Create properties table
 CREATE TABLE IF NOT EXISTS public.properties (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    owner_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
+    "ownerId" UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
     title TEXT NOT NULL,
     description TEXT,
     city TEXT NOT NULL,
@@ -55,9 +55,9 @@ CREATE TABLE IF NOT EXISTS public.properties (
     property_type TEXT NOT NULL CHECK (property_type IN ('Room', '1BHK', '2BHK', 'PG', 'Hostel')),
     for_whom TEXT DEFAULT 'Anyone' CHECK (for_whom IN ('Male', 'Female', 'Student', 'Family', 'Anyone')),
     amenities TEXT[] DEFAULT '{}',
-    image_urls TEXT[] DEFAULT '{}',
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+    "imageUrls" TEXT[] DEFAULT '{}',
+    "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+    "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
 -- Enable RLS on properties
@@ -68,22 +68,22 @@ CREATE POLICY "Anyone can view properties" ON public.properties
     FOR SELECT USING (true);
 
 CREATE POLICY "Owners can insert their properties" ON public.properties
-    FOR INSERT WITH CHECK (auth.uid() = owner_id);
+    FOR INSERT WITH CHECK (auth.uid() = "ownerId");
 
 CREATE POLICY "Owners can update their properties" ON public.properties
-    FOR UPDATE USING (auth.uid() = owner_id);
+    FOR UPDATE USING (auth.uid() = "ownerId");
 
 CREATE POLICY "Owners can delete their properties" ON public.properties
-    FOR DELETE USING (auth.uid() = owner_id);
+    FOR DELETE USING (auth.uid() = "ownerId");
 
 -- Create enquiries table
 CREATE TABLE IF NOT EXISTS public.enquiries (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    property_id UUID REFERENCES public.properties(id) ON DELETE CASCADE NOT NULL,
-    tenant_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
-    owner_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
+    "propertyId" UUID REFERENCES public.properties(id) ON DELETE CASCADE NOT NULL,
+    "tenantId" UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
+    "ownerId" UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
     message TEXT NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+    "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
 -- Enable RLS on enquiries
@@ -91,10 +91,10 @@ ALTER TABLE public.enquiries ENABLE ROW LEVEL SECURITY;
 
 -- Policies for enquiries
 CREATE POLICY "Owners and tenants can view enquiries" ON public.enquiries
-    FOR SELECT USING (auth.uid() = owner_id OR auth.uid() = tenant_id);
+    FOR SELECT USING (auth.uid() = "ownerId" OR auth.uid() = "tenantId");
 
 CREATE POLICY "Tenants can create enquiries" ON public.enquiries
-    FOR INSERT WITH CHECK (auth.uid() = tenant_id);
+    FOR INSERT WITH CHECK (auth.uid() = "tenantId");
 
 -- Function to update updated_at
 CREATE OR REPLACE FUNCTION public.handle_updated_at()
