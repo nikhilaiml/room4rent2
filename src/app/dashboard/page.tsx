@@ -2,13 +2,12 @@
 
 import React, { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore, useCollection, useDoc } from '@/firebase';
+import { useUser, useCollection, useDoc } from '@/supabase';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlusCircle, BedDouble, Heart, Building, User as UserIcon, Mail, Shield } from 'lucide-react';
-import { collection, query, where, doc, documentId } from 'firebase/firestore';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -31,7 +30,6 @@ interface UserProfile {
 export default function DashboardPage() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
-  const firestore = useFirestore();
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -40,26 +38,38 @@ export default function DashboardPage() {
   }, [user, isUserLoading, router]);
   
   const userDocRef = useMemo(() => {
-    if (!firestore || !user) return null;
-    return doc(firestore, 'users', user.uid);
-  }, [firestore, user]);
+    if (!user) return null;
+    return {
+      table: 'users',
+      id: user.id,
+      realtime: true,
+    };
+  }, [user]);
 
   const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userDocRef);
 
   const propertiesQuery = useMemo(() => {
-    if (!firestore || !user || !userProfile) return null;
+    if (!user || !userProfile) return null;
 
     if (userProfile.role === 'owner') {
-      return query(collection(firestore, 'properties'), where('ownerId', '==', user.uid));
+      return {
+        table: 'properties',
+        filter: (query: any) => query.eq('ownerId', user.id),
+        realtime: true,
+      };
     }
     if (userProfile.role === 'tenant') {
         if (userProfile.favorites && userProfile.favorites.length > 0) {
-            return query(collection(firestore, 'properties'), where(documentId(), 'in', userProfile.favorites));
+            return {
+                table: 'properties',
+                filter: (query: any) => query.in('id', userProfile.favorites!),
+                realtime: true,
+            };
         }
         return null;
     }
     return null;
-  }, [firestore, user, userProfile]);
+  }, [user, userProfile]);
 
   const { data: properties, isLoading: isLoadingProperties } = useCollection<Property>(propertiesQuery);
 

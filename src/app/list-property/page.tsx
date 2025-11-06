@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser } from '@/firebase';
+import { useUser, useSupabaseClient } from '@/supabase';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { Button } from '@/components/ui/button';
@@ -15,9 +15,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { useFirestore } from '@/firebase';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL, UploadTaskSnapshot } from 'firebase/storage';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
@@ -37,7 +34,7 @@ const propertyFormSchema = z.object({
 export default function ListPropertyPage() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
-  const firestore = useFirestore();
+  const supabase = useSupabaseClient();
   const { toast } = useToast();
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -109,87 +106,31 @@ export default function ListPropertyPage() {
     setImageFiles(newFiles);
   }
 
-  const uploadImages = (files: File[]): Promise<string[]> => {
-    return new Promise((resolve, reject) => {
-        if (!user) {
-          return reject(new Error("User not authenticated for image upload."));
-        }
-        const storage = getStorage();
-        const promises: Promise<string>[] = [];
-        let totalBytesTransferred = 0;
-        const totalBytes = files.reduce((acc, file) => acc + file.size, 0);
+  const uploadImages = async (files: File[]): Promise<string[]> => {
+    if (!user) {
+      throw new Error("User not authenticated for image upload.");
+    }
 
-        files.forEach(file => {
-            const imageRef = ref(storage, `properties/${user.uid}/${uuidv4()}-${file.name}`);
-            const uploadTask = uploadBytesResumable(imageRef, file);
-            
-            promises.push(new Promise<string>((resolveTask, rejectTask) => {
-                uploadTask.on('state_changed',
-                    (snapshot: UploadTaskSnapshot) => {
-                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        // This will be noisy if we aggregate like this, better to calculate total progress
-                    },
-                    (error) => {
-                        console.error(`Upload failed for file: ${file.name}`, error);
-                        rejectTask(error);
-                    },
-                    async () => {
-                        try {
-                            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                            resolveTask(downloadURL);
-                        } catch (error) {
-                            rejectTask(error);
-                        }
-                    }
-                );
-            }));
+    const uploadPromises = files.map(async (file) => {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${uuidv4()}-${file.name}`;
+      const filePath = `properties/${user.id}/${fileName}`;
 
-            // Track total progress
-            uploadTask.on('state_changed', (snapshot) => {
-                // This is not perfect as it doesn't account for already transferred bytes of other files
-                // but it's a way to show progress. A better approach would be to track each file's progress.
-                // Let's try a simpler aggregation.
-            });
-        });
-        
-        // A better way to calculate progress
-        const allTasks = files.map(file => {
-            const imageRef = ref(storage, `properties/${user.uid}/${uuidv4()}-${file.name}`);
-            return uploadBytesResumable(imageRef, file);
-        });
+      const { error: uploadError } = await supabase.storage
+        .from('properties')
+        .upload(filePath, file);
 
-        let uploadedBytes = 0;
-        const totalSize = allTasks.reduce((acc, task) => acc + task.snapshot.totalBytes, 0);
+      if (uploadError) throw uploadError;
 
-        allTasks.forEach(task => {
-            task.on('state_changed',
-                (snapshot) => {
-                    // This is not quite right, it doesn't aggregate progress
-                }
-            );
-        });
+      const { data: { publicUrl } } = supabase.storage
+        .from('properties')
+        .getPublicUrl(filePath);
 
-        // Let's stick to the Promise.all approach which is simpler to reason about for completion
-        Promise.all(allTasks.map(task => new Promise<string>((resolveTask, rejectTask) => {
-             task.on('state_changed', 
-                (snapshot) => {
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    // We can't easily aggregate progress this way without more complex state management
-                    // A simple approximation:
-                    const totalProgress = allTasks.reduce((acc, t) => acc + (t.snapshot.bytesTransferred / t.snapshot.totalBytes), 0);
-                    setUploadProgress((totalProgress / allTasks.length) * 100);
-                },
-                (error) => rejectTask(error),
-                async () => {
-                    const downloadURL = await getDownloadURL(task.snapshot.ref);
-                    resolveTask(downloadURL);
-                }
-            );
-        })))
-        .then(urls => resolve(urls))
-        .catch(error => reject(error));
+      return publicUrl;
     });
-};
+
+    return Promise.all(uploadPromises);
+  };
 
 
   async function onSubmit(values: z.infer<typeof propertyFormSchema>) {
@@ -219,11 +160,15 @@ export default function ListPropertyPage() {
         imageUrls: uploadedUrls,
         city: values.city.toLowerCase(),
         location: values.location.toLowerCase(),
-        ownerId: user.uid,
-        createdAt: serverTimestamp(),
+        ownerId: user.id,
+        createdAt: new Date().toISOString(),
       };
 
-      await addDoc(collection(firestore, 'properties'), propertyData);
+      const { error } = await supabase
+        .from('properties')
+        .insert(propertyData);
+
+      if (error) throw error;
 
       toast({
         title: 'Property Listed!',

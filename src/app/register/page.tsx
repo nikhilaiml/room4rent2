@@ -23,10 +23,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useAuth, useFirestore } from '@/firebase';
+import { useAuth, useSupabaseClient } from '@/supabase';
 import { useRouter } from 'next/navigation';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
@@ -42,7 +40,7 @@ const formSchema = z.object({
 
 export default function RegisterPage() {
   const auth = useAuth();
-  const firestore = useFirestore();
+  const supabase = useSupabaseClient();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -58,21 +56,31 @@ export default function RegisterPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-      const user = userCredential.user;
+      const { data: userData, error: signUpError } = await auth.signUp({
+        email: values.email,
+        password: values.password,
+        options: {
+          data: {
+            name: values.name,
+            role: values.role,
+          }
+        }
+      });
 
-      if (user) {
-        await updateProfile(user, {
-          displayName: values.name,
-        });
+      if (signUpError) throw signUpError;
 
-        const userRef = doc(firestore, 'users', user.uid);
-        await setDoc(userRef, {
-          id: user.uid,
-          name: values.name,
-          email: values.email,
-          role: values.role,
-        });
+      if (userData?.user) {
+        // Create user profile in users table
+        const { error: profileError } = await supabase
+          .from('users')
+          .insert({
+            id: userData.user.id,
+            name: values.name,
+            email: values.email,
+            role: values.role,
+          });
+
+        if (profileError) throw profileError;
       }
 
       toast({
@@ -83,7 +91,7 @@ export default function RegisterPage() {
     } catch (error: any) {
       console.error('Registration failed:', error);
       let errorMessage = 'An unexpected error occurred.';
-      if (error.code === 'auth/email-already-in-use') {
+      if (error.message?.includes('already registered') || error.message?.includes('User already registered')) {
         errorMessage = 'This email is already registered. Please log in.';
       }
       toast({

@@ -4,8 +4,7 @@ import { Suspense } from 'react';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { useSearchParams } from 'next/navigation';
-import { useFirestore, useCollection } from '@/firebase';
-import { collection, query, where, Query, orderBy } from 'firebase/firestore';
+import { useCollection } from '@/supabase';
 import { useMemo } from 'react';
 import { PropertyCard } from '@/components/PropertyCard';
 
@@ -27,41 +26,34 @@ interface Property {
 
 function PropertiesList() {
     const searchParams = useSearchParams();
-    const firestore = useFirestore();
     
     const location = searchParams.get('location');
     const propertyType = searchParams.get('propertyType');
     const forWhom = searchParams.get('forWhom');
 
     const propertiesQuery = useMemo(() => {
-        if (!firestore) return null;
-        let q: Query<Property> = collection(firestore, 'properties') as Query<Property>;
+        return {
+            table: 'properties',
+            filter: (query: any) => {
+                let q = query;
+                if (location) {
+                    const searchLocation = location.toLowerCase();
+                    q = q.eq('location', searchLocation);
+                }
+                if (propertyType) {
+                    q = q.eq('propertyType', propertyType);
+                }
+                if (forWhom) {
+                    q = q.eq('forWhom', forWhom);
+                }
+                return q;
+            },
+            orderBy: { column: 'createdAt', ascending: false },
+            realtime: true,
+        };
+    }, [location, propertyType, forWhom]);
 
-        let conditions = [];
-        if (location) {
-            const searchLocation = location.toLowerCase();
-            conditions.push(where('location', '==', searchLocation));
-        }
-        if (propertyType) {
-            conditions.push(where('propertyType', '==', propertyType));
-        }
-        if (forWhom) {
-             conditions.push(where('forWhom', '==', forWhom));
-        }
-
-        // If there are any search conditions, apply them
-        if (conditions.length > 0) {
-            q = query(q, ...conditions);
-        } else {
-            // Otherwise, return all properties ordered by creation date
-            q = query(q, orderBy('createdAt', 'desc'));
-        }
-
-        return q;
-
-    }, [firestore, location, propertyType, forWhom]);
-
-    const { data: properties, isLoading } = useCollection<Property>(propertiesQuery as Query<Property>);
+    const { data: properties, isLoading } = useCollection<Property>(propertiesQuery);
 
     const getTitle = () => {
         if (location || propertyType || forWhom) {

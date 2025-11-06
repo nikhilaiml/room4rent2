@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
-import { FirebaseClientProvider } from '@/firebase/client-provider';
+import { SupabaseClientProvider } from '@/supabase/client-provider';
 import { Inter } from 'next/font/google';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -19,9 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning={true}>
        <body className={`${inter.variable} font-body antialiased`} suppressHydrationWarning={true}>
-        <FirebaseClientProvider>
+        <SupabaseClientProvider>
           <main>{children}</main>
-        </FirebaseClientProvider>
+        </SupabaseClientProvider>
         <Toaster />
       </body>
     </html>

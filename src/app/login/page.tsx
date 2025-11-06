@@ -23,9 +23,8 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { useAuth } from '@/firebase';
+import { useAuth } from '@/supabase';
 import { useRouter } from 'next/navigation';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
@@ -50,7 +49,13 @@ export default function LoginPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      await signInWithEmailAndPassword(auth, values.email, values.password);
+      const { error } = await auth.signInWithPassword({
+        email: values.email,
+        password: values.password,
+      });
+      
+      if (error) throw error;
+      
       toast({
         title: 'Login Successful',
         description: "You're now logged in.",
@@ -59,7 +64,7 @@ export default function LoginPage() {
     } catch (error: any) {
       console.error('Login failed:', error);
       let errorMessage = 'An unexpected error occurred.';
-      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+      if (error.message?.includes('Invalid login credentials') || error.message?.includes('Email not confirmed')) {
         errorMessage = 'Invalid email or password. Please try again.';
       }
       toast({
