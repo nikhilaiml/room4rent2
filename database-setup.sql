@@ -3,6 +3,12 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('properties', 'properties', true)
 ON CONFLICT (id) DO NOTHING;
 
+-- Drop existing storage policies if they exist
+DROP POLICY IF EXISTS "Anyone can view property images" ON storage.objects;
+DROP POLICY IF EXISTS "Authenticated users can upload property images" ON storage.objects;
+DROP POLICY IF EXISTS "Users can update their own property images" ON storage.objects;
+DROP POLICY IF EXISTS "Users can delete their own property images" ON storage.objects;
+
 -- Create storage policies for properties bucket
 CREATE POLICY "Anyone can view property images" ON storage.objects
     FOR SELECT USING (bucket_id = 'properties');
@@ -29,6 +35,12 @@ CREATE TABLE IF NOT EXISTS public.users (
 
 -- Enable RLS
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view their own profile" ON public.users;
+DROP POLICY IF EXISTS "Users can insert their own profile" ON public.users;
+DROP POLICY IF EXISTS "Users can update their own profile" ON public.users;
+DROP POLICY IF EXISTS "Users can delete their own profile" ON public.users;
 
 -- Create policies
 CREATE POLICY "Users can view their own profile" ON public.users
@@ -63,6 +75,12 @@ CREATE TABLE IF NOT EXISTS public.properties (
 -- Enable RLS on properties
 ALTER TABLE public.properties ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Anyone can view properties" ON public.properties;
+DROP POLICY IF EXISTS "Owners can insert their properties" ON public.properties;
+DROP POLICY IF EXISTS "Owners can update their properties" ON public.properties;
+DROP POLICY IF EXISTS "Owners can delete their properties" ON public.properties;
+
 -- Policies for properties
 CREATE POLICY "Anyone can view properties" ON public.properties
     FOR SELECT USING (true);
@@ -89,6 +107,10 @@ CREATE TABLE IF NOT EXISTS public.enquiries (
 -- Enable RLS on enquiries
 ALTER TABLE public.enquiries ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Owners and tenants can view enquiries" ON public.enquiries;
+DROP POLICY IF EXISTS "Tenants can create enquiries" ON public.enquiries;
+
 -- Policies for enquiries
 CREATE POLICY "Owners and tenants can view enquiries" ON public.enquiries
     FOR SELECT USING (auth.uid() = "ownerId" OR auth.uid() = "tenantId");
@@ -100,10 +122,14 @@ CREATE POLICY "Tenants can create enquiries" ON public.enquiries
 CREATE OR REPLACE FUNCTION public.handle_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
-    NEW.updated_at = TIMEZONE('utc'::text, NOW());
+    NEW."updatedAt" = TIMEZONE('utc'::text, NOW());
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Drop existing triggers if they exist
+DROP TRIGGER IF EXISTS handle_updated_at_users ON public.users;
+DROP TRIGGER IF EXISTS handle_updated_at_properties ON public.properties;
 
 -- Triggers for updated_at
 CREATE TRIGGER handle_updated_at_users
