@@ -28,6 +28,19 @@ const propertyFormSchema = z.object({
   location: z.string().min(3, 'Location is required'),
   price: z.coerce.number().min(0, 'Price must be a positive number'),
   propertyType: z.enum(['Room', '1BHK', '2BHK', 'PG', 'Hostel']),
+  securityDeposit: z.coerce.number().min(0, 'Security deposit must be a positive number'),
+  forWhom: z.enum(['Family', 'Girls', 'Boys', 'Any']),
+  ownerResidence: z.string().min(1, 'Owner residence is required'),
+  type: z.string().min(1, 'Type is required'),
+  furnishing: z.string().min(1, 'Furnishing is required'),
+  listedBy: z.string().min(1, 'Listed by is required'),
+  superBuiltUpArea: z.coerce.number().min(0, 'Super built-up area must be a positive number'),
+  carpetArea: z.coerce.number().min(0, 'Carpet area must be a positive number'),
+  maintenance: z.coerce.number().min(0, 'Maintenance must be a positive number'),
+  totalFloors: z.coerce.number().min(1, 'Total floors must be at least 1'),
+  floorNo: z.coerce.number().min(0, 'Floor number must be 0 or more'),
+  carParking: z.string().min(1, 'Car parking is required'),
+  facing: z.string().min(1, 'Facing is required'),
 });
 
 
@@ -66,6 +79,19 @@ export default function ListPropertyPage() {
       location: '',
       price: 0,
       propertyType: 'Room',
+      securityDeposit: 0,
+      forWhom: 'Any',
+      ownerResidence: '',
+      type: '',
+      furnishing: '',
+      listedBy: '',
+      superBuiltUpArea: 0,
+      carpetArea: 0,
+      maintenance: 0,
+      totalFloors: 1,
+      floorNo: 0,
+      carParking: '',
+      facing: '',
     },
   });
 
@@ -420,6 +446,206 @@ export default function ListPropertyPage() {
                           <FormMessage />
                         </FormItem>
                       )}
+                    />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                    control={form.control}
+                    name="securityDeposit"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Security Deposit Amount (INR) *</FormLabel>
+                        <FormControl>
+                            <Input type="number" placeholder="e.g., 30000" {...field} disabled={isUploading} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="forWhom"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>For Whom</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isUploading}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select for whom" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="Family">Family</SelectItem>
+                              <SelectItem value="Girls">Girls</SelectItem>
+                              <SelectItem value="Boys">Boys</SelectItem>
+                              <SelectItem value="Any">Any</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                    control={form.control}
+                    name="ownerResidence"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Owner Residence</FormLabel>
+                        <FormControl>
+                            <Input placeholder="e.g., Same City" {...field} disabled={isUploading} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField
+                    control={form.control}
+                    name="type"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Type</FormLabel>
+                        <FormControl>
+                            <Input placeholder="e.g., Apartment" {...field} disabled={isUploading} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                    control={form.control}
+                    name="furnishing"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Furnishing</FormLabel>
+                        <FormControl>
+                            <Input placeholder="e.g., Fully Furnished" {...field} disabled={isUploading} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField
+                    control={form.control}
+                    name="listedBy"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Listed By</FormLabel>
+                        <FormControl>
+                            <Input placeholder="e.g., Owner" {...field} disabled={isUploading} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                    control={form.control}
+                    name="superBuiltUpArea"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Super Built-up Area (Sqft) *</FormLabel>
+                        <FormControl>
+                            <Input type="number" placeholder="e.g., 1200" {...field} disabled={isUploading} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField
+                    control={form.control}
+                    name="carpetArea"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Carpet Area (Sqft) *</FormLabel>
+                        <FormControl>
+                            <Input type="number" placeholder="e.g., 1000" {...field} disabled={isUploading} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                    control={form.control}
+                    name="maintenance"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Maintenance (Monthly) *</FormLabel>
+                        <FormControl>
+                            <Input type="number" placeholder="e.g., 500" {...field} disabled={isUploading} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField
+                    control={form.control}
+                    name="totalFloors"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Total Floors *</FormLabel>
+                        <FormControl>
+                            <Input type="number" placeholder="e.g., 5" {...field} disabled={isUploading} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                    control={form.control}
+                    name="floorNo"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Floor No *</FormLabel>
+                        <FormControl>
+                            <Input type="number" placeholder="e.g., 2" {...field} disabled={isUploading} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField
+                    control={form.control}
+                    name="carParking"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Car Parking</FormLabel>
+                        <FormControl>
+                            <Input placeholder="e.g., Available" {...field} disabled={isUploading} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                    control={form.control}
+                    name="facing"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Facing</FormLabel>
+                        <FormControl>
+                            <Input placeholder="e.g., East" {...field} disabled={isUploading} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
                     />
                 </div>
                 
