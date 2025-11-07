@@ -71,7 +71,19 @@ CREATE TABLE IF NOT EXISTS public.properties (
     location TEXT NOT NULL,
     price NUMERIC NOT NULL,
     "propertyType" TEXT NOT NULL CHECK ("propertyType" IN ('Room', '1BHK', '2BHK', 'PG', 'Hostel')),
-    "forWhom" TEXT DEFAULT 'Anyone' CHECK ("forWhom" IN ('Male', 'Female', 'Student', 'Family', 'Anyone')),
+    "forWhom" TEXT DEFAULT 'Any' CHECK ("forWhom" IN ('Family', 'Girls', 'Boys', 'Any')),
+    "securityDeposit" NUMERIC DEFAULT 0,
+    "ownerResidence" TEXT,
+    "type" TEXT,
+    "furnishing" TEXT,
+    "listedBy" TEXT,
+    "superBuiltUpArea" NUMERIC,
+    "carpetArea" NUMERIC,
+    "maintenance" NUMERIC,
+    "totalFloors" INTEGER,
+    "floorNo" INTEGER,
+    "carParking" TEXT,
+    "facing" TEXT,
     amenities TEXT[] DEFAULT '{}',
     "imageUrls" TEXT[] DEFAULT '{}',
     "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
@@ -80,7 +92,19 @@ CREATE TABLE IF NOT EXISTS public.properties (
 
 -- Add missing columns if table already exists
 ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS "propertyType" TEXT;
-ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS "forWhom" TEXT DEFAULT 'Anyone';
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS "forWhom" TEXT DEFAULT 'Any';
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS "securityDeposit" NUMERIC DEFAULT 0;
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS "ownerResidence" TEXT;
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS "type" TEXT;
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS "furnishing" TEXT;
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS "listedBy" TEXT;
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS "superBuiltUpArea" NUMERIC;
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS "carpetArea" NUMERIC;
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS "maintenance" NUMERIC;
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS "totalFloors" INTEGER;
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS "floorNo" INTEGER;
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS "carParking" TEXT;
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS "facing" TEXT;
 ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS amenities TEXT[] DEFAULT '{}';
 ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS "imageUrls" TEXT[] DEFAULT '{}';
 ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW());
