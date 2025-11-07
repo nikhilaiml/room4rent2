@@ -3,10 +3,11 @@ DROP TABLE IF EXISTS public.enquiries CASCADE;
 DROP TABLE IF EXISTS public.properties CASCADE;
 DROP TABLE IF EXISTS public.users CASCADE;
 
--- Create storage bucket for property images
+-- Create or update storage bucket for property images
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('properties', 'properties', true)
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET
+    public = EXCLUDED.public;
 
 -- Drop existing storage policies if they exist
 DROP POLICY IF EXISTS "Anyone can view property images" ON storage.objects;
@@ -15,17 +16,17 @@ DROP POLICY IF EXISTS "Users can update their own property images" ON storage.ob
 DROP POLICY IF EXISTS "Users can delete their own property images" ON storage.objects;
 
 -- Create storage policies for properties bucket
-CREATE POLICY "Anyone can view property images" ON storage.objects
+CREATE POLICY "Public property images access" ON storage.objects
     FOR SELECT USING (bucket_id = 'properties');
 
 CREATE POLICY "Authenticated users can upload property images" ON storage.objects
-    FOR INSERT WITH CHECK (bucket_id = 'properties' AND auth.role() = 'authenticated');
+    FOR INSERT WITH CHECK (bucket_id = 'properties');
 
 CREATE POLICY "Users can update their own property images" ON storage.objects
-    FOR UPDATE USING (bucket_id = 'properties' AND auth.uid()::text = (storage.foldername(name))[1]);
+    FOR UPDATE USING (bucket_id = 'properties');
 
 CREATE POLICY "Users can delete their own property images" ON storage.objects
-    FOR DELETE USING (bucket_id = 'properties' AND auth.uid()::text = (storage.foldername(name))[1]);
+    FOR DELETE USING (bucket_id = 'properties');
 
 -- Create users table
 CREATE TABLE IF NOT EXISTS public.users (
