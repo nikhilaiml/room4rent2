@@ -1,6 +1,5 @@
 'use client';
 
-import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { SupabaseClientProvider } from '@/supabase/client-provider';
@@ -10,11 +9,6 @@ import { Inter } from 'next/font/google';
 import { useMemo } from 'react';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-
-export const metadata: Metadata = {
-  title: 'room4rent',
-  description: 'Find your next room with ease.',
-};
 
 export default function RootLayout({
   children,
