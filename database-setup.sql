@@ -121,6 +121,35 @@ CREATE POLICY "Owners and tenants can view enquiries" ON public.enquiries
 CREATE POLICY "Tenants can create enquiries" ON public.enquiries
     FOR INSERT WITH CHECK (auth.uid() = "tenantId");
 
+-- Create messages table for chat
+CREATE TABLE public.messages (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    "enquiryId" UUID REFERENCES public.enquiries(id) ON DELETE CASCADE NOT NULL,
+    "senderId" UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
+    message TEXT NOT NULL,
+    "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+-- Enable RLS on messages
+ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
+
+-- Policies for messages
+CREATE POLICY "Participants can view messages" ON public.messages
+    FOR SELECT USING (
+        EXISTS (
+            SELECT 1 FROM public.enquiries e
+            WHERE e.id = "enquiryId" AND (auth.uid() = e."tenantId" OR auth.uid() = e."ownerId")
+        )
+    );
+
+CREATE POLICY "Participants can send messages" ON public.messages
+    FOR INSERT WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM public.enquiries e
+            WHERE e.id = "enquiryId" AND (auth.uid() = e."tenantId" OR auth.uid() = e."ownerId")
+        )
+    );
+
 -- Function to update updated_at
 CREATE OR REPLACE FUNCTION public.handle_updated_at()
 RETURNS TRIGGER AS $$
