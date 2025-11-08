@@ -1,3 +1,5 @@
+'use client';
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -5,6 +7,7 @@ import { SupabaseClientProvider } from '@/supabase/client-provider';
 import { FirebaseProvider } from '@/firebase/provider';
 import { initializeFirebase } from '@/firebase';
 import { Inter } from 'next/font/google';
+import { useMemo } from 'react';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -18,12 +21,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { firebaseApp, auth, firestore } = initializeFirebase();
+  const firebaseServices = useMemo(() => initializeFirebase(), []);
 
   return (
     <html lang="en" suppressHydrationWarning={true}>
        <body className={`${inter.variable} font-body antialiased`} suppressHydrationWarning={true}>
-         <FirebaseProvider firebaseApp={firebaseApp} auth={auth} firestore={firestore}>
+         <FirebaseProvider firebaseApp={firebaseServices.firebaseApp} auth={firebaseServices.auth} firestore={firebaseServices.firestore}>
            <SupabaseClientProvider>
              <main>{children}</main>
            </SupabaseClientProvider>
