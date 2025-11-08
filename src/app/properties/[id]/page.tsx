@@ -120,53 +120,33 @@ function PropertyDetails() {
     }
 
     try {
-      // Check if enquiry already exists
-      const { data: existingEnquiry, error: checkError } = await supabase
+      // Create enquiry first
+      const { data: enquiryData, error: enquiryError } = await supabase
         .from('enquiries')
-        .select('id')
-        .eq('propertyId', property.id)
-        .eq('tenantId', user.uid)
+        .insert({
+          propertyId: property.id,
+          tenantId: user.uid,
+          ownerId: (property as any).ownerId,
+          message: "Hi, I'm interested in this property. Can we discuss the details?",
+        })
+        .select()
         .single();
 
-      if (checkError && checkError.code !== 'PGRST116') { // PGRST116 is "not found"
-        throw checkError;
-      }
-
-      let enquiryId: string;
-
-      if (existingEnquiry) {
-        // Use existing enquiry
-        enquiryId = existingEnquiry.id;
-      } else {
-        // Create new enquiry
-        const { data: enquiryData, error: enquiryError } = await supabase
-          .from('enquiries')
-          .insert({
-            propertyId: property.id,
-            tenantId: user.uid,
-            ownerId: (property as any).ownerId,
-            message: "Hi, I'm interested in this property. Can we discuss the details?",
-          })
-          .select()
-          .single();
-
-        if (enquiryError) throw enquiryError;
-        enquiryId = enquiryData.id;
-      }
+      if (enquiryError) throw enquiryError;
 
       // Open chat with the enquiry ID
-      setChatEnquiryId(enquiryId);
+      setChatEnquiryId(enquiryData.id);
       setShowChat(true);
 
       toast({
-        title: "Chat Opened",
-        description: existingEnquiry ? "Continuing your existing conversation." : "Your enquiry has been sent. You can now chat with the owner.",
+        title: "Enquiry Sent",
+        description: "Your enquiry has been sent. You can now chat with the owner.",
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error sending enquiry:', error);
       toast({
         title: "Error",
-        description: `Failed to send enquiry: ${error.message || 'Please try again.'}`,
+        description: "Failed to send enquiry. Please try again.",
         variant: "destructive",
       });
     }
