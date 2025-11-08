@@ -126,7 +126,7 @@ function PropertyDetails() {
         .insert({
           propertyId: property.id,
           tenantId: user.uid,
-          ownerId: (property as any).ownerId,
+          ownerId: property.ownerId,
           message: "Hi, I'm interested in this property. Can we discuss the details?",
         })
         .select()
