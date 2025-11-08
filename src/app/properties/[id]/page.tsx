@@ -126,7 +126,7 @@ function PropertyDetails() {
         .insert({
           propertyId: property.id,
           tenantId: user.uid,
-          ownerId: "test-owner-id", // Temporary test value
+          ownerId: user.uid, // Use current user's ID as owner for testing
           message: "Hi, I'm interested in this property. Can we discuss the details?",
         })
         .select()
