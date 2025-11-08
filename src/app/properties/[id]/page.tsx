@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useMemo } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
@@ -12,6 +12,9 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Button } from '@/components/ui/button';
 import { Share2, Heart, Phone, ShieldCheck, Wifi, BedDouble, Bath } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useUser } from '@/firebase';
+import { useSupabaseClient } from '@/supabase';
+import ChatComponent from '@/components/ChatComponent';
 
 interface Property {
   id: string;
@@ -23,12 +26,17 @@ interface Property {
   imageUrls: string[];
   propertyType: string;
   amenities: string[];
+  ownerId: string;
 }
 
 function PropertyDetails() {
   const params = useParams();
   const { id } = params;
   const { toast } = useToast();
+  const { user } = useUser();
+  const supabase = useSupabaseClient();
+  const [chatEnquiryId, setChatEnquiryId] = useState<string | null>(null);
+  const [showChat, setShowChat] = useState(false);
 
   const propertyRef = useMemo(() => {
     if (!id) return null;
@@ -73,6 +81,13 @@ function PropertyDetails() {
           <p>Property not found.</p>
         </main>
         <Footer />
+        {showChat && chatEnquiryId && user && property && (
+          <ChatComponent
+            enquiryId={chatEnquiryId}
+            currentUserId={user.uid}
+            otherUserId={property.ownerId}
+          />
+        )}
       </div>
     );
   }
@@ -82,6 +97,58 @@ function PropertyDetails() {
       title: "Contact Owner",
       description: "Functionality to call the owner will be implemented soon.",
     });
+  };
+
+  const handleSendEnquiry = async () => {
+    if (!user) {
+      toast({
+        title: "Login Required",
+        description: "Please login to send an enquiry.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (user.uid === property.ownerId) {
+      toast({
+        title: "Cannot Send Enquiry",
+        description: "You cannot send enquiry to your own property.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Create enquiry first
+      const { data: enquiryData, error: enquiryError } = await supabase
+        .from('enquiries')
+        .insert({
+          propertyId: property.id,
+          tenantId: user.uid,
+          ownerId: property.ownerId,
+          message: "Hi, I'm interested in this property. Can we discuss the details?",
+        })
+        .select()
+        .single();
+
+      if (enquiryError) throw enquiryError;
+
+      // Open chat with the enquiry ID
+      setChatEnquiryId(enquiryData.id);
+      setShowChat(true);
+
+      toast({
+        title: "Enquiry Sent",
+        description: "Your enquiry has been sent. You can now chat with the owner.",
+      });
+    } catch (error) {
+      console.error('Error sending enquiry:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send enquiry. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -150,7 +217,13 @@ function PropertyDetails() {
                                     <Button className="w-full mt-4" onClick={handleCall}>
                                         <Phone className="w-4 h-4 mr-2" /> Call Owner
                                     </Button>
-                                    <Button variant="secondary" className="w-full mt-2">Send Enquiry</Button>
+                                    <Button
+                                      variant="secondary"
+                                      className="w-full mt-2"
+                                      onClick={handleSendEnquiry}
+                                    >
+                                      Send Enquiry
+                                    </Button>
                                 </CardContent>
                              </Card>
                         </div>
