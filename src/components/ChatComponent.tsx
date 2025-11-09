@@ -109,14 +109,14 @@ export default function ChatComponent({ enquiryId, currentUserId, otherUserId, o
 
   if (isLoading) {
     return (
-      <div className="fixed bottom-4 right-4 w-80 h-96 bg-white border rounded-lg shadow-lg flex items-center justify-center">
+      <div className="fixed bottom-8 right-4 w-80 h-96 bg-white border rounded-lg shadow-lg flex items-center justify-center">
         <p>Loading chat...</p>
       </div>
     );
   }
 
   return (
-    <Card className="fixed bottom-4 right-4 w-80 h-96 shadow-lg z-50">
+    <Card className="fixed bottom-8 right-4 w-80 h-96 shadow-lg z-50">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">Chat</CardTitle>
         {onClose && (
