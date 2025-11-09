@@ -274,7 +274,7 @@ export default function DashboardPage() {
                         <p className="font-medium">Property Enquiry</p>
                         <p className="text-sm text-muted-foreground">{chat.message}</p>
                       </div>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={() => setSelectedChat(chat.id)}>
                         Open Chat
                       </Button>
                     </div>
