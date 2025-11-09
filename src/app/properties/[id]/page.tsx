@@ -110,7 +110,7 @@ function PropertyDetails() {
       return;
     }
 
-    if (user.uid === property.ownerId) {
+    if (user.uid === (property as any).ownerId) {
       toast({
         title: "Cannot Send Enquiry",
         description: "You cannot send enquiry to your own property.",
@@ -126,7 +126,7 @@ function PropertyDetails() {
         .insert({
           propertyId: property.id,
           tenantId: user.uid,
-          ownerId: property.ownerId,
+          ownerId: (property as any).ownerId,
           message: "Hi, I'm interested in this property. Can we discuss the details?",
         })
         .select()
