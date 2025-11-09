@@ -85,7 +85,7 @@ function PropertyDetails() {
           <ChatComponent
             enquiryId={chatEnquiryId}
             currentUserId={user.uid}
-            otherUserId={(property as any)?.ownerId || ''}
+            otherUserId={(property as any).ownerId}
             onClose={() => setShowChat(false)}
           />
         )}
