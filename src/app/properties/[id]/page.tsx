@@ -150,7 +150,7 @@ function PropertyDetails() {
 
       toast({
         title: "Enquiry Sent",
-        description: "Your enquiry has been sent. You can now chat with the owner.",
+        description: "Your enquiry has been sent. You can now chat with the owner. Open dashboard for chat.",
       });
     } catch (error) {
       console.error('Error sending enquiry:', error);
