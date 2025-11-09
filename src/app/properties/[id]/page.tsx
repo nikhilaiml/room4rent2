@@ -126,7 +126,7 @@ function PropertyDetails() {
         .insert({
           propertyId: property.id,
           tenantId: user.uid,
-          ownerId: "550e8400-e29b-41d4-a716-446655440000", // Valid UUID format
+          ownerId: property.ownerId,
           message: "Hi, I'm interested in this property. Can we discuss the details?",
         })
         .select()
