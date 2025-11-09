@@ -12,8 +12,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Button } from '@/components/ui/button';
 import { Share2, Heart, Phone, ShieldCheck, Wifi, BedDouble, Bath } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useUser } from '@/firebase';
-import { useSupabaseClient } from '@/supabase';
+import { useSupabaseClient, useSupabase } from '@/supabase';
 import ChatComponent from '@/components/ChatComponent';
 
 interface Property {
@@ -33,7 +32,7 @@ function PropertyDetails() {
   const params = useParams();
   const { id } = params;
   const { toast } = useToast();
-  const { user } = useUser();
+  const { user } = useSupabase();
   const supabase = useSupabaseClient();
   const [chatEnquiryId, setChatEnquiryId] = useState<string | null>(null);
   const [showChat, setShowChat] = useState(false);
@@ -84,7 +83,7 @@ function PropertyDetails() {
         {showChat && chatEnquiryId && user && property && (
           <ChatComponent
             enquiryId={chatEnquiryId}
-            currentUserId={user.uid}
+            currentUserId={user.id}
             otherUserId={(property as any).ownerId}
             onClose={() => setShowChat(false)}
           />
@@ -110,7 +109,7 @@ function PropertyDetails() {
       return;
     }
 
-    if (user.uid === (property as any).ownerId) {
+    if (user.id === (property as any).ownerId) {
       toast({
         title: "Cannot Send Enquiry",
         description: "You cannot send enquiry to your own property.",
@@ -125,12 +124,15 @@ function PropertyDetails() {
         .from('enquiries')
         .insert({
           propertyId: property.id,
-          tenantId: user.uid,
+          tenantId: user.id,
           ownerId: (property as any).ownerId,
           message: "Hi, I'm interested in this property. Can we discuss the details?",
         })
         .select()
         .single();
+
+      console.log('Enquiry data:', enquiryData);
+      console.log('Enquiry error:', enquiryError);
 
       if (enquiryError) throw enquiryError;
 

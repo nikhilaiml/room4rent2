@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useSupabaseClient } from '@/supabase';
-import { useUser } from '@/firebase';
+import { useSupabase } from '@/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,7 +29,7 @@ export default function ChatComponent({ enquiryId, currentUserId, otherUserId, o
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const supabase = useSupabaseClient();
-  const { user } = useUser();
+  const { user } = useSupabase();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -89,7 +89,7 @@ export default function ChatComponent({ enquiryId, currentUserId, otherUserId, o
         .from('messages')
         .insert({
           enquiryId,
-          senderId: user.uid,
+          senderId: user.id,
           message: newMessage.trim(),
         });
 
