@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useCollection, useDoc } from '@/supabase';
+import ChatComponent from '@/components/ChatComponent';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { Button } from '@/components/ui/button';
@@ -30,6 +31,8 @@ interface UserProfile {
 export default function DashboardPage() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
+  const [activeChats, setActiveChats] = useState<any[]>([]);
+  const [selectedChat, setSelectedChat] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -72,6 +75,24 @@ export default function DashboardPage() {
   }, [user, userProfile]);
 
   const { data: properties, isLoading: isLoadingProperties } = useCollection<Property>(propertiesQuery);
+
+  // Fetch enquiries for chat
+  const enquiriesQuery = useMemo(() => {
+    if (!user) return null;
+    return {
+      table: 'enquiries',
+      filter: (query: any) => query.or(`tenantId.eq.${user.id},ownerId.eq.${user.id}`),
+      realtime: true,
+    };
+  }, [user]);
+
+  const { data: enquiries } = useCollection(enquiriesQuery);
+
+  useEffect(() => {
+    if (enquiries) {
+      setActiveChats(enquiries);
+    }
+  }, [enquiries]);
 
   if (isUserLoading || isProfileLoading || !userProfile) {
     return (
@@ -234,9 +255,50 @@ export default function DashboardPage() {
           {userProfile.role === 'tenant' && renderTenantDashboard()}
           {userProfile.role === 'admin' && renderAdminDashboard()}
 
+          {/* Chat Section */}
+          {activeChats.length > 0 && (
+            <Card className="mt-8">
+              <CardHeader>
+                <CardTitle>Messages</CardTitle>
+                <CardDescription>Your ongoing conversations</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {activeChats.map((chat) => (
+                    <div
+                      key={chat.id}
+                      className="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-muted"
+                      onClick={() => setSelectedChat(chat.id)}
+                    >
+                      <div>
+                        <p className="font-medium">Property Enquiry</p>
+                        <p className="text-sm text-muted-foreground">{chat.message}</p>
+                      </div>
+                      <Button variant="outline" size="sm">
+                        Open Chat
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
         </div>
       </main>
       <Footer />
+
+      {/* Chat Component */}
+      {selectedChat && user && (
+        <ChatComponent
+          enquiryId={selectedChat}
+          currentUserId={user.id}
+          otherUserId={activeChats.find(chat => chat.id === selectedChat)?.tenantId === user.id
+            ? activeChats.find(chat => chat.id === selectedChat)?.ownerId
+            : activeChats.find(chat => chat.id === selectedChat)?.tenantId}
+          onClose={() => setSelectedChat(null)}
+        />
+      )}
     </div>
   );
 }

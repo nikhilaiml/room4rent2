@@ -68,9 +68,17 @@ function PropertyDetails() {
                 <p>Error loading property: {error.message}</p>
             </main>
             <Footer />
-        </div>
-    );
-  }
+            {showChat && chatEnquiryId && user && property && (
+              <ChatComponent
+                enquiryId={chatEnquiryId}
+                currentUserId={user.id}
+                otherUserId={(property as any).ownerId}
+                onClose={() => setShowChat(false)}
+              />
+            )}
+          </div>
+        );
+      }
 
   if (!property) {
     return (
