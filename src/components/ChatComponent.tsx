@@ -84,19 +84,34 @@ export default function ChatComponent({ enquiryId, currentUserId, otherUserId, o
   const sendMessage = async () => {
     if (!newMessage.trim() || !user) return;
 
+    const messageToSend = newMessage.trim();
+
+    // Optimistically add message to local state for instant display
+    const optimisticMessage: Message = {
+      id: `temp-${Date.now()}`, // Temporary ID
+      enquiryId,
+      senderId: user.id,
+      message: messageToSend,
+      createdAt: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, optimisticMessage]);
+    setNewMessage('');
+
     try {
       const { error } = await supabase
         .from('messages')
         .insert({
           enquiryId,
           senderId: user.id,
-          message: newMessage.trim(),
+          message: messageToSend,
         });
 
       if (error) throw error;
-      setNewMessage('');
     } catch (error) {
       console.error('Error sending message:', error);
+      // Remove optimistic message on error
+      setMessages((prev) => prev.filter(msg => msg.id !== optimisticMessage.id));
+      setNewMessage(messageToSend); // Restore the message
     }
   };
 

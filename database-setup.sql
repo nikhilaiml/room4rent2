@@ -1,4 +1,5 @@
 -- Drop existing tables to recreate with correct schema
+DROP TABLE IF EXISTS public.messages CASCADE;
 DROP TABLE IF EXISTS public.enquiries CASCADE;
 DROP TABLE IF EXISTS public.properties CASCADE;
 DROP TABLE IF EXISTS public.users CASCADE;
