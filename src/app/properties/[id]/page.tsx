@@ -185,65 +185,113 @@ function PropertyDetails() {
                      </div>
                  </CardHeader>
                 <CardContent>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div className="lg:col-span-2">
-                             <Carousel className="w-full">
-                                <CarouselContent>
-                                {property.imageUrls && property.imageUrls.length > 0 ? (
-                                    property.imageUrls.map((url, index) => (
-                                    <CarouselItem key={index}>
-                                        <Image src={url} alt={`${property.title} image ${index + 1}`} width={800} height={500} className="w-full h-auto max-h-[500px] object-cover rounded-lg"/>
-                                    </CarouselItem>
-                                    ))
-                                ) : (
-                                     <CarouselItem>
-                                        <Image src={'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&h=500&auto=format&fit=crop'} alt="Placeholder image" width={800} height={500} className="w-full h-auto object-cover rounded-lg"/>
-                                    </CarouselItem>
-                                )}
-                                </CarouselContent>
-                                <CarouselPrevious className="left-4" />
-                                <CarouselNext className="right-4" />
-                            </Carousel>
-                            <div className="mt-8">
-                                <h2 className="text-2xl font-bold mb-4">About this property</h2>
-                                <p className="text-muted-foreground">{property.description}</p>
-                            </div>
-                             <div className="mt-8">
-                                <h2 className="text-2xl font-bold mb-4">Amenities</h2>
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                   {/* This should be dynamic based on property.amenities */}
-                                   <div className="flex items-center gap-2"><Wifi className="w-5 h-5 text-primary"/><span>WiFi</span></div>
-                                   <div className="flex items-center gap-2"><BedDouble className="w-5 h-5 text-primary"/><span>Furnished</span></div>
-                                   <div className="flex items-center gap-2"><Bath className="w-5 h-5 text-primary"/><span>Attached Bathroom</span></div>
-                                   <div className="flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-primary"/><span>Security</span></div>
+                    <div className="hidden md:block">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <div className="lg:col-span-2">
+                                 <Carousel className="w-full">
+                                    <CarouselContent>
+                                    {property.imageUrls && property.imageUrls.length > 0 ? (
+                                        property.imageUrls.map((url, index) => (
+                                        <CarouselItem key={index}>
+                                            <Image src={url} alt={`${property.title} image ${index + 1}`} width={800} height={500} className="w-full h-auto max-h-[500px] object-cover rounded-lg"/>
+                                        </CarouselItem>
+                                        ))
+                                    ) : (
+                                         <CarouselItem>
+                                            <Image src={'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&h=500&auto=format&fit=crop'} alt="Placeholder image" width={800} height={500} className="w-full h-auto object-cover rounded-lg"/>
+                                        </CarouselItem>
+                                    )}
+                                    </CarouselContent>
+                                    <CarouselPrevious className="left-4" />
+                                    <CarouselNext className="right-4" />
+                                </Carousel>
+                                <div className="mt-8">
+                                    <h2 className="text-2xl font-bold mb-4">About this property</h2>
+                                    <p className="text-muted-foreground">{property.description}</p>
+                                </div>
+                                 <div className="mt-8">
+                                    <h2 className="text-2xl font-bold mb-4">Amenities</h2>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                       {/* This should be dynamic based on property.amenities */}
+                                       <div className="flex items-center gap-2"><Wifi className="w-5 h-5 text-primary"/><span>WiFi</span></div>
+                                       <div className="flex items-center gap-2"><BedDouble className="w-5 h-5 text-primary"/><span>Furnished</span></div>
+                                       <div className="flex items-center gap-2"><Bath className="w-5 h-5 text-primary"/><span>Attached Bathroom</span></div>
+                                       <div className="flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-primary"/><span>Security</span></div>
+                                    </div>
                                 </div>
                             </div>
+                            <div className="lg:col-span-1">
+                                 <Card className="sticky top-24">
+                                    <CardHeader>
+                                        <p className="text-2xl font-bold">₹{property.price.toLocaleString()}<span className="text-lg font-normal text-muted-foreground">/month</span></p>
+                                        <Badge>{property.propertyType}</Badge>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <p className="font-bold mb-2">Owner Details</p>
+                                        {/* Fetch owner details later */}
+                                        <p className="text-sm text-muted-foreground">Contact details will be visible after sending an enquiry.</p>
+                                        <Button className="w-full mt-4" onClick={handleCall}>
+                                            <Phone className="w-4 h-4 mr-2" /> Call Owner
+                                        </Button>
+                                        <Button
+                                          variant="secondary"
+                                          className="w-full mt-2"
+                                          onClick={handleSendEnquiry}
+                                        >
+                                          Send Enquiry
+                                        </Button>
+                                    </CardContent>
+                                 </Card>
+                            </div>
                         </div>
-                        <div className="lg:col-span-1">
-                              <Card className="sticky top-24">
-                                 <CardHeader>
-                                     <div className="hidden md:block">
-                                       <p className="text-2xl font-bold">₹{property.price.toLocaleString()}<span className="text-lg font-normal text-muted-foreground">/month</span></p>
-                                       <Badge>{property.propertyType}</Badge>
-                                     </div>
-                                 </CardHeader>
-                                 <CardContent>
-                                     <p className="font-bold mb-2">Owner Details</p>
-                                     {/* Fetch owner details later */}
-                                     <p className="text-sm text-muted-foreground">Contact details will be visible after sending an enquiry.</p>
-                                     <Button className="w-full mt-4" onClick={handleCall}>
-                                         <Phone className="w-4 h-4 mr-2" /> Call Owner
-                                     </Button>
-                                     <Button
-                                       variant="secondary"
-                                       className="w-full mt-2"
-                                       onClick={handleSendEnquiry}
-                                     >
-                                       Send Enquiry
-                                     </Button>
-                                 </CardContent>
-                              </Card>
-                         </div>
+                    </div>
+                    <div className="md:hidden">
+                        <Carousel className="w-full">
+                            <CarouselContent>
+                            {property.imageUrls && property.imageUrls.length > 0 ? (
+                                property.imageUrls.map((url, index) => (
+                                <CarouselItem key={index}>
+                                    <Image src={url} alt={`${property.title} image ${index + 1}`} width={800} height={500} className="w-full h-auto max-h-[500px] object-cover rounded-lg"/>
+                                </CarouselItem>
+                                ))
+                            ) : (
+                                 <CarouselItem>
+                                    <Image src={'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&h=500&auto=format&fit=crop'} alt="Placeholder image" width={800} height={500} className="w-full h-auto object-cover rounded-lg"/>
+                                </CarouselItem>
+                            )}
+                            </CarouselContent>
+                            <CarouselPrevious className="left-4" />
+                            <CarouselNext className="right-4" />
+                        </Carousel>
+                        <div className="mt-8">
+                            <h2 className="text-2xl font-bold mb-4">About this property</h2>
+                            <p className="text-muted-foreground">{property.description}</p>
+                        </div>
+                         <div className="mt-8">
+                            <h2 className="text-2xl font-bold mb-4">Amenities</h2>
+                            <div className="grid grid-cols-2 gap-4">
+                               {/* This should be dynamic based on property.amenities */}
+                               <div className="flex items-center gap-2"><Wifi className="w-5 h-5 text-primary"/><span>WiFi</span></div>
+                               <div className="flex items-center gap-2"><BedDouble className="w-5 h-5 text-primary"/><span>Furnished</span></div>
+                               <div className="flex items-center gap-2"><Bath className="w-5 h-5 text-primary"/><span>Attached Bathroom</span></div>
+                               <div className="flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-primary"/><span>Security</span></div>
+                            </div>
+                        </div>
+                        <div className="mt-8">
+                            <p className="font-bold mb-2">Owner Details</p>
+                            {/* Fetch owner details later */}
+                            <p className="text-sm text-muted-foreground">Contact details will be visible after sending an enquiry.</p>
+                            <Button className="w-full mt-4" onClick={handleCall}>
+                                <Phone className="w-4 h-4 mr-2" /> Call Owner
+                            </Button>
+                            <Button
+                              variant="secondary"
+                              className="w-full mt-2"
+                              onClick={handleSendEnquiry}
+                            >
+                              Send Enquiry
+                            </Button>
+                        </div>
                     </div>
                 </CardContent>
             </Card>
