@@ -51,34 +51,36 @@ export default function Header() {
           {navLinks.map(link => <NavLink key={link.href} {...link} />)}
         </nav>
         <div className="flex items-center gap-2 md:gap-4">
-          {!isUserLoading && (
-            <>
-              {user ? (
-                <>
-                  <Button variant="ghost" asChild>
-                    <Link href="/dashboard">Dashboard</Link>
-                  </Button>
-                  <Button variant="outline" onClick={handleSignOut} size="sm">
-                    <LogOut className="mr-0 md:mr-2 h-4 w-4" />
-                    <span className="hidden md:inline">Sign Out</span>
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button variant="outline" asChild size="sm">
-                    <Link href="/login" className="flex items-center">
-                       <User className="mr-0 sm:mr-2 h-4 w-4" /> <span className="hidden sm:inline">Login</span>
-                    </Link>
-                  </Button>
-                  <Button asChild size="sm">
-                    <Link href="/register" className="flex items-center">
-                      <LogIn className="mr-2 h-4 w-4" /> Register
-                    </Link>
-                  </Button>
-                </>
-              )}
-            </>
-          )}
+          <div className="hidden md:flex">
+            {!isUserLoading && (
+              <>
+                {user ? (
+                  <>
+                    <Button variant="ghost" asChild>
+                      <Link href="/dashboard">Dashboard</Link>
+                    </Button>
+                    <Button variant="outline" onClick={handleSignOut} size="sm">
+                      <LogOut className="mr-0 md:mr-2 h-4 w-4" />
+                      <span className="hidden md:inline">Sign Out</span>
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="outline" asChild size="sm">
+                      <Link href="/login" className="flex items-center">
+                         <User className="mr-0 sm:mr-2 h-4 w-4" /> <span className="hidden sm:inline">Login</span>
+                      </Link>
+                    </Button>
+                    <Button asChild size="sm">
+                      <Link href="/register" className="flex items-center">
+                        <LogIn className="mr-2 h-4 w-4" /> Register
+                      </Link>
+                    </Button>
+                  </>
+                )}
+              </>
+            )}
+          </div>
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="md:hidden">
@@ -98,6 +100,19 @@ export default function Header() {
                       <Link href={link.href}>{link.label}</Link>
                     </SheetClose>
                   ))}
+                 {user && (
+                   <>
+                     <SheetClose asChild>
+                       <Link href="/dashboard">Dashboard</Link>
+                     </SheetClose>
+                     <SheetClose asChild>
+                       <Button variant="ghost" onClick={handleSignOut} className="justify-start">
+                         <LogOut className="mr-2 h-4 w-4" />
+                         Sign Out
+                       </Button>
+                     </SheetClose>
+                   </>
+                 )}
               </nav>
             </SheetContent>
           </Sheet>
