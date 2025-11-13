@@ -173,10 +173,6 @@ function PropertyDetails() {
                          <div>
                              <CardTitle className="text-2xl md:text-3xl font-bold">{property.title}</CardTitle>
                              <CardDescription className="text-md text-muted-foreground mt-2">{property.location}, {property.city}</CardDescription>
-                             <div className="md:hidden mt-4">
-                                 <p className="text-2xl font-bold">₹{property.price.toLocaleString()}<span className="text-lg font-normal text-muted-foreground">/month</span></p>
-                                 <Badge className="mt-2">{property.propertyType}</Badge>
-                             </div>
                          </div>
                          <div className="flex items-center gap-2 mt-4 md:mt-0">
                               <Button variant="outline" size="icon"><Heart className="w-5 h-5" /></Button>
@@ -263,6 +259,10 @@ function PropertyDetails() {
                             <CarouselPrevious className="left-4" />
                             <CarouselNext className="right-4" />
                         </Carousel>
+                        <div className="mt-8">
+                            <p className="text-2xl font-bold">₹{property.price.toLocaleString()}<span className="text-lg font-normal text-muted-foreground">/month</span></p>
+                            <Badge className="mt-2">{property.propertyType}</Badge>
+                        </div>
                         <div className="mt-8">
                             <h2 className="text-2xl font-bold mb-4">About this property</h2>
                             <p className="text-muted-foreground">{property.description}</p>
