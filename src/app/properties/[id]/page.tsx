@@ -168,7 +168,7 @@ function PropertyDetails() {
       <main className="flex-grow py-8 px-4 md:px-8">
         <div className="max-w-6xl mx-auto">
             <Card className="overflow-hidden">
-                 <CardHeader>
+                 <CardHeader className="hidden md:block">
                      <div className="flex flex-col md:flex-row justify-between items-start">
                          <div>
                              <CardTitle className="text-2xl md:text-3xl font-bold">{property.title}</CardTitle>
@@ -259,6 +259,14 @@ function PropertyDetails() {
                             <CarouselPrevious className="left-4" />
                             <CarouselNext className="right-4" />
                         </Carousel>
+                        <div className="mt-8">
+                            <h1 className="text-2xl md:text-3xl font-bold">{property.title}</h1>
+                            <p className="text-md text-muted-foreground mt-2">{property.location}, {property.city}</p>
+                            <div className="flex items-center gap-2 mt-4">
+                                <Button variant="outline" size="icon"><Heart className="w-5 h-5" /></Button>
+                                <Button variant="outline" size="icon"><Share2 className="w-5 h-5" /></Button>
+                            </div>
+                        </div>
                         <div className="mt-8">
                             <p className="text-2xl font-bold">₹{property.price.toLocaleString()}<span className="text-lg font-normal text-muted-foreground">/month</span></p>
                             <Badge className="mt-2">{property.propertyType}</Badge>
