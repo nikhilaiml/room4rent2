@@ -169,17 +169,21 @@ function PropertyDetails() {
         <div className="max-w-6xl mx-auto">
             <Card className="overflow-hidden">
                  <CardHeader>
-                    <div className="flex flex-col md:flex-row justify-between items-start">
-                        <div>
-                            <CardTitle className="text-2xl md:text-3xl font-bold">{property.title}</CardTitle>
-                            <CardDescription className="text-md text-muted-foreground mt-2">{property.location}, {property.city}</CardDescription>
-                        </div>
-                        <div className="flex items-center gap-2 mt-4 md:mt-0">
-                             <Button variant="outline" size="icon"><Heart className="w-5 h-5" /></Button>
-                             <Button variant="outline" size="icon"><Share2 className="w-5 h-5" /></Button>
-                        </div>
-                    </div>
-                </CardHeader>
+                     <div className="flex flex-col md:flex-row justify-between items-start">
+                         <div>
+                             <CardTitle className="text-2xl md:text-3xl font-bold">{property.title}</CardTitle>
+                             <CardDescription className="text-md text-muted-foreground mt-2">{property.location}, {property.city}</CardDescription>
+                             <div className="md:hidden mt-4">
+                                 <p className="text-2xl font-bold">₹{property.price.toLocaleString()}<span className="text-lg font-normal text-muted-foreground">/month</span></p>
+                                 <Badge className="mt-2">{property.propertyType}</Badge>
+                             </div>
+                         </div>
+                         <div className="flex items-center gap-2 mt-4 md:mt-0">
+                              <Button variant="outline" size="icon"><Heart className="w-5 h-5" /></Button>
+                              <Button variant="outline" size="icon"><Share2 className="w-5 h-5" /></Button>
+                         </div>
+                     </div>
+                 </CardHeader>
                 <CardContent>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2">
@@ -216,28 +220,30 @@ function PropertyDetails() {
                             </div>
                         </div>
                         <div className="lg:col-span-1">
-                             <Card className="sticky top-24">
-                                <CardHeader>
-                                    <p className="text-2xl font-bold">₹{property.price.toLocaleString()}<span className="text-lg font-normal text-muted-foreground">/month</span></p>
-                                    <Badge>{property.propertyType}</Badge>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="font-bold mb-2">Owner Details</p>
-                                    {/* Fetch owner details later */}
-                                    <p className="text-sm text-muted-foreground">Contact details will be visible after sending an enquiry.</p>
-                                    <Button className="w-full mt-4" onClick={handleCall}>
-                                        <Phone className="w-4 h-4 mr-2" /> Call Owner
-                                    </Button>
-                                    <Button
-                                      variant="secondary"
-                                      className="w-full mt-2"
-                                      onClick={handleSendEnquiry}
-                                    >
-                                      Send Enquiry
-                                    </Button>
-                                </CardContent>
-                             </Card>
-                        </div>
+                              <Card className="sticky top-24">
+                                 <CardHeader>
+                                     <div className="hidden md:block">
+                                       <p className="text-2xl font-bold">₹{property.price.toLocaleString()}<span className="text-lg font-normal text-muted-foreground">/month</span></p>
+                                       <Badge>{property.propertyType}</Badge>
+                                     </div>
+                                 </CardHeader>
+                                 <CardContent>
+                                     <p className="font-bold mb-2">Owner Details</p>
+                                     {/* Fetch owner details later */}
+                                     <p className="text-sm text-muted-foreground">Contact details will be visible after sending an enquiry.</p>
+                                     <Button className="w-full mt-4" onClick={handleCall}>
+                                         <Phone className="w-4 h-4 mr-2" /> Call Owner
+                                     </Button>
+                                     <Button
+                                       variant="secondary"
+                                       className="w-full mt-2"
+                                       onClick={handleSendEnquiry}
+                                     >
+                                       Send Enquiry
+                                     </Button>
+                                 </CardContent>
+                              </Card>
+                         </div>
                     </div>
                 </CardContent>
             </Card>
