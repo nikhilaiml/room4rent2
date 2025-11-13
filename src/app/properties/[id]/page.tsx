@@ -6,7 +6,6 @@ import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { useDoc } from '@/supabase';
 import Image from 'next/image';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Button } from '@/components/ui/button';
@@ -166,21 +165,21 @@ function PropertyDetails() {
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
       <main className="flex-grow py-8 px-4 md:px-8">
-        <div className="max-w-6xl mx-auto">
-            <Card className="overflow-hidden">
-                 <CardHeader className="hidden md:block">
+        <div className="w-full">
+            <div className="overflow-hidden">
+                 <div className="hidden md:block p-6">
                      <div className="flex flex-col md:flex-row justify-between items-start">
                          <div>
-                             <CardTitle className="text-2xl md:text-3xl font-bold">{property.title}</CardTitle>
-                             <CardDescription className="text-md text-muted-foreground mt-2">{property.location}, {property.city}</CardDescription>
+                             <h1 className="text-2xl md:text-3xl font-bold">{property.title}</h1>
+                             <p className="text-md text-muted-foreground mt-2">{property.location}, {property.city}</p>
                          </div>
                          <div className="flex items-center gap-2 mt-4 md:mt-0">
                               <Button variant="outline" size="icon"><Heart className="w-5 h-5" /></Button>
                               <Button variant="outline" size="icon"><Share2 className="w-5 h-5" /></Button>
                          </div>
                      </div>
-                 </CardHeader>
-                <CardContent>
+                 </div>
+                <div className="p-6">
                     <div className="hidden md:block">
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                             <div className="lg:col-span-2">
@@ -217,12 +216,12 @@ function PropertyDetails() {
                                 </div>
                             </div>
                             <div className="lg:col-span-1">
-                                 <Card className="sticky top-24">
-                                    <CardHeader>
+                                 <div className="sticky top-24 p-6">
+                                    <div>
                                         <p className="text-2xl font-bold">₹{property.price.toLocaleString()}<span className="text-lg font-normal text-muted-foreground">/month</span></p>
                                         <Badge>{property.propertyType}</Badge>
-                                    </CardHeader>
-                                    <CardContent>
+                                    </div>
+                                    <div>
                                         <p className="font-bold mb-2">Owner Details</p>
                                         {/* Fetch owner details later */}
                                         <p className="text-sm text-muted-foreground">Contact details will be visible after sending an enquiry.</p>
@@ -236,8 +235,8 @@ function PropertyDetails() {
                                         >
                                           Send Enquiry
                                         </Button>
-                                    </CardContent>
-                                 </Card>
+                                    </div>
+                                 </div>
                             </div>
                         </div>
                     </div>
@@ -301,8 +300,8 @@ function PropertyDetails() {
                             </Button>
                         </div>
                     </div>
-                </CardContent>
-            </Card>
+                </div>
+            </div>
         </div>
       </main>
       <Footer />
