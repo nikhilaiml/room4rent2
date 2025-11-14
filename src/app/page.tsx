@@ -8,7 +8,7 @@ import Footer from '@/components/footer';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, MapPin } from 'lucide-react';
+import { Search, MapPin, DollarSign, Calendar, ShieldCheck, BarChart3 } from 'lucide-react';
 import placeholderImages from '@/lib/placeholder-images.json';
 import { useCollection } from '@/supabase';
 import React, { useState, useMemo, Suspense, useEffect } from 'react';
@@ -192,9 +192,14 @@ export default function HomePage() {
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold text-center mb-10">Why Choose Us</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {benefits.map(benefit => (
+              {benefits.map((benefit, index) => (
                 <div key={benefit.title} className="text-center p-6">
-                  <Image src={benefit.icon.src} alt={benefit.title} width={60} height={60} className="mx-auto mb-4" data-ai-hint={benefit.icon.hint} />
+                  <div className="mx-auto mb-4 w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                    {index === 0 && <DollarSign className="w-8 h-8 text-primary" />}
+                    {index === 1 && <Calendar className="w-8 h-8 text-primary" />}
+                    {index === 2 && <ShieldCheck className="w-8 h-8 text-primary" />}
+                    {index === 3 && <BarChart3 className="w-8 h-8 text-primary" />}
+                  </div>
                   <h4 className="font-bold text-lg mb-2">{benefit.title}</h4>
                   <p className="text-gray-600 text-sm">{benefit.description}</p>
                 </div>
