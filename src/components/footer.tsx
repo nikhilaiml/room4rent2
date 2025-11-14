@@ -8,8 +8,8 @@ import { Logo } from './logo';
 export default function Footer() {
   return (
     <footer className="bg-gray-800 text-gray-300 pt-8 md:pt-16">
-      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10 px-4">
-        <div className="md:col-span-2 lg:col-span-1">
+      <div className="container mx-auto grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10 px-4">
+        <div className="col-span-2 md:col-span-2 lg:col-span-1">
           <Link href="/" className="flex items-center gap-2 mb-4">
             <Logo className="h-8 md:h-12 text-white" />
           </Link>
@@ -24,7 +24,7 @@ export default function Footer() {
             <Link href="#" className="p-2 bg-gray-700 rounded-full hover:bg-primary transition-colors"><Youtube className="w-5 h-5" /></Link>
           </div>
         </div>
-        <div>
+        <div className="col-span-1">
           <h4 className="font-bold text-white mb-4">Navigator</h4>
           <ul className="space-y-2 text-sm">
             <li><Link href="/about" className="hover:text-primary">About us</Link></li>
@@ -33,7 +33,7 @@ export default function Footer() {
             <li><Link href="/dashboard" className="hover:text-primary">My Account</Link></li>
           </ul>
         </div>
-        <div>
+        <div className="col-span-1">
           <h4 className="font-bold text-white mb-4">Quick Links</h4>
           <ul className="space-y-2 text-sm">
             <li><Link href="#" className="hover:text-primary">Terms of Use</Link></li>
@@ -41,7 +41,7 @@ export default function Footer() {
             <li><Link href="/list-property" className="hover:text-primary">List your property</Link></li>
           </ul>
         </div>
-        <div>
+        <div className="col-span-2 md:col-span-2 lg:col-span-1">
           <h4 className="font-bold text-white mb-4">Newsletter</h4>
           <p className="text-sm mb-4">Sign up for our newsletter to get the latest news and offers.</p>
           <div className="flex">
