@@ -7,11 +7,11 @@ import { Logo } from './logo';
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-800 text-gray-300 pt-16">
-      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 px-4">
+    <footer className="bg-gray-800 text-gray-300 pt-8 md:pt-16">
+      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10 px-4">
         <div className="md:col-span-2 lg:col-span-1">
           <Link href="/" className="flex items-center gap-2 mb-4">
-            <Logo className="h-12 text-white" />
+            <Logo className="h-8 md:h-12 text-white" />
           </Link>
           <p className="text-sm">
             room4rent is an online home rental aggregation platform executing tech based solutions for individuals in need of independent and comfortable living spaces.
@@ -50,7 +50,7 @@ export default function Footer() {
           </div>
         </div>
       </div>
-      <div className="mt-12 py-4 border-t border-gray-700">
+      <div className="mt-8 md:mt-12 py-4 border-t border-gray-700">
         <div className="container mx-auto text-center text-sm">
           <p>&copy; {new Date().getFullYear()} room4rent. All Rights Reserved.</p>
         </div>
