@@ -240,7 +240,7 @@ function PropertyDetails() {
                             </div>
                         </div>
                     </div>
-                    <div className="md:hidden">
+                    <div className="md:hidden p-4">
                         <Carousel className="w-full">
                             <CarouselContent>
                             {property.imageUrls && property.imageUrls.length > 0 ? (
