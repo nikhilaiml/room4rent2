@@ -27,6 +27,7 @@ const propertyFormSchema = z.object({
   city: z.string().min(2, 'City is required'),
   location: z.string().min(3, 'Location is required'),
   price: z.coerce.number().min(0, 'Price must be a positive number'),
+  listingType: z.enum(['Rent', 'Sale']),
   propertyType: z.enum(['Room', '1BHK', '2BHK', 'PG', 'Hostel']),
   securityDeposit: z.coerce.number().min(0, 'Security deposit must be a positive number'),
   forWhom: z.enum(['Family', 'Girls', 'Boys', 'Any']),
@@ -78,6 +79,7 @@ export default function ListPropertyPage() {
       city: '',
       location: '',
       price: 0,
+      listingType: 'Rent',
       propertyType: 'Room',
       securityDeposit: 0,
       forWhom: 'Any',
@@ -409,13 +411,34 @@ export default function ListPropertyPage() {
                     )}
                     />
                  </div>
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="listingType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Listing Type</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isUploading}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select listing type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="Rent">Rent</SelectItem>
+                              <SelectItem value="Sale">Sale</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     <FormField
                     control={form.control}
                     name="price"
                     render={({ field }) => (
                         <FormItem>
-                        <FormLabel>Rent Price (per month)</FormLabel>
+                        <FormLabel>Rent/Sale Price</FormLabel>
                         <FormControl>
                             <Input type="number" placeholder="e.g., 15000" {...field} disabled={isUploading} />
                         </FormControl>
