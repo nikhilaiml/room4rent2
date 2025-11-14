@@ -53,28 +53,23 @@ export default function HomePage() {
   }, []);
   
   const propertiesQuery = useMemo(() => {
+    if (userLocation) {
+      return {
+        table: 'properties',
+        filter: (query: any) => {
+          return query.eq('city', userLocation.toLowerCase());
+        },
+        orderBy: { column: 'createdAt', ascending: false },
+        realtime: true,
+      };
+    }
     return {
       table: 'properties',
-      realtime: true,
-    };
-  }, []);
-
-  const { data: properties, isLoading: isLoadingProperties } = useCollection(propertiesQuery);
-
-  const recommendedPropertiesQuery = useMemo(() => {
-    if (!userLocation) return null;
-    return {
-      table: 'properties',
-      filter: (query: any) => {
-        return query.eq('city', userLocation.toLowerCase());
-      },
-      orderBy: { column: 'createdAt', ascending: false },
-      limit: 6,
       realtime: true,
     };
   }, [userLocation]);
 
-  const { data: recommendedProperties, isLoading: isLoadingRecommended } = useCollection(recommendedPropertiesQuery);
+  const { data: properties, isLoading: isLoadingProperties } = useCollection(propertiesQuery);
 
   const handleSearch = () => {
     const queryParams = new URLSearchParams();
@@ -173,24 +168,14 @@ export default function HomePage() {
         <section className="py-12 bg-white">
           <div className="container mx-auto px-4">
             <h2 className="text-center text-3xl font-bold mb-2">Featured Properties</h2>
-            <p className="text-center text-muted-foreground mb-8">Check out our latest listings.</p>
+            <p className="text-center text-muted-foreground mb-8">
+              {userLocation ? `Properties in ${userLocation}` : 'Check out our latest listings.'}
+            </p>
             <Suspense fallback={<div className="text-center"><p>Loading properties...</p></div>}>
               <PropertiesCarousel properties={properties} isLoading={isLoadingProperties} />
             </Suspense>
           </div>
         </section>
-
-        {userLocation && recommendedProperties && recommendedProperties.length > 0 && (
-          <section className="py-12 bg-gray-50">
-            <div className="container mx-auto px-4">
-              <h2 className="text-center text-3xl font-bold mb-2">Recommended for You</h2>
-              <p className="text-center text-muted-foreground mb-8">Properties in {userLocation} based on your location.</p>
-              <Suspense fallback={<div className="text-center"><p>Loading recommended properties...</p></div>}>
-                <PropertiesCarousel properties={recommendedProperties} isLoading={isLoadingRecommended} />
-              </Suspense>
-            </div>
-          </section>
-        )}
 
         <section className="py-12 bg-primary text-primary-foreground">
            <div className="container mx-auto px-4 text-center">
