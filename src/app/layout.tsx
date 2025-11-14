@@ -7,6 +7,7 @@ import { FirebaseProvider } from '@/firebase/provider';
 import { initializeFirebase } from '@/firebase';
 import { Inter } from 'next/font/google';
 import { useMemo, useEffect, useState } from 'react';
+import LocationPermission from '@/components/LocationPermission';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -37,6 +38,7 @@ export default function RootLayout({
        <body className={`${inter.variable} font-body antialiased`} suppressHydrationWarning={true}>
          <FirebaseProvider firebaseApp={firebaseServices.firebaseApp} auth={firebaseServices.auth} firestore={firebaseServices.firestore}>
            <SupabaseClientProvider>
+             <LocationPermission />
              <main>{children}</main>
            </SupabaseClientProvider>
          </FirebaseProvider>
