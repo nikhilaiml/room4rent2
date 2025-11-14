@@ -10,7 +10,7 @@ import { useUser, useSupabaseClient } from '@/supabase';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-export const PropertyCard = ({ id, title, location, amenities, securityDeposit, price, views, image, rating }: {
+export const PropertyCard = ({ id, title, location, amenities, securityDeposit, price, views, image, rating, listingType }: {
   id: string;
   title: string;
   location: string;
@@ -20,6 +20,7 @@ export const PropertyCard = ({ id, title, location, amenities, securityDeposit, 
   views: number;
   image: { src: string; hint: string };
   rating: number;
+  listingType?: string;
 }) => {
   const { toast } = useToast();
   const { user } = useUser();
@@ -134,7 +135,11 @@ export const PropertyCard = ({ id, title, location, amenities, securityDeposit, 
       <CardContent className="p-0 flex-grow flex flex-col">
         <div className="relative overflow-hidden">
           <Image src={image.src} alt={title} width={400} height={250} className="w-full object-cover h-56 transform group-hover:scale-110 transition-transform duration-500" data-ai-hint={image.hint} />
-          <div className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs px-3 py-1 rounded-full font-bold">For Sale</div>
+          {listingType && (
+            <div className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs px-3 py-1 rounded-full font-bold">
+              {listingType === 'Sale' ? 'For Sale' : 'For Rent'}
+            </div>
+          )}
           <div className="absolute top-3 right-3 flex space-x-1">
              <Button variant="ghost" size="icon" className="w-8 h-8 bg-white/80 hover:bg-white text-gray-700" onClick={handleFavorite}>
                 <Heart className={`w-4 h-4 transition-colors ${isFavorite ? 'text-primary fill-primary' : 'text-gray-500'}`} />

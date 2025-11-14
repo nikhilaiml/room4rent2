@@ -1,3 +1,6 @@
+-- Add listingType column to existing properties table (run this if table already exists)
+-- ALTER TABLE public.properties ADD COLUMN "listingType" TEXT NOT NULL DEFAULT 'Rent' CHECK ("listingType" IN ('Rent', 'Sale'));
+
 -- Drop existing tables to recreate with correct schema
 DROP TABLE IF EXISTS public.messages CASCADE;
 DROP TABLE IF EXISTS public.enquiries CASCADE;
@@ -66,6 +69,7 @@ CREATE TABLE public.properties (
     city TEXT NOT NULL,
     location TEXT NOT NULL,
     price NUMERIC NOT NULL,
+    "listingType" TEXT NOT NULL CHECK ("listingType" IN ('Rent', 'Sale')),
     "propertyType" TEXT NOT NULL CHECK ("propertyType" IN ('Room', '1BHK', '2BHK', 'PG', 'Hostel')),
     "forWhom" TEXT DEFAULT 'Any' CHECK ("forWhom" IN ('Family', 'Girls', 'Boys', 'Any')),
     "securityDeposit" NUMERIC DEFAULT 0,

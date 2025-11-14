@@ -21,6 +21,7 @@ interface Property {
     securityDeposit: number;
     views: number;
     rating: number;
+    listingType: string;
 }
 
 
@@ -77,7 +78,7 @@ function PropertiesList() {
                     {!isLoading && properties && properties.length > 0 && (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {properties.map(prop => (
-                                <PropertyCard 
+                                <PropertyCard
                                     key={prop.id}
                                     id={prop.id}
                                     title={prop.title}
@@ -88,6 +89,7 @@ function PropertiesList() {
                                     views={prop.views || 0}
                                     image={{src: prop.imageUrls?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop', hint: 'property'}}
                                     rating={prop.rating || 4}
+                                    listingType={prop.listingType}
                                 />
                             ))}
                         </div>
