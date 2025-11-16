@@ -37,18 +37,21 @@ export default function HomePage() {
   const [displayedText, setDisplayedText] = useState('');
   const [showCursor, setShowCursor] = useState(true);
   const currentIndexRef = useRef(0);
+  const typingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const cursorIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const typeText = () => {
       const currentText = heroTexts[currentIndexRef.current];
       setDisplayedText('');
       let i = 0;
-      const typingInterval = setInterval(() => {
+      typingIntervalRef.current = setInterval(() => {
         if (i < currentText.length) {
           setDisplayedText(prev => prev + currentText.charAt(i));
           i++;
         } else {
-          clearInterval(typingInterval);
+          clearInterval(typingIntervalRef.current!);
+          typingIntervalRef.current = null;
           setTimeout(() => {
             currentIndexRef.current = (currentIndexRef.current + 1) % heroTexts.length;
             typeText(); // Start typing next text
@@ -59,13 +62,13 @@ export default function HomePage() {
 
     typeText();
 
-    const cursorInterval = setInterval(() => {
+    cursorIntervalRef.current = setInterval(() => {
       setShowCursor(prev => !prev);
     }, 500);
 
     return () => {
-      clearInterval(typingInterval);
-      clearInterval(cursorInterval);
+      if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
+      if (cursorIntervalRef.current) clearInterval(cursorIntervalRef.current);
     };
   }, [heroTexts]);
 
