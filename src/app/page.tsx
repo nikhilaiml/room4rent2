@@ -29,21 +29,36 @@ export default function HomePage() {
   const router = useRouter();
 
   const [heroTitle, setHeroTitle] = useState('');
-  const fullHeroTitle = 'Find Your Dream Apartment';
+  const heroTexts = [
+    'Find Your Dream Home',
+    'Discover Perfect Rentals',
+    'Your Journey Starts Here',
+    'Comfortable Living Awaits'
+  ];
+  const [currentTextIndex, setCurrentTextIndex] = useState(0);
 
   useEffect(() => {
-    setHeroTitle(''); // Reset on component mount
+    const textChangeInterval = setInterval(() => {
+      setCurrentTextIndex(prev => (prev + 1) % heroTexts.length);
+    }, 3000); // Change text every 3 seconds
+
+    return () => clearInterval(textChangeInterval);
+  }, [heroTexts.length]);
+
+  useEffect(() => {
+    setHeroTitle(''); // Reset on text change
+    const currentText = heroTexts[currentTextIndex];
     let i = 0;
     const typingInterval = setInterval(() => {
-      if (i < fullHeroTitle.length) {
-        setHeroTitle(prev => prev + fullHeroTitle.charAt(i));
+      if (i < currentText.length) {
+        setHeroTitle(prev => prev + currentText.charAt(i));
         i++;
       } else {
         clearInterval(typingInterval);
       }
     }, 100);
     return () => clearInterval(typingInterval);
-  }, []);
+  }, [currentTextIndex, heroTexts]);
 
   useEffect(() => {
     const storedLocation = localStorage.getItem('userLocation');
