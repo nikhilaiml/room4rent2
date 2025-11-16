@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Search, MapPin, DollarSign, Calendar, ShieldCheck, BarChart3 } from 'lucide-react';
 import placeholderImages from '@/lib/placeholder-images.json';
 import { useCollection } from '@/supabase';
-import React, { useState, useMemo, Suspense, useEffect } from 'react';
+import React, { useState, useMemo, Suspense, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Bubbles from '@/components/Bubbles';
 
@@ -34,36 +34,40 @@ export default function HomePage() {
     'Your Journey Starts Here',
     'Comfortable Living Awaits'
   ];
-  const [currentTextIndex, setCurrentTextIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState('');
   const [showCursor, setShowCursor] = useState(true);
+  const currentIndexRef = useRef(0);
 
   useEffect(() => {
-    const currentText = heroTexts[currentTextIndex];
-    setDisplayedText('');
-    let i = 0;
-    const typingInterval = setInterval(() => {
-      if (i < currentText.length) {
-        setDisplayedText(currentText.slice(0, i + 1));
-        i++;
-      } else {
-        clearInterval(typingInterval);
-        // After typing, wait then move to next
-        setTimeout(() => {
-          setCurrentTextIndex(prev => (prev + 1) % heroTexts.length);
-        }, 2000); // Pause before next text
-      }
-    }, 100);
+    const typeText = () => {
+      const currentText = heroTexts[currentIndexRef.current];
+      setDisplayedText('');
+      let i = 0;
+      const typingInterval = setInterval(() => {
+        if (i < currentText.length) {
+          setDisplayedText(prev => prev + currentText.charAt(i));
+          i++;
+        } else {
+          clearInterval(typingInterval);
+          setTimeout(() => {
+            currentIndexRef.current = (currentIndexRef.current + 1) % heroTexts.length;
+            typeText(); // Start typing next text
+          }, 2000);
+        }
+      }, 100);
+    };
 
-    return () => clearInterval(typingInterval);
-  }, [currentTextIndex, heroTexts]);
+    typeText();
 
-  useEffect(() => {
     const cursorInterval = setInterval(() => {
       setShowCursor(prev => !prev);
     }, 500);
-    return () => clearInterval(cursorInterval);
-  }, []);
+
+    return () => {
+      clearInterval(typingInterval);
+      clearInterval(cursorInterval);
+    };
+  }, [heroTexts]);
 
   useEffect(() => {
     const storedLocation = localStorage.getItem('userLocation');
