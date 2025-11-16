@@ -36,41 +36,53 @@ export default function HomePage() {
   ];
   const [displayedText, setDisplayedText] = useState('');
   const [showCursor, setShowCursor] = useState(true);
-  const currentIndexRef = useRef(0);
-  const typingIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const cursorIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    const typeText = () => {
-      const currentText = heroTexts[currentIndexRef.current];
-      setDisplayedText('');
-      let i = 0;
-      typingIntervalRef.current = setInterval(() => {
-        if (i < currentText.length) {
-          setDisplayedText(prev => prev + currentText.charAt(i));
-          i++;
+    let currentIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    let pauseCounter = 0;
+    const pauseDuration = 20; // 2 seconds at 100ms interval
+
+    const typeWriter = () => {
+      const currentText = heroTexts[currentIndex];
+
+      if (pauseCounter > 0) {
+        pauseCounter--;
+        return;
+      }
+
+      if (!isDeleting) {
+        if (charIndex < currentText.length) {
+          setDisplayedText(currentText.slice(0, charIndex + 1));
+          charIndex++;
         } else {
-          clearInterval(typingIntervalRef.current!);
-          typingIntervalRef.current = null;
-          setTimeout(() => {
-            currentIndexRef.current = (currentIndexRef.current + 1) % heroTexts.length;
-            typeText(); // Start typing next text
-          }, 2000);
+          pauseCounter = pauseDuration; // Start pause
+          isDeleting = true;
         }
-      }, 100);
+      } else {
+        if (charIndex > 0) {
+          setDisplayedText(currentText.slice(0, charIndex - 1));
+          charIndex--;
+        } else {
+          isDeleting = false;
+          currentIndex = (currentIndex + 1) % heroTexts.length;
+          charIndex = 0;
+        }
+      }
     };
 
-    typeText();
+    const interval = setInterval(typeWriter, 100);
 
-    cursorIntervalRef.current = setInterval(() => {
+    const cursorInterval = setInterval(() => {
       setShowCursor(prev => !prev);
     }, 500);
 
     return () => {
-      if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
-      if (cursorIntervalRef.current) clearInterval(cursorIntervalRef.current);
+      clearInterval(interval);
+      clearInterval(cursorInterval);
     };
-  }, [heroTexts]);
+  }, []);
 
   useEffect(() => {
     const storedLocation = localStorage.getItem('userLocation');
