@@ -39,7 +39,7 @@ export default function HomePage() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTextIndex(prev => (prev + 1) % heroTexts.length);
-    }, 3000); // Change text every 3 seconds
+    }, 4000); // Change text every 4 seconds
 
     return () => clearInterval(interval);
   }, [heroTexts.length]);
@@ -95,7 +95,7 @@ export default function HomePage() {
             <div className="absolute inset-0 bg-black bg-opacity-50"></div>
             <Bubbles />
             <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
-                 <h1 className="text-4xl md:text-5xl font-bold animate-in fade-in slide-in-from-top-10 duration-700 transition-opacity duration-1000">{heroTexts[currentTextIndex]}</h1>
+                 <h1 key={currentTextIndex} className="text-4xl md:text-5xl font-bold animate-in slide-in-from-left-10 duration-1000">{heroTexts[currentTextIndex]}</h1>
                  <p className="mt-2 md:mt-4 text-lg md:text-xl max-w-2xl animate-in fade-in slide-in-from-top-12 duration-700 delay-500">We are a recognized real estate agency</p>
             </div>
             <div className="relative z-10 p-4 w-full max-w-5xl mx-auto -mt-20 md:-mt-16 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
