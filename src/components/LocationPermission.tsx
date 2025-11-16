@@ -10,15 +10,25 @@ export default function LocationPermission() {
   const [userLocation, setUserLocation] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if location permission was already requested
-    const locationRequested = localStorage.getItem('locationRequested');
     const storedLocation = localStorage.getItem('userLocation');
 
     if (storedLocation) {
       setUserLocation(storedLocation);
-    } else if (!locationRequested) {
-      // Show dialog if not requested before
-      setShowDialog(true);
+    } else {
+      // Check geolocation permission status
+      if ('permissions' in navigator) {
+        navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+          if (result.state !== 'granted') {
+            setShowDialog(true);
+          }
+        }).catch(() => {
+          // If permissions API fails, show dialog
+          setShowDialog(true);
+        });
+      } else {
+        // Fallback for browsers without permissions API
+        setShowDialog(true);
+      }
     }
   }, []);
 
@@ -42,25 +52,21 @@ export default function LocationPermission() {
             setShowDialog(false);
           } catch (error) {
             console.error('Error getting location:', error);
-            localStorage.setItem('locationRequested', 'true');
             setShowDialog(false);
           }
         },
         (error) => {
           console.error('Geolocation error:', error);
-          localStorage.setItem('locationRequested', 'true');
           setShowDialog(false);
         }
       );
     } else {
       alert('Geolocation is not supported by this browser.');
-      localStorage.setItem('locationRequested', 'true');
       setShowDialog(false);
     }
   };
 
   const denyLocation = () => {
-    localStorage.setItem('locationRequested', 'true');
     setShowDialog(false);
   };
 
