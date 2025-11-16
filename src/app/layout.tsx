@@ -8,6 +8,7 @@ import { initializeFirebase } from '@/firebase';
 import { Inter } from 'next/font/google';
 import { useMemo, useEffect, useState } from 'react';
 import LocationPermission from '@/components/LocationPermission';
+import Loading from '@/components/Loading';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -27,7 +28,7 @@ export default function RootLayout({
     return (
       <html lang="en" suppressHydrationWarning={true}>
         <body className={`${inter.variable} font-body antialiased`} suppressHydrationWarning={true}>
-          <div>Loading...</div>
+          <Loading />
         </body>
       </html>
     );
