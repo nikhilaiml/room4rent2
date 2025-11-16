@@ -35,14 +35,35 @@ export default function HomePage() {
     'Comfortable Living Awaits'
   ];
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
+  const [displayedText, setDisplayedText] = useState('');
+  const [showCursor, setShowCursor] = useState(true);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTextIndex(prev => (prev + 1) % heroTexts.length);
-    }, 4000); // Change text every 4 seconds
+    const currentText = heroTexts[currentTextIndex];
+    setDisplayedText('');
+    let i = 0;
+    const typingInterval = setInterval(() => {
+      if (i < currentText.length) {
+        setDisplayedText(currentText.slice(0, i + 1));
+        i++;
+      } else {
+        clearInterval(typingInterval);
+        // After typing, wait then move to next
+        setTimeout(() => {
+          setCurrentTextIndex(prev => (prev + 1) % heroTexts.length);
+        }, 2000); // Pause before next text
+      }
+    }, 100);
 
-    return () => clearInterval(interval);
-  }, [heroTexts.length]);
+    return () => clearInterval(typingInterval);
+  }, [currentTextIndex, heroTexts]);
+
+  useEffect(() => {
+    const cursorInterval = setInterval(() => {
+      setShowCursor(prev => !prev);
+    }, 500);
+    return () => clearInterval(cursorInterval);
+  }, []);
 
   useEffect(() => {
     const storedLocation = localStorage.getItem('userLocation');
@@ -95,7 +116,7 @@ export default function HomePage() {
             <div className="absolute inset-0 bg-black bg-opacity-50"></div>
             <Bubbles />
             <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
-                 <h1 key={currentTextIndex} className="text-4xl md:text-5xl font-bold animate-in slide-in-from-left-10 duration-1000">{heroTexts[currentTextIndex]}</h1>
+                 <h1 className="text-4xl md:text-5xl font-bold">{displayedText}<span className={`inline-block w-1 h-12 bg-white ml-1 ${showCursor ? 'opacity-100' : 'opacity-0'} transition-opacity duration-100`}></span></h1>
                  <p className="mt-2 md:mt-4 text-lg md:text-xl max-w-2xl animate-in fade-in slide-in-from-top-12 duration-700 delay-500">We are a recognized real estate agency</p>
             </div>
             <div className="relative z-10 p-4 w-full max-w-5xl mx-auto -mt-20 md:-mt-16 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
