@@ -140,8 +140,8 @@ export default function HomePage() {
             </div>
             <div className="relative z-10 p-4 w-full max-w-5xl mx-auto -mt-20 md:-mt-16 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
                 <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-2xl p-4 md:p-6 hover:bg-white focus-within:bg-white transition-colors duration-300">
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-                        <div className="md:col-span-2">
+                    <div className="grid grid-cols-3 md:grid-cols-3 gap-4 items-end">
+                        <div>
                             <label htmlFor="location" className="text-sm font-semibold text-gray-700">Location</label>
                             <div className="relative">
                                 <Input id="location" placeholder="Enter an address, state, city, or zip code" className="text-black" value={location} onChange={(e) => setLocation(e.target.value)} />
@@ -149,39 +149,16 @@ export default function HomePage() {
                         </div>
                         <div>
                             <label htmlFor="property-type" className="text-sm font-semibold text-gray-700">Property Type</label>
-                            <Select onValueChange={setPropertyType} defaultValue="all">
-                                <SelectTrigger className="text-black">
-                                    <SelectValue placeholder="All Types" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Types</SelectItem>
-                                    <SelectItem value="Room">Room</SelectItem>
-                                    <SelectItem value="1BHK">1BHK</SelectItem>
-                                    <SelectItem value="2BHK">2BHK</SelectItem>
-                                    <SelectItem value="PG">PG</SelectItem>
-                                    <SelectItem value="Hostel">Hostel</SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <Input id="property-type" placeholder="All Types" className="text-black" value={propertyType} onChange={(e) => setPropertyType(e.target.value)} />
                         </div>
                         <div>
-                           <label htmlFor="for-whom" className="text-sm font-semibold text-gray-700">For Whom</label>
-                            <Select onValueChange={setForWhom} defaultValue="all">
-                                <SelectTrigger className="text-black">
-                                    <SelectValue placeholder="Anyone" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">Anyone</SelectItem>
-                                    <SelectItem value="Male">Male</SelectItem>
-                                    <SelectItem value="Female">Female</SelectItem>
-                                    <SelectItem value="Student">Student</SelectItem>
-                                    <SelectItem value="Family">Family</SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <label htmlFor="for-whom" className="text-sm font-semibold text-gray-700">For Whom</label>
+                            <Input id="for-whom" placeholder="Anyone" className="text-black" value={forWhom} onChange={(e) => setForWhom(e.target.value)} />
                         </div>
-                        <Button className="w-full h-12 text-base font-bold" onClick={handleSearch}>
-                            Search
-                        </Button>
                     </div>
+                    <Button className="w-full h-12 text-base font-bold" onClick={handleSearch}>
+                        Search
+                    </Button>
                 </div>
             </div>
         </section>
