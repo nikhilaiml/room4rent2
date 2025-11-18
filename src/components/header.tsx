@@ -4,11 +4,13 @@ import Link from 'next/link';
 import { useUser, useAuth } from '@/supabase';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
-import { User, LogIn, LogOut, Menu } from 'lucide-react';
+import { Input } from './ui/input';
+import { User, LogIn, LogOut, Menu, Search } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 import { Logo } from './logo';
+import { useState } from 'react';
 
 
 export default function Header() {
@@ -16,10 +18,18 @@ export default function Header() {
   const auth = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleSignOut = async () => {
     await auth.signOut();
     router.push('/');
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/properties?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
   };
   
   const navLinks = [
@@ -47,6 +57,18 @@ export default function Header() {
         <Link href="/" className="flex items-center gap-2">
           <Logo />
         </Link>
+        <form onSubmit={handleSearch} className="hidden md:flex items-center gap-2 flex-1 max-w-md mx-4">
+          <Input
+            type="text"
+            placeholder="Search properties or cities..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1"
+          />
+          <Button type="submit" size="sm">
+            <Search className="h-4 w-4" />
+          </Button>
+        </form>
         <nav className="hidden md:flex items-center gap-6">
           {navLinks.map(link => <NavLink key={link.href} {...link} />)}
         </nav>

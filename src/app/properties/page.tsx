@@ -27,10 +27,11 @@ interface Property {
 
 function PropertiesList() {
     const searchParams = useSearchParams();
-    
+
     const location = searchParams.get('location');
     const propertyType = searchParams.get('propertyType');
     const forWhom = searchParams.get('forWhom');
+    const q = searchParams.get('q');
 
     const propertiesQuery = useMemo(() => {
         return {
@@ -47,16 +48,22 @@ function PropertiesList() {
                 if (forWhom) {
                     q = q.eq('forWhom', forWhom);
                 }
+                if (q) {
+                    q = q.or(`title.ilike.%${q}%,location.ilike.%${q}%`);
+                }
                 return q;
             },
             orderBy: { column: 'createdAt', ascending: false },
             realtime: true,
         };
-    }, [location, propertyType, forWhom]);
+    }, [location, propertyType, forWhom, q]);
 
     const { data: properties, isLoading } = useCollection<Property>(propertiesQuery);
 
     const getTitle = () => {
+        if (q) {
+            return `Search results for "${q}"`;
+        }
         if (location || propertyType || forWhom) {
             return 'Properties matching your search';
         }
