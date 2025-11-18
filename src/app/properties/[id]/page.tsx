@@ -181,30 +181,30 @@ function PropertyDetails() {
                  </div>
                 <div className="p-0 md:p-6">
                     <div className="hidden md:block">
+                        <Carousel className="w-full mb-8">
+                            <CarouselContent>
+                            {property.imageUrls && property.imageUrls.length > 0 ? (
+                                property.imageUrls.map((url, index) => (
+                                <CarouselItem key={index}>
+                                    <Image src={url} alt={`${property.title} image ${index + 1}`} width={1200} height={800} className="w-full h-auto max-h-[800px] object-cover"/>
+                                </CarouselItem>
+                                ))
+                            ) : (
+                                 <CarouselItem>
+                                    <Image src={'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200&h=800&auto=format&fit=crop'} alt="Placeholder image" width={1200} height={800} className="w-full h-auto object-cover"/>
+                                </CarouselItem>
+                            )}
+                            </CarouselContent>
+                            <CarouselPrevious className="left-4" />
+                            <CarouselNext className="right-4" />
+                        </Carousel>
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                             <div className="lg:col-span-2">
-                                 <Carousel className="w-full">
-                                    <CarouselContent>
-                                    {property.imageUrls && property.imageUrls.length > 0 ? (
-                                        property.imageUrls.map((url, index) => (
-                                        <CarouselItem key={index}>
-                                            <Image src={url} alt={`${property.title} image ${index + 1}`} width={800} height={700} className="w-full h-auto max-h-[700px] object-cover rounded-lg"/>
-                                        </CarouselItem>
-                                        ))
-                                    ) : (
-                                         <CarouselItem>
-                                            <Image src={'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&h=700&auto=format&fit=crop'} alt="Placeholder image" width={800} height={700} className="w-full h-auto object-cover rounded-lg"/>
-                                        </CarouselItem>
-                                    )}
-                                    </CarouselContent>
-                                    <CarouselPrevious className="left-4" />
-                                    <CarouselNext className="right-4" />
-                                </Carousel>
-                                <div className="mt-8">
+                                <div className="mb-8">
                                     <h2 className="text-2xl font-bold mb-4">About this property</h2>
                                     <p className="text-muted-foreground">{property.description}</p>
                                 </div>
-                                 <div className="mt-8">
+                                <div className="mb-8">
                                     <h2 className="text-2xl font-bold mb-4">Amenities</h2>
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                        {/* This should be dynamic based on property.amenities */}
@@ -216,10 +216,10 @@ function PropertyDetails() {
                                 </div>
                             </div>
                             <div className="lg:col-span-1">
-                                 <div className="sticky top-24 p-6">
-                                    <div>
-                                        <p className="text-2xl font-bold">₹{property.price.toLocaleString()}<span className="text-lg font-normal text-muted-foreground">/month</span></p>
-                                        <Badge>{property.propertyType}</Badge>
+                                <div className="bg-white p-6 rounded-lg shadow-md">
+                                    <div className="mb-6">
+                                        <p className="text-3xl font-bold text-primary">₹{property.price.toLocaleString()}<span className="text-lg font-normal text-muted-foreground">/month</span></p>
+                                        <Badge className="mt-2">{property.propertyType}</Badge>
                                     </div>
                                     <div>
                                         <p className="font-bold mb-2">Owner Details</p>
@@ -236,7 +236,7 @@ function PropertyDetails() {
                                           Send Enquiry
                                         </Button>
                                     </div>
-                                 </div>
+                                </div>
                             </div>
                         </div>
                     </div>
