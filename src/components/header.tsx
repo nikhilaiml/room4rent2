@@ -122,6 +122,22 @@ export default function Header() {
                       <Link href={link.href}>{link.label}</Link>
                     </SheetClose>
                   ))}
+                 {!user && (
+                   <>
+                     <SheetClose asChild>
+                       <Link href="/login" className="flex items-center gap-2">
+                         <User className="h-4 w-4" />
+                         Login
+                       </Link>
+                     </SheetClose>
+                     <SheetClose asChild>
+                       <Link href="/register" className="flex items-center gap-2">
+                         <LogIn className="h-4 w-4" />
+                         Register
+                       </Link>
+                     </SheetClose>
+                   </>
+                 )}
                  {user && (
                    <>
                      <SheetClose asChild>

@@ -35,6 +35,7 @@ function PropertyDetails() {
   const supabase = useSupabaseClient();
   const [chatEnquiryId, setChatEnquiryId] = useState<string | null>(null);
   const [showChat, setShowChat] = useState(false);
+  const [ownerDetails, setOwnerDetails] = useState<any>(null);
 
   const propertyRef = useMemo(() => {
     if (!id) return null;
@@ -143,13 +144,24 @@ function PropertyDetails() {
 
       if (enquiryError) throw enquiryError;
 
+      // Fetch owner details
+      const { data: owner, error: ownerError } = await supabase
+        .from('users')
+        .select('name, email')
+        .eq('id', (property as any).ownerId)
+        .single();
+
+      if (!ownerError && owner) {
+        setOwnerDetails(owner);
+      }
+
       // Open chat with the enquiry ID
       setChatEnquiryId(enquiryData.id);
       setShowChat(true);
 
       toast({
         title: "Enquiry Sent",
-        description: "Your enquiry has been sent. You can now chat with the owner. Open dashboard for chat.",
+        description: "Your enquiry has been sent. Owner details are now visible. You can now chat with the owner.",
       });
     } catch (error) {
       console.error('Error sending enquiry:', error);
@@ -223,8 +235,14 @@ function PropertyDetails() {
                                     </div>
                                     <div>
                                         <p className="font-bold mb-2">Owner Details</p>
-                                        {/* Fetch owner details later */}
-                                        <p className="text-sm text-muted-foreground">Contact details will be visible after sending an enquiry.</p>
+                                        {ownerDetails ? (
+                                          <div className="text-sm">
+                                            <p><strong>Name:</strong> {ownerDetails.name}</p>
+                                            <p><strong>Email:</strong> {ownerDetails.email}</p>
+                                          </div>
+                                        ) : (
+                                          <p className="text-sm text-muted-foreground">Contact details will be visible after sending an enquiry.</p>
+                                        )}
                                         <Button className="w-full mt-4" onClick={handleCall}>
                                             <Phone className="w-4 h-4 mr-2" /> Call Owner
                                         </Button>
@@ -246,12 +264,12 @@ function PropertyDetails() {
                             {property.imageUrls && property.imageUrls.length > 0 ? (
                                 property.imageUrls.map((url, index) => (
                                 <CarouselItem key={index}>
-                                    <Image src={url} alt={`${property.title} image ${index + 1}`} width={800} height={500} className="w-full h-auto max-h-[500px] object-cover rounded-lg"/>
+                                    <Image src={url} alt={`${property.title} image ${index + 1}`} width={800} height={600} className="w-full h-auto object-cover rounded-lg"/>
                                 </CarouselItem>
                                 ))
                             ) : (
                                  <CarouselItem>
-                                    <Image src={'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&h=500&auto=format&fit=crop'} alt="Placeholder image" width={800} height={500} className="w-full h-auto object-cover rounded-lg"/>
+                                    <Image src={'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&h=600&auto=format&fit=crop'} alt="Placeholder image" width={800} height={600} className="w-full h-auto object-cover rounded-lg"/>
                                 </CarouselItem>
                             )}
                             </CarouselContent>
@@ -286,8 +304,14 @@ function PropertyDetails() {
                         </div>
                         <div className="mt-4">
                             <p className="font-bold mb-2">Owner Details</p>
-                            {/* Fetch owner details later */}
-                            <p className="text-sm text-muted-foreground">Contact details will be visible after sending an enquiry.</p>
+                            {ownerDetails ? (
+                              <div className="text-sm">
+                                <p><strong>Name:</strong> {ownerDetails.name}</p>
+                                <p><strong>Email:</strong> {ownerDetails.email}</p>
+                              </div>
+                            ) : (
+                              <p className="text-sm text-muted-foreground">Contact details will be visible after sending an enquiry.</p>
+                            )}
                             <Button className="w-full mt-4" onClick={handleCall}>
                                 <Phone className="w-4 h-4 mr-2" /> Call Owner
                             </Button>
