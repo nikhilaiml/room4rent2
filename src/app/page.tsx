@@ -112,13 +112,14 @@ export default function HomePage() {
         realtime: true,
       };
     }
-    return {
-      table: 'properties',
-      realtime: true,
-    };
+    return null;
   }, [userLocation]);
 
-  const { data: properties, isLoading: isLoadingProperties } = useCollection(propertiesQuery);
+  const { data: properties, isLoading: isLoadingProperties } = useCollection(propertiesQuery || {
+    table: 'properties',
+    filter: (query: any) => query.eq('id', 'nonexistent'),
+    realtime: true,
+  });
 
   const handleSearch = () => {
     const queryParams = new URLSearchParams();
