@@ -49,6 +49,7 @@ export default function LocationPermission() {
             localStorage.setItem('userLocation', city);
             localStorage.setItem('locationRequested', 'true');
             setUserLocation(city);
+            window.dispatchEvent(new CustomEvent('locationUpdated', { detail: city }));
             setShowDialog(false);
           } catch (error) {
             console.error('Error getting location:', error);

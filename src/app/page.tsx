@@ -89,7 +89,16 @@ export default function HomePage() {
     const storedLocation = localStorage.getItem('userLocation');
     if (storedLocation) {
       setUserLocation(storedLocation);
+      setLocation(storedLocation);
     }
+  }, []);
+
+  useEffect(() => {
+    const handleLocationUpdate = (event: any) => {
+      setLocation(event.detail);
+    };
+    window.addEventListener('locationUpdated', handleLocationUpdate);
+    return () => window.removeEventListener('locationUpdated', handleLocationUpdate);
   }, []);
   
   const propertiesQuery = useMemo(() => {
