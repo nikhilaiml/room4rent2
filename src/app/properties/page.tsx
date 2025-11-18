@@ -40,7 +40,7 @@ function PropertiesList() {
                 let q = query;
                 if (location) {
                     const searchLocation = location.toLowerCase();
-                    q = q.eq('location', searchLocation);
+                    q = q.eq('city', searchLocation);
                 }
                 if (propertyType) {
                     q = q.eq('propertyType', propertyType);
@@ -50,7 +50,7 @@ function PropertiesList() {
                 }
                 if (searchQuery) {
                     const lowerQuery = searchQuery.toLowerCase();
-                    q = q.or(`title.ilike.%${lowerQuery}%,location.ilike.%${lowerQuery}%`);
+                    q = q.or(`title.ilike.%${lowerQuery}%,city.ilike.%${lowerQuery}%,location.ilike.%${lowerQuery}%`);
                 }
                 return q;
             },
