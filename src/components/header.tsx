@@ -57,7 +57,7 @@ export default function Header() {
         <Link href="/" className="flex items-center gap-2">
           <Logo />
         </Link>
-        <form onSubmit={handleSearch} className="hidden md:flex items-center gap-2 flex-1 max-w-md mx-4">
+        <form onSubmit={handleSearch} className="flex items-center gap-2 flex-1 max-w-sm mx-2">
           <Input
             type="text"
             placeholder="Search properties or cities..."
