@@ -14,6 +14,7 @@ import { useCollection } from '@/supabase';
 import React, { useState, useMemo, Suspense, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Bubbles from '@/components/Bubbles';
+import { PropertyCard } from '@/components/PropertyCard';
 
 const cities = placeholderImages.cities;
 const testimonials = placeholderImages.testimonials;
@@ -23,16 +24,16 @@ const PropertiesCarousel = React.lazy(() => import('@/components/PropertiesCarou
 
 export default function HomePage() {
   const [location, setLocation] = useState('');
-  const [propertyType, setPropertyType] = useState('all');
-  const [forWhom, setForWhom] = useState('all');
+  const [checkIn, setCheckIn] = useState('');
+  const [checkOut, setCheckOut] = useState('');
   const [userLocation, setUserLocation] = useState<string | null>(null);
   const router = useRouter();
 
   const heroTexts = [
-    'Find Your Dream Home',
-    'Discover Perfect Rentals',
-    'Your Journey Starts Here',
-    'Comfortable Living Awaits'
+    'Find Your Perfect Room',
+    'Discover Amazing Rentals',
+    'Your Stay Starts Here',
+    'Comfortable Rooms Await'
   ];
   const [displayedText, setDisplayedText] = useState('');
   const [showCursor, setShowCursor] = useState(true);
@@ -113,8 +114,8 @@ export default function HomePage() {
   const handleSearch = () => {
     const queryParams = new URLSearchParams();
     if (location) queryParams.set('location', location);
-    if (propertyType && propertyType !== 'all') queryParams.set('propertyType', propertyType);
-    if (forWhom && forWhom !== 'all') queryParams.set('forWhom', forWhom);
+    if (checkIn) queryParams.set('checkIn', checkIn);
+    if (checkOut) queryParams.set('checkOut', checkOut);
     router.push(`/properties?${queryParams.toString()}`);
   };
 
@@ -136,7 +137,7 @@ export default function HomePage() {
             <Bubbles />
             <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
                  <h1 className="text-4xl md:text-5xl font-bold">{displayedText}<span className={`inline-block w-1 h-12 bg-white ml-1 ${showCursor ? 'opacity-100' : 'opacity-0'} transition-opacity duration-100`}></span></h1>
-                 <p className="mt-2 md:mt-4 text-lg md:text-xl max-w-2xl animate-in fade-in slide-in-from-top-12 duration-700 delay-500">We are a recognized real estate agency</p>
+                 <p className="mt-2 md:mt-4 text-lg md:text-xl max-w-2xl animate-in fade-in slide-in-from-top-12 duration-700 delay-500">Book rooms online with ease</p>
             </div>
             <div className="relative z-10 p-4 w-full max-w-5xl mx-auto -mt-20 md:-mt-16 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
                 <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-2xl p-4 md:p-6 hover:bg-white focus-within:bg-white transition-colors duration-300">
@@ -144,20 +145,20 @@ export default function HomePage() {
                         <div>
                             <label htmlFor="location" className="text-sm font-semibold text-gray-700">Location</label>
                             <div className="relative">
-                                <Input id="location" placeholder="Enter an address, state, city, or zip code" className="text-black" value={location} onChange={(e) => setLocation(e.target.value)} />
+                                <Input id="location" placeholder="Enter city or location" className="text-black" value={location} onChange={(e) => setLocation(e.target.value)} />
                             </div>
                         </div>
                         <div>
-                            <label htmlFor="property-type" className="text-sm font-semibold text-gray-700">Property Type</label>
-                            <Input id="property-type" placeholder="All Types" className="text-black" value={propertyType} onChange={(e) => setPropertyType(e.target.value)} />
+                            <label htmlFor="check-in" className="text-sm font-semibold text-gray-700">Check-in</label>
+                            <Input id="check-in" type="date" className="text-black" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} />
                         </div>
                         <div>
-                            <label htmlFor="for-whom" className="text-sm font-semibold text-gray-700">For Whom</label>
-                            <Input id="for-whom" placeholder="Anyone" className="text-black" value={forWhom} onChange={(e) => setForWhom(e.target.value)} />
+                            <label htmlFor="check-out" className="text-sm font-semibold text-gray-700">Check-out</label>
+                            <Input id="check-out" type="date" className="text-black" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} />
                         </div>
                     </div>
                     <Button className="w-full h-12 text-base font-bold" onClick={handleSearch}>
-                        Search
+                        Search Rooms
                     </Button>
                 </div>
             </div>
@@ -188,21 +189,61 @@ export default function HomePage() {
               {userLocation ? `Properties in ${userLocation}` : 'Check out our latest listings.'}
             </p>
             <Suspense fallback={<div className="text-center"><p>Loading properties...</p></div>}>
-              <PropertiesCarousel properties={properties} isLoading={isLoadingProperties} />
+              {isLoadingProperties ? (
+                <div className="text-center"><p>Loading properties...</p></div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {properties?.slice(0, 6).map((prop) => (
+                    <PropertyCard
+                      key={prop.id}
+                      id={prop.id}
+                      title={prop.title}
+                      location={prop.location}
+                      amenities={prop.amenities || ''}
+                      securityDeposit={prop.securityDeposit || 0}
+                      price={prop.price}
+                      views={prop.views || 0}
+                      image={{ src: prop.imageUrls?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop', hint: 'property' }}
+                      rating={prop.rating || 4}
+                      listingType={prop.listingType}
+                    />
+                  ))}
+                </div>
+              )}
             </Suspense>
           </div>
         </section>
 
         <section className="py-12 bg-primary text-primary-foreground">
            <div className="container mx-auto px-4 text-center">
-             <h2 className="text-3xl font-bold mb-2">Discover Popular Properties</h2>
-             <p className="mb-8">Explore the most sought-after properties in our portfolio.</p>
-             {/* You can re-use the carousel or show different properties here */}
-             <Suspense fallback={<div className="text-center"><p>Loading properties...</p></div>}>
-              <PropertiesCarousel properties={properties} isLoading={isLoadingProperties} />
-            </Suspense>
-           </div>
-        </section>
+              <h2 className="text-3xl font-bold mb-2">Discover Popular Properties</h2>
+              <p className="mb-8">Explore the most sought-after properties in our portfolio.</p>
+              {/* You can re-use the carousel or show different properties here */}
+              <Suspense fallback={<div className="text-center"><p>Loading properties...</p></div>}>
+                {isLoadingProperties ? (
+                  <div className="text-center"><p>Loading properties...</p></div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {properties?.slice(0, 6).map((prop) => (
+                      <PropertyCard
+                        key={prop.id}
+                        id={prop.id}
+                        title={prop.title}
+                        location={prop.location}
+                        amenities={prop.amenities || ''}
+                        securityDeposit={prop.securityDeposit || 0}
+                        price={prop.price}
+                        views={prop.views || 0}
+                        image={{ src: prop.imageUrls?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop', hint: 'property' }}
+                        rating={prop.rating || 4}
+                        listingType={prop.listingType}
+                      />
+                    ))}
+                  </div>
+                )}
+              </Suspense>
+            </div>
+         </section>
 
         <section className="py-16 bg-background">
           <div className="container mx-auto px-4">
