@@ -52,7 +52,7 @@ export default function Header() {
   );
 
   return (
-    <header className="bg-white/80 backdrop-blur-md border-b border-border sticky top-0 z-50">
+    <header className="bg-white border-b border-border sticky top-0 z-50">
       <div className="container mx-auto flex items-center justify-between p-4 h-20">
         <Link href="/" className="flex items-center gap-2">
           <Logo />
