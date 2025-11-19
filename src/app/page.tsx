@@ -117,11 +117,7 @@ export default function HomePage() {
     return null;
   }, [userLocation]);
 
-  const { data: properties, isLoading: isLoadingProperties } = useCollection(propertiesQuery || {
-    table: 'properties',
-    orderBy: { column: 'createdAt', ascending: false },
-    realtime: true,
-  });
+  const { data: properties, isLoading: isLoadingProperties } = useCollection(propertiesQuery);
 
   const handleSearch = () => {
     const queryParams = new URLSearchParams();
@@ -198,14 +194,16 @@ export default function HomePage() {
           <div className="container mx-auto px-4">
             <h2 className="text-center text-3xl font-bold mb-2">Featured Properties</h2>
             <p className="text-center text-muted-foreground mb-8">
-              {userLocation ? `Properties in ${userLocation}` : 'Check out our latest listings.'}
+              {userLocation ? `Properties in ${userLocation}` : 'Enable location services to see properties in your area.'}
             </p>
             <Suspense fallback={<div className="text-center"><p>Loading properties...</p></div>}>
               {isLoadingProperties ? (
                 <div className="text-center"><p>Loading properties...</p></div>
+              ) : !properties || properties.length === 0 ? (
+                <div className="text-center"><p>No properties found in your location. Try searching for properties in other cities.</p></div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {properties?.slice(0, 6).map((prop) => (
+                  {properties.slice(0, 6).map((prop) => (
                     <PropertyCard
                       key={prop.id}
                       id={prop.id}
@@ -233,9 +231,11 @@ export default function HomePage() {
               <Suspense fallback={<div className="text-center"><p>Loading properties...</p></div>}>
                 {isLoadingProperties ? (
                   <div className="text-center"><p>Loading properties...</p></div>
+                ) : !properties || properties.length === 0 ? (
+                  <div className="text-center"><p>No properties found in your location. Try searching for properties in other cities.</p></div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {properties?.slice(0, 6).map((prop) => (
+                    {properties.slice(0, 6).map((prop) => (
                       <PropertyCard
                         key={prop.id}
                         id={prop.id}
