@@ -9,6 +9,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useCollection } from '@/supabase';
 import { useMemo } from 'react';
 import { PropertyCard } from '@/components/PropertyCard';
+import { PropertyListItem } from '@/components/PropertyListItem';
 import PropertyFilters from '@/components/PropertyFilters';
 import { Button } from '@/components/ui/button';
 import { SlidersHorizontal, Grid, List } from 'lucide-react';
@@ -249,18 +250,33 @@ function PropertiesList() {
                                         : "space-y-4"
                                 }>
                                     {properties.map((prop) => (
-                                        <PropertyCard
-                                            key={prop.id}
-                                            id={prop.id}
-                                            title={prop.title}
-                                            location={prop.location}
-                                            securityDeposit={prop.securityDeposit || 0}
-                                            price={prop.price}
-                                            views={prop.views || 0}
-                                            image={{src: prop.imageUrls?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop', hint: 'property'}}
-                                            rating={prop.rating || 4}
-                                            listingType={prop.listingType}
-                                        />
+                                        viewMode === 'grid' ? (
+                                            <PropertyCard
+                                                key={prop.id}
+                                                id={prop.id}
+                                                title={prop.title}
+                                                location={prop.location}
+                                                securityDeposit={prop.securityDeposit || 0}
+                                                price={prop.price}
+                                                views={prop.views || 0}
+                                                image={{src: prop.imageUrls?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop', hint: 'property'}}
+                                                rating={prop.rating || 4}
+                                                listingType={prop.listingType}
+                                            />
+                                        ) : (
+                                            <PropertyListItem
+                                                key={prop.id}
+                                                id={prop.id}
+                                                title={prop.title}
+                                                location={prop.location}
+                                                securityDeposit={prop.securityDeposit || 0}
+                                                price={prop.price}
+                                                views={prop.views || 0}
+                                                image={{src: prop.imageUrls?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop', hint: 'property'}}
+                                                rating={prop.rating || 4}
+                                                listingType={prop.listingType}
+                                            />
+                                        )
                                     ))}
                                 </div>
                             )}
