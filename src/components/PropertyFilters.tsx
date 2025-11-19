@@ -164,9 +164,11 @@ export default function PropertyFilters({ onFiltersChange, initialFilters = {} }
             </div>
             <Slider
               value={[filters.minPrice, filters.maxPrice]}
-              onValueChange={([min, max]) => {
-                handleFilterChange('minPrice', min);
-                handleFilterChange('maxPrice', max);
+              onValueChange={(value) => {
+                if (value.length === 2) {
+                  handleFilterChange('minPrice', value[0]);
+                  handleFilterChange('maxPrice', value[1]);
+                }
               }}
               max={100000}
               min={0}
