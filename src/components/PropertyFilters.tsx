@@ -33,9 +33,9 @@ export default function PropertyFilters({ onFiltersChange, initialFilters = {} }
 
   const resetFilters = () => {
     const defaultFilters = {
-      location: '',
-      propertyType: '',
-      forWhom: '',
+      location: 'all',
+      propertyType: 'all',
+      forWhom: 'all',
       minPrice: 0,
       maxPrice: 50000,
       searchQuery: '',
@@ -78,12 +78,12 @@ export default function PropertyFilters({ onFiltersChange, initialFilters = {} }
         <CardContent>
           <div className="space-y-2">
             <Label htmlFor="location">City</Label>
-            <Select value={filters.location} onValueChange={(value) => handleFilterChange('location', value)}>
+            <Select value={filters.location} onValueChange={(value) => handleFilterChange('location', value === 'all' ? '' : value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select city" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Cities</SelectItem>
+                <SelectItem value="all">All Cities</SelectItem>
                 <SelectItem value="lucknow">Lucknow</SelectItem>
                 <SelectItem value="varanasi">Varanasi</SelectItem>
                 <SelectItem value="kanpur">Kanpur</SelectItem>
@@ -105,12 +105,12 @@ export default function PropertyFilters({ onFiltersChange, initialFilters = {} }
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <Select value={filters.propertyType} onValueChange={(value) => handleFilterChange('propertyType', value)}>
+            <Select value={filters.propertyType} onValueChange={(value) => handleFilterChange('propertyType', value === 'all' ? '' : value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select property type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Types</SelectItem>
+                <SelectItem value="all">All Types</SelectItem>
                 <SelectItem value="Apartment">Apartment</SelectItem>
                 <SelectItem value="House">House</SelectItem>
                 <SelectItem value="Villa">Villa</SelectItem>
@@ -132,12 +132,12 @@ export default function PropertyFilters({ onFiltersChange, initialFilters = {} }
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <Select value={filters.forWhom} onValueChange={(value) => handleFilterChange('forWhom', value)}>
+            <Select value={filters.forWhom} onValueChange={(value) => handleFilterChange('forWhom', value === 'all' ? '' : value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select audience" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All</SelectItem>
+                <SelectItem value="all">All</SelectItem>
                 <SelectItem value="Students">Students</SelectItem>
                 <SelectItem value="Working Professionals">Working Professionals</SelectItem>
                 <SelectItem value="Families">Families</SelectItem>

@@ -42,9 +42,9 @@ function PropertiesList() {
     const searchQuery = searchParams.get('q');
 
     const [filters, setFilters] = useState({
-        location: location || '',
-        propertyType: propertyType || '',
-        forWhom: forWhom || '',
+        location: location || 'all',
+        propertyType: propertyType || 'all',
+        forWhom: forWhom || 'all',
         minPrice: 0,
         maxPrice: 50000,
         searchQuery: searchQuery || '',
@@ -121,7 +121,12 @@ function PropertiesList() {
                             <div className="sticky top-8">
                                 <PropertyFilters
                                     onFiltersChange={handleFiltersChange}
-                                    initialFilters={filters}
+                                    initialFilters={{
+                                        ...filters,
+                                        location: filters.location || 'all',
+                                        propertyType: filters.propertyType || 'all',
+                                        forWhom: filters.forWhom || 'all',
+                                    }}
                                 />
                             </div>
                         </div>
@@ -140,7 +145,12 @@ function PropertiesList() {
                                 <div className="mt-4 p-4 border rounded-lg bg-card">
                                     <PropertyFilters
                                         onFiltersChange={handleFiltersChange}
-                                        initialFilters={filters}
+                                        initialFilters={{
+                                            ...filters,
+                                            location: filters.location || 'all',
+                                            propertyType: filters.propertyType || 'all',
+                                            forWhom: filters.forWhom || 'all',
+                                        }}
                                     />
                                 </div>
                             )}
