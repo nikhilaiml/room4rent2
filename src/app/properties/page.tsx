@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 
 export const dynamic = 'force-dynamic';
 import Header from '@/components/header';
@@ -35,14 +35,33 @@ function PropertiesList() {
     const router = useRouter();
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [showFilters, setShowFilters] = useState(false);
+    const [userLocation, setUserLocation] = useState<string | null>(null);
 
     const location = searchParams.get('location');
     const propertyType = searchParams.get('propertyType');
     const forWhom = searchParams.get('forWhom');
     const searchQuery = searchParams.get('q');
 
+    // Get user location from localStorage
+    useEffect(() => {
+        const storedLocation = localStorage.getItem('userLocation');
+        if (storedLocation) {
+            setUserLocation(storedLocation);
+        }
+    }, []);
+
+    // Update filters when userLocation is loaded and no URL params exist
+    useEffect(() => {
+        if (userLocation && !location && !propertyType && !forWhom && !searchQuery) {
+            setFilters(prev => ({
+                ...prev,
+                location: userLocation
+            }));
+        }
+    }, [userLocation, location, propertyType, forWhom, searchQuery]);
+
     const [filters, setFilters] = useState({
-        location: location || 'all',
+        location: location || userLocation || 'all',
         propertyType: propertyType || 'all',
         forWhom: forWhom || 'all',
         minPrice: 0,
@@ -55,27 +74,45 @@ function PropertiesList() {
             table: 'properties',
             filter: (query: any) => {
                 let q = query;
-                if (filters.location) {
-                    const searchLocation = filters.location.toLowerCase();
-                    q = q.eq('city', searchLocation);
+
+                // Check if any filters are actively applied (not default values)
+                const hasActiveFilters =
+                    (filters.location && filters.location !== 'all') ||
+                    (filters.propertyType && filters.propertyType !== 'all') ||
+                    (filters.forWhom && filters.forWhom !== 'all') ||
+                    filters.searchQuery ||
+                    filters.minPrice > 0 ||
+                    filters.maxPrice < 50000;
+
+                if (hasActiveFilters) {
+                    // Apply strict filtering when user has set filters
+                    if (filters.location && filters.location !== 'all') {
+                        const searchLocation = filters.location.toLowerCase();
+                        q = q.eq('city', searchLocation);
+                    }
+                    if (filters.propertyType && filters.propertyType !== 'all') {
+                        q = q.eq('propertyType', filters.propertyType);
+                    }
+                    if (filters.forWhom && filters.forWhom !== 'all') {
+                        q = q.eq('forWhom', filters.forWhom);
+                    }
+                    if (filters.searchQuery) {
+                        const lowerQuery = filters.searchQuery.toLowerCase();
+                        q = q.or(`title.ilike.%${lowerQuery}%,city.ilike.%${lowerQuery}%,location.ilike.%${lowerQuery}%`);
+                    }
+                    // Price filtering
+                    if (filters.minPrice > 0) {
+                        q = q.gte('price', filters.minPrice);
+                    }
+                    if (filters.maxPrice < 50000) {
+                        q = q.lte('price', filters.maxPrice);
+                    }
+                } else {
+                    // Default behavior: show all properties for variety
+                    // User can see properties from their location and others
+                    // If they want location-specific, they can use the location filter
                 }
-                if (filters.propertyType) {
-                    q = q.eq('propertyType', filters.propertyType);
-                }
-                if (filters.forWhom) {
-                    q = q.eq('forWhom', filters.forWhom);
-                }
-                if (filters.searchQuery) {
-                    const lowerQuery = filters.searchQuery.toLowerCase();
-                    q = q.or(`title.ilike.%${lowerQuery}%,city.ilike.%${lowerQuery}%,location.ilike.%${lowerQuery}%`);
-                }
-                // Price filtering
-                if (filters.minPrice > 0) {
-                    q = q.gte('price', filters.minPrice);
-                }
-                if (filters.maxPrice < 50000) {
-                    q = q.lte('price', filters.maxPrice);
-                }
+
                 return q;
             },
             orderBy: { column: 'createdAt', ascending: false },
