@@ -119,6 +119,15 @@ export default function HomePage() {
 
   const { data: properties, isLoading: isLoadingProperties } = useCollection(propertiesQuery);
 
+  // Query for all properties (for Discover Popular Properties section)
+  const allPropertiesQuery = useMemo(() => ({
+    table: 'properties',
+    orderBy: { column: 'createdAt', ascending: false },
+    realtime: true,
+  }), []);
+
+  const { data: allProperties, isLoading: isLoadingAllProperties } = useCollection(allPropertiesQuery);
+
   const handleSearch = () => {
     const queryParams = new URLSearchParams();
     if (location) queryParams.set('location', location);
@@ -197,13 +206,13 @@ export default function HomePage() {
               {userLocation ? `Properties in ${userLocation}` : 'Enable location services to see properties in your area.'}
             </p>
             <Suspense fallback={<div className="text-center"><p>Loading properties...</p></div>}>
-              {isLoadingProperties ? (
+              {isLoadingAllProperties ? (
                 <div className="text-center"><p>Loading properties...</p></div>
-              ) : !properties || properties.length === 0 ? (
-                <div className="text-center"><p>No properties found in your location. Try searching for properties in other cities.</p></div>
+              ) : !allProperties || allProperties.length === 0 ? (
+                <div className="text-center"><p>No properties available at the moment.</p></div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {properties.slice(0, 6).map((prop) => (
+                  {allProperties.slice(0, 6).map((prop) => (
                     <PropertyCard
                       key={prop.id}
                       id={prop.id}
