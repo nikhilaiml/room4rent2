@@ -26,8 +26,9 @@ const PropertiesCarousel = React.lazy(() => import('@/components/PropertiesCarou
 
 export default function HomePage() {
   const [location, setLocation] = useState('');
-  const [checkIn, setCheckIn] = useState('');
-  const [checkOut, setCheckOut] = useState('');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [forWhom, setForWhom] = useState('');
   const [userLocation, setUserLocation] = useState<string | null>(null);
   const router = useRouter();
 
@@ -131,8 +132,9 @@ export default function HomePage() {
   const handleSearch = () => {
     const queryParams = new URLSearchParams();
     if (location) queryParams.set('location', location);
-    if (checkIn) queryParams.set('checkIn', checkIn);
-    if (checkOut) queryParams.set('checkOut', checkOut);
+    if (minPrice) queryParams.set('minPrice', minPrice);
+    if (maxPrice) queryParams.set('maxPrice', maxPrice);
+    if (forWhom) queryParams.set('forWhom', forWhom);
     router.push(`/properties?${queryParams.toString()}`);
   };
 
@@ -156,7 +158,7 @@ export default function HomePage() {
                  <h1 className="text-4xl md:text-5xl font-bold">{displayedText}<span className={`inline-block w-1 h-12 bg-white ml-1 ${showCursor ? 'opacity-100' : 'opacity-0'} transition-opacity duration-100`}></span></h1>
                  <p className="mt-2 md:mt-4 text-lg md:text-xl max-w-2xl animate-in fade-in slide-in-from-top-12 duration-700 delay-500">Book rooms online with ease</p>
             </div>
-            <div className="relative z-10 p-4 w-full max-w-5xl mx-auto -mt-8 md:-mt-16 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
+            <div className="relative z-10 p-4 w-full max-w-5xl mx-auto -mt-12 md:-mt-20 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
                 <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-2xl p-4 md:p-6 hover:bg-white focus-within:bg-white transition-colors duration-300">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                         <div>
@@ -166,12 +168,26 @@ export default function HomePage() {
                             </div>
                         </div>
                         <div>
-                            <label htmlFor="check-in" className="text-sm font-semibold text-gray-700">Check-in</label>
-                            <Input id="check-in" type="date" className="text-black" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} />
+                            <label className="text-sm font-semibold text-gray-700">Price Range</label>
+                            <div className="flex gap-2">
+                                <Input placeholder="Min Price" type="number" className="text-black" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
+                                <Input placeholder="Max Price" type="number" className="text-black" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
+                            </div>
                         </div>
                         <div>
-                            <label htmlFor="check-out" className="text-sm font-semibold text-gray-700">Check-out</label>
-                            <Input id="check-out" type="date" className="text-black" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} />
+                            <label htmlFor="for-whom" className="text-sm font-semibold text-gray-700">For Whom</label>
+                            <Select value={forWhom} onValueChange={setForWhom}>
+                                <SelectTrigger className="text-black">
+                                    <SelectValue placeholder="Select audience" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="anyone">Anyone</SelectItem>
+                                    <SelectItem value="students">Students</SelectItem>
+                                    <SelectItem value="professionals">Professionals</SelectItem>
+                                    <SelectItem value="families">Families</SelectItem>
+                                    <SelectItem value="couples">Couples</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
                     <Button className="w-full h-12 text-base font-bold" onClick={handleSearch}>
