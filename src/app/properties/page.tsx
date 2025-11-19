@@ -169,33 +169,32 @@ function PropertiesList() {
                             </div>
                         </div>
 
-                        {/* Mobile filter toggle */}
-                        <div className="lg:hidden mb-4">
-                            <Button
-                                onClick={() => setShowFilters(!showFilters)}
-                                variant="outline"
-                                className="w-full"
-                            >
-                                <SlidersHorizontal className="w-4 h-4 mr-2" />
-                                {showFilters ? 'Hide Filters' : 'Show Filters'}
-                            </Button>
-                            {showFilters && (
-                                <div className="mt-4 p-4 border rounded-lg bg-card">
-                                    <PropertyFilters
-                                        onFiltersChange={handleFiltersChange}
-                                        initialFilters={{
-                                            ...filters,
-                                            location: filters.location || 'all',
-                                            propertyType: filters.propertyType || 'all',
-                                            forWhom: filters.forWhom || 'all',
-                                        }}
-                                    />
-                                </div>
-                            )}
-                        </div>
-
                         {/* Main content area */}
                         <div className="flex-1">
+                            {/* Mobile filter toggle */}
+                            <div className="lg:hidden mb-4">
+                                <Button
+                                    onClick={() => setShowFilters(!showFilters)}
+                                    variant="outline"
+                                    className="w-full"
+                                >
+                                    <SlidersHorizontal className="w-4 h-4 mr-2" />
+                                    {showFilters ? 'Hide Filters' : 'Show Filters'}
+                                </Button>
+                                {showFilters && (
+                                    <div className="mt-4 p-4 border rounded-lg bg-card">
+                                        <PropertyFilters
+                                            onFiltersChange={handleFiltersChange}
+                                            initialFilters={{
+                                                ...filters,
+                                                location: filters.location || 'all',
+                                                propertyType: filters.propertyType || 'all',
+                                                forWhom: filters.forWhom || 'all',
+                                            }}
+                                        />
+                                    </div>
+                                )}
+                            </div>
                             {/* View controls */}
                             <div className="flex justify-between items-center mb-6">
                                 <p className="text-muted-foreground">
@@ -221,7 +220,7 @@ function PropertiesList() {
 
                             {/* Properties display */}
                             {isLoading && (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                                     {[...Array(6)].map((_, i) => (
                                         <div key={i} className="bg-card rounded-lg p-4 animate-pulse">
                                             <div className="h-48 bg-muted rounded mb-4"></div>
@@ -246,7 +245,7 @@ function PropertiesList() {
                             {!isLoading && properties && properties.length > 0 && (
                                 <div className={
                                     viewMode === 'grid'
-                                        ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                                        ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
                                         : "space-y-4"
                                 }>
                                     {properties.map((prop) => (
