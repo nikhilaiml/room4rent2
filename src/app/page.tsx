@@ -211,22 +211,7 @@ export default function HomePage() {
               ) : !properties || properties.length === 0 ? (
                 <div className="text-center"><p>No properties available at the moment.</p></div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {properties.slice(0, 6).map((prop) => (
-                    <PropertyCard
-                      key={prop.id}
-                      id={prop.id}
-                      title={prop.title}
-                      location={prop.location}
-                      securityDeposit={prop.securityDeposit || 0}
-                      price={prop.price}
-                      views={prop.views || 0}
-                      image={{ src: prop.imageUrls?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop', hint: 'property' }}
-                      rating={prop.rating || 4}
-                      listingType={prop.listingType}
-                    />
-                  ))}
-                </div>
+                <PropertiesCarousel properties={properties.slice(0, 6)} isLoading={isLoadingProperties} />
               )}
             </Suspense>
           </div>
@@ -243,22 +228,7 @@ export default function HomePage() {
                 ) : !allProperties || allProperties.length === 0 ? (
                   <div className="text-center"><p>No properties found in your location. Try searching for properties in other cities.</p></div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {allProperties.slice(0, 6).map((prop) => (
-                      <PropertyCard
-                        key={prop.id}
-                        id={prop.id}
-                        title={prop.title}
-                        location={prop.location}
-                        securityDeposit={prop.securityDeposit || 0}
-                        price={prop.price}
-                        views={prop.views || 0}
-                        image={{ src: prop.imageUrls?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop', hint: 'property' }}
-                        rating={prop.rating || 4}
-                        listingType={prop.listingType}
-                      />
-                    ))}
-                  </div>
+                  <PropertiesCarousel properties={allProperties.slice(0, 6)} isLoading={isLoadingAllProperties} />
                 )}
               </Suspense>
             </div>
