@@ -130,38 +130,41 @@ export const PropertyCard = ({ id, title, location, securityDeposit, price, view
 
   return (
     <Link href={`/properties/${id}`} className="block h-full group">
-    <Card className="overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col rounded-lg hover:-translate-y-1">
-      <CardContent className="p-0 flex-grow flex flex-col">
-        <div className="relative overflow-hidden">
-          <Image src={image.src} alt={title} width={400} height={250} className="w-full object-cover h-56 transform group-hover:scale-110 transition-transform duration-500" data-ai-hint={image.hint} />
+    <Card className="overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-full flex rounded-lg hover:-translate-y-1">
+      <CardContent className="p-0 flex flex-row h-full">
+        {/* Image Section - Left Side */}
+        <div className="relative overflow-hidden w-48 flex-shrink-0">
+          <Image src={image.src} alt={title} width={192} height={144} className="w-full object-cover h-full transform group-hover:scale-110 transition-transform duration-500" data-ai-hint={image.hint} />
           {listingType && (
-            <div className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs px-3 py-1 rounded-full font-bold">
+            <div className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full font-bold">
               {listingType === 'Sale' ? 'For Sale' : 'For Rent'}
             </div>
           )}
-          <div className="absolute top-3 right-3 flex space-x-1">
-             <Button variant="ghost" size="icon" className="w-8 h-8 bg-white/80 hover:bg-white text-gray-700" onClick={handleFavorite}>
-                <Heart className={`w-4 h-4 transition-colors ${isFavorite ? 'text-primary fill-primary' : 'text-gray-500'}`} />
+          <div className="absolute top-2 right-2 flex space-x-1">
+             <Button variant="ghost" size="icon" className="w-6 h-6 bg-white/80 hover:bg-white text-gray-700" onClick={handleFavorite}>
+                <Heart className={`w-3 h-3 transition-colors ${isFavorite ? 'text-primary fill-primary' : 'text-gray-500'}`} />
               </Button>
-               <Button variant="ghost" size="icon" className="w-8 h-8 bg-white/80 hover:bg-white text-gray-700" onClick={handleShare}><Share2 className="w-4 h-4" /></Button>
+               <Button variant="ghost" size="icon" className="w-6 h-6 bg-white/80 hover:bg-white text-gray-700" onClick={handleShare}><Share2 className="w-3 h-3" /></Button>
           </div>
         </div>
-        <div className="p-4 flex flex-col flex-grow">
-          <h3 className="font-bold text-lg flex-1 mr-2 truncate group-hover:text-primary transition-colors">{title}</h3>
+
+        {/* Details Section - Right Side */}
+        <div className="p-4 flex flex-col flex-1 min-w-0">
+          <h3 className="font-bold text-lg truncate group-hover:text-primary transition-colors">{title}</h3>
           <p className="text-sm text-muted-foreground flex items-center mt-1 truncate"><MapPin className="w-4 h-4 mr-1 flex-shrink-0" /> {location}</p>
-          
-          <div className="flex items-center text-sm text-muted-foreground gap-4 my-3">
-              <span className="flex items-center gap-1"><Bed className="w-4 h-4"/> 3</span>
-              <span className="flex items-center gap-1"><Bath className="w-4 h-4"/> 2</span>
-              <span className="flex items-center gap-1"><Car className="w-4 h-4"/> 1</span>
+
+          <div className="flex items-center text-sm text-muted-foreground gap-3 my-2">
+              <span className="flex items-center gap-1"><Bed className="w-3 h-3"/> 3</span>
+              <span className="flex items-center gap-1"><Bath className="w-3 h-3"/> 2</span>
+              <span className="flex items-center gap-1"><Car className="w-3 h-3"/> 1</span>
           </div>
 
-          <div className="flex justify-between items-center mt-auto pt-4 border-t">
+          <div className="flex justify-between items-center mt-auto pt-3 border-t">
             <div>
-              <p className="font-bold text-lg text-primary">₹{price.toLocaleString()}/Month</p>
+              <p className="font-bold text-base text-primary">₹{price.toLocaleString()}/Month</p>
             </div>
-            <Button asChild variant="outline" size="sm">
-                <p>View Details</p>
+            <Button asChild variant="outline" size="sm" className="text-xs px-3 py-1 h-7">
+                <span>View Details</span>
             </Button>
           </div>
         </div>
