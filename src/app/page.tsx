@@ -117,7 +117,7 @@ export default function HomePage() {
 
   const { data: properties, isLoading: isLoadingProperties } = useCollection(propertiesQuery || {
     table: 'properties',
-    filter: (query: any) => query.eq('id', 'nonexistent'),
+    orderBy: { column: 'createdAt', ascending: false },
     realtime: true,
   });
 
@@ -209,7 +209,6 @@ export default function HomePage() {
                       id={prop.id}
                       title={prop.title}
                       location={prop.location}
-                      amenities={prop.amenities || ''}
                       securityDeposit={prop.securityDeposit || 0}
                       price={prop.price}
                       views={prop.views || 0}
@@ -240,7 +239,6 @@ export default function HomePage() {
                         id={prop.id}
                         title={prop.title}
                         location={prop.location}
-                        amenities={prop.amenities || ''}
                         securityDeposit={prop.securityDeposit || 0}
                         price={prop.price}
                         views={prop.views || 0}

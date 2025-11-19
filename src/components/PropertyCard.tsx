@@ -10,11 +10,10 @@ import { useUser, useSupabaseClient } from '@/supabase';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-export const PropertyCard = ({ id, title, location, amenities, securityDeposit, price, views, image, rating, listingType }: {
+export const PropertyCard = ({ id, title, location, securityDeposit, price, views, image, rating, listingType }: {
   id: string;
   title: string;
   location: string;
-  amenities: string;
   securityDeposit: number;
   price: number;
   views: number;
