@@ -133,35 +133,36 @@ export const PropertyCard = ({ id, title, location, securityDeposit, price, view
     <Card className="overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col rounded-lg hover:-translate-y-1">
       <CardContent className="p-0 flex-grow flex flex-col">
         <div className="relative overflow-hidden">
-          <Image src={image.src} alt={title} width={400} height={250} className="w-full object-cover h-56 transform group-hover:scale-110 transition-transform duration-500" data-ai-hint={image.hint} />
+          <Image src={image.src} alt={title} width={400} height={300} className="w-full object-cover h-64 transform group-hover:scale-110 transition-transform duration-500" data-ai-hint={image.hint} />
           {listingType && (
-            <div className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs px-3 py-1 rounded-full font-bold">
+            <div className="absolute top-4 left-4 bg-primary text-primary-foreground text-sm px-4 py-2 rounded-full font-bold">
               {listingType === 'Sale' ? 'For Sale' : 'For Rent'}
             </div>
           )}
-          <div className="absolute top-3 right-3 flex space-x-1">
-             <Button variant="ghost" size="icon" className="w-8 h-8 bg-white/80 hover:bg-white text-gray-700" onClick={handleFavorite}>
-                <Heart className={`w-4 h-4 transition-colors ${isFavorite ? 'text-primary fill-primary' : 'text-gray-500'}`} />
+          <div className="absolute top-4 right-4 flex space-x-2">
+             <Button variant="ghost" size="icon" className="w-10 h-10 bg-white/90 hover:bg-white text-gray-700 shadow-lg" onClick={handleFavorite}>
+                <Heart className={`w-5 h-5 transition-colors ${isFavorite ? 'text-primary fill-primary' : 'text-gray-500'}`} />
               </Button>
-               <Button variant="ghost" size="icon" className="w-8 h-8 bg-white/80 hover:bg-white text-gray-700" onClick={handleShare}><Share2 className="w-4 h-4" /></Button>
+               <Button variant="ghost" size="icon" className="w-10 h-10 bg-white/90 hover:bg-white text-gray-700 shadow-lg" onClick={handleShare}><Share2 className="w-5 h-5" /></Button>
           </div>
         </div>
-        <div className="p-4 flex flex-col flex-grow">
-          <h3 className="font-bold text-lg flex-1 mr-2 truncate group-hover:text-primary transition-colors">{title}</h3>
-          <p className="text-sm text-muted-foreground flex items-center mt-1 truncate"><MapPin className="w-4 h-4 mr-1 flex-shrink-0" /> {location}</p>
+        <div className="p-6 flex flex-col flex-grow">
+          <h3 className="font-bold text-xl flex-1 mr-2 group-hover:text-primary transition-colors leading-tight mb-2">{title}</h3>
+          <p className="text-base text-muted-foreground flex items-center mb-3"><MapPin className="w-5 h-5 mr-2 flex-shrink-0" /> {location}</p>
 
-          <div className="flex items-center text-sm text-muted-foreground gap-4 my-3">
-              <span className="flex items-center gap-1"><Bed className="w-4 h-4"/> 3</span>
-              <span className="flex items-center gap-1"><Bath className="w-4 h-4"/> 2</span>
-              <span className="flex items-center gap-1"><Car className="w-4 h-4"/> 1</span>
+          <div className="flex items-center text-base text-muted-foreground gap-6 mb-4">
+              <span className="flex items-center gap-2"><Bed className="w-5 h-5"/> 3</span>
+              <span className="flex items-center gap-2"><Bath className="w-5 h-5"/> 2</span>
+              <span className="flex items-center gap-2"><Car className="w-5 h-5"/> 1</span>
           </div>
 
-          <div className="flex justify-between items-center mt-auto pt-4 border-t">
-            <div>
-              <p className="font-bold text-lg text-primary">₹{price.toLocaleString()}/Month</p>
+          <div className="flex justify-between items-center mt-auto pt-5 border-t border-gray-200">
+            <div className="flex flex-col">
+              <p className="font-bold text-xl text-primary">₹{price.toLocaleString()}/Month</p>
+              <p className="text-sm text-muted-foreground">Security: ₹{securityDeposit.toLocaleString()}</p>
             </div>
-            <Button asChild variant="outline" size="sm">
-                <p>View Details</p>
+            <Button asChild variant="outline" size="default" className="px-6 py-2">
+                <span className="font-semibold">View Details</span>
             </Button>
           </div>
         </div>
