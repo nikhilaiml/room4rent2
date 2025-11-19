@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
+
+export const dynamic = 'force-dynamic';
 import { useRouter } from 'next/navigation';
 import { useUser, useCollection, useDoc } from '@/supabase';
 import ChatComponent from '@/components/ChatComponent';

@@ -1,6 +1,8 @@
 'use client';
 
 import { Suspense } from 'react';
+
+export const dynamic = 'force-dynamic';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { useSearchParams } from 'next/navigation';
@@ -91,7 +93,6 @@ function PropertiesList() {
                                     id={prop.id}
                                     title={prop.title}
                                     location={prop.location}
-                                    amenities={prop.amenities || ''}
                                     securityDeposit={prop.securityDeposit || 0}
                                     price={prop.price}
                                     views={prop.views || 0}

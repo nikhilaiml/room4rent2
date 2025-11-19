@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+
+export const dynamic = 'force-dynamic';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/header';
