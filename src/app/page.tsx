@@ -201,9 +201,9 @@ export default function HomePage() {
 
         <section className="py-12 bg-white">
           <div className="container mx-auto px-4">
-            <h2 className="text-center text-3xl font-bold mb-2">Featured Properties</h2>
+            <h2 className="text-center text-3xl font-bold mb-2">Recommended Properties</h2>
             <p className="text-center text-muted-foreground mb-8">
-              Check out our latest listings.
+              Properties in {userLocation || 'your area'}
             </p>
             <Suspense fallback={<div className="text-center"><p>Loading properties...</p></div>}>
               {isLoadingProperties ? (
