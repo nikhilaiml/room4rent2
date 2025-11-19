@@ -9,6 +9,7 @@ import { useSearchParams } from 'next/navigation';
 import { useCollection } from '@/supabase';
 import { useMemo } from 'react';
 import { PropertyCard } from '@/components/PropertyCard';
+import PropertiesCarousel from '@/components/PropertiesCarousel';
 
 
 interface Property {
@@ -86,22 +87,7 @@ function PropertiesList() {
                         <p>No properties found matching your criteria. Try a different search.</p>
                     )}
                     {!isLoading && properties && properties.length > 0 && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {properties.map(prop => (
-                                <PropertyCard
-                                    key={prop.id}
-                                    id={prop.id}
-                                    title={prop.title}
-                                    location={prop.location}
-                                    securityDeposit={prop.securityDeposit || 0}
-                                    price={prop.price}
-                                    views={prop.views || 0}
-                                    image={{src: prop.imageUrls?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop', hint: 'property'}}
-                                    rating={prop.rating || 4}
-                                    listingType={prop.listingType}
-                                />
-                            ))}
-                        </div>
+                        <PropertiesCarousel properties={properties} isLoading={isLoading} />
                     )}
                 </div>
             </main>
