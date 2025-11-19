@@ -42,6 +42,8 @@ function PropertiesList() {
     const propertyType = searchParams.get('propertyType');
     const forWhom = searchParams.get('forWhom');
     const searchQuery = searchParams.get('q');
+    const minPriceParam = searchParams.get('minPrice');
+    const maxPriceParam = searchParams.get('maxPrice');
 
     // Get user location from localStorage
     useEffect(() => {
@@ -65,8 +67,8 @@ function PropertiesList() {
         location: location || userLocation || 'all',
         propertyType: propertyType || 'all',
         forWhom: forWhom || 'all',
-        minPrice: 0,
-        maxPrice: 50000,
+        minPrice: minPriceParam ? parseInt(minPriceParam) : 0,
+        maxPrice: maxPriceParam ? parseInt(maxPriceParam) : 50000,
         searchQuery: searchQuery || '',
     });
 
@@ -131,6 +133,8 @@ function PropertiesList() {
         if (newFilters.propertyType) params.set('propertyType', newFilters.propertyType);
         if (newFilters.forWhom) params.set('forWhom', newFilters.forWhom);
         if (newFilters.searchQuery) params.set('q', newFilters.searchQuery);
+        if (newFilters.minPrice > 0) params.set('minPrice', newFilters.minPrice.toString());
+        if (newFilters.maxPrice < 50000) params.set('maxPrice', newFilters.maxPrice.toString());
         router.push(`/properties?${params.toString()}`);
     };
 
@@ -164,6 +168,8 @@ function PropertiesList() {
                                         location: filters.location || 'all',
                                         propertyType: filters.propertyType || 'all',
                                         forWhom: filters.forWhom || 'all',
+                                        minPrice: filters.minPrice,
+                                        maxPrice: filters.maxPrice,
                                     }}
                                 />
                             </div>
@@ -190,6 +196,8 @@ function PropertiesList() {
                                                 location: filters.location || 'all',
                                                 propertyType: filters.propertyType || 'all',
                                                 forWhom: filters.forWhom || 'all',
+                                                minPrice: filters.minPrice,
+                                                maxPrice: filters.maxPrice,
                                             }}
                                         />
                                     </div>

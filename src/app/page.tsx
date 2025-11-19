@@ -169,7 +169,7 @@ export default function HomePage() {
                         </div>
                         <div>
                             <label className="text-sm font-semibold text-gray-700">Price Range</label>
-                            <div className="flex gap-2">
+                            <div className="flex flex-col sm:flex-row gap-2">
                                 <Input placeholder="Min Price" type="number" className="text-black" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
                                 <Input placeholder="Max Price" type="number" className="text-black" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
                             </div>
