@@ -33,6 +33,7 @@ export default function LocationPermission() {
   }, []);
 
   const requestLocation = () => {
+    setShowDialog(false);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
