@@ -28,10 +28,10 @@ export default function PropertiesCarousel({ properties, isLoading }: Properties
   }
 
   return (
-    <Carousel opts={{ align: "start", loop: true }}>
-      <CarouselContent>
+    <div className="overflow-x-auto pb-4">
+      <div className="flex gap-6 min-w-max">
         {properties?.map((prop, index) => (
-          <CarouselItem key={`${prop.id}-${index}`} className="basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+          <div key={`${prop.id}-${index}`} className="flex-shrink-0 w-80">
             <PropertyCard
               id={prop.id}
               title={prop.title}
@@ -43,11 +43,9 @@ export default function PropertiesCarousel({ properties, isLoading }: Properties
               rating={prop.rating || 4}
               listingType={prop.listingType}
             />
-          </CarouselItem>
+          </div>
         ))}
-      </CarouselContent>
-      <CarouselPrevious className="left-[-20px]" />
-      <CarouselNext className="right-[-20px]" />
-    </Carousel>
+      </div>
+    </div>
   );
 }
