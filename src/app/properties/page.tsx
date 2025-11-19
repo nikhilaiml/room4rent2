@@ -75,9 +75,9 @@ function PropertiesList() {
             filter: (query: any) => {
                 let q = query;
 
-                // Check if any filters are actively applied (not default values)
+                // Check if any filters are actively applied by user (not auto-set values)
                 const hasActiveFilters =
-                    (filters.location && filters.location !== 'all') ||
+                    (filters.location && filters.location !== 'all' && filters.location !== userLocation) ||
                     (filters.propertyType && filters.propertyType !== 'all') ||
                     (filters.forWhom && filters.forWhom !== 'all') ||
                     filters.searchQuery ||
