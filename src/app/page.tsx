@@ -203,16 +203,16 @@ export default function HomePage() {
           <div className="container mx-auto px-4">
             <h2 className="text-center text-3xl font-bold mb-2">Featured Properties</h2>
             <p className="text-center text-muted-foreground mb-8">
-              {userLocation ? `Properties in ${userLocation}` : 'Enable location services to see properties in your area.'}
+              Check out our latest listings.
             </p>
             <Suspense fallback={<div className="text-center"><p>Loading properties...</p></div>}>
-              {isLoadingAllProperties ? (
+              {isLoadingProperties ? (
                 <div className="text-center"><p>Loading properties...</p></div>
-              ) : !allProperties || allProperties.length === 0 ? (
+              ) : !properties || properties.length === 0 ? (
                 <div className="text-center"><p>No properties available at the moment.</p></div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {allProperties.slice(0, 6).map((prop) => (
+                  {properties.slice(0, 6).map((prop) => (
                     <PropertyCard
                       key={prop.id}
                       id={prop.id}
@@ -238,13 +238,13 @@ export default function HomePage() {
               <p className="mb-8">Explore the most sought-after properties in our portfolio.</p>
               {/* You can re-use the carousel or show different properties here */}
               <Suspense fallback={<div className="text-center"><p>Loading properties...</p></div>}>
-                {isLoadingProperties ? (
+                {isLoadingAllProperties ? (
                   <div className="text-center"><p>Loading properties...</p></div>
-                ) : !properties || properties.length === 0 ? (
+                ) : !allProperties || allProperties.length === 0 ? (
                   <div className="text-center"><p>No properties found in your location. Try searching for properties in other cities.</p></div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {properties.slice(0, 6).map((prop) => (
+                    {allProperties.slice(0, 6).map((prop) => (
                       <PropertyCard
                         key={prop.id}
                         id={prop.id}
