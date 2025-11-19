@@ -158,9 +158,9 @@ export default function HomePage() {
                  <h1 className="text-4xl md:text-5xl font-bold">{displayedText}<span className={`inline-block w-1 h-12 bg-white ml-1 ${showCursor ? 'opacity-100' : 'opacity-0'} transition-opacity duration-100`}></span></h1>
                  <p className="mt-2 md:mt-4 text-lg md:text-xl max-w-2xl animate-in fade-in slide-in-from-top-12 duration-700 delay-500">Book rooms online with ease</p>
             </div>
-            <div className="relative z-10 p-4 w-full max-w-5xl mx-auto -mt-12 md:-mt-20 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
+            <div className="relative z-10 p-4 w-full max-w-5xl mx-auto -mt-16 md:-mt-24 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
                 <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-2xl p-4 md:p-6 hover:bg-white focus-within:bg-white transition-colors duration-300">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                    <div className="grid grid-cols-3 gap-2 items-end">
                         <div>
                             <label htmlFor="location" className="text-sm font-semibold text-gray-700">Location</label>
                             <div className="relative">
