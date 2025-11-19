@@ -130,10 +130,10 @@ export const PropertyListItem = ({ id, title, location, securityDeposit, price, 
 
   return (
     <Link href={`/properties/${id}`} className="block group">
-    <Card className="overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex rounded-lg hover:-translate-y-1">
-      <CardContent className="p-0 flex flex-row w-full">
-        {/* Image Section - Left Side */}
-        <div className="relative overflow-hidden w-64 flex-shrink-0">
+    <Card className="overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col md:flex-row rounded-lg hover:-translate-y-1">
+      <CardContent className="p-0 flex flex-col md:flex-row w-full">
+        {/* Image Section - Top on mobile, Left on desktop */}
+        <div className="relative overflow-hidden w-full md:w-64 flex-shrink-0">
           <Image src={image.src} alt={title} width={256} height={192} className="w-full object-cover h-48 transform group-hover:scale-110 transition-transform duration-500" data-ai-hint={image.hint} />
           {listingType && (
             <div className="absolute top-3 left-3 bg-primary text-primary-foreground text-sm px-4 py-2 rounded-full font-bold">

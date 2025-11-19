@@ -31,7 +31,7 @@ export default function PropertiesCarousel({ properties, isLoading }: Properties
     <Carousel opts={{ align: "start", loop: true }}>
       <CarouselContent>
         {properties?.map((prop, index) => (
-          <CarouselItem key={`${prop.id}-${index}`} className="basis-full md:basis-1/2">
+          <CarouselItem key={`${prop.id}-${index}`} className="basis-full sm:basis-1/2 lg:basis-1/3">
             <PropertyCard
               id={prop.id}
               title={prop.title}

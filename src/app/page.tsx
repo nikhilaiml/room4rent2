@@ -158,7 +158,7 @@ export default function HomePage() {
             </div>
             <div className="relative z-10 p-4 w-full max-w-5xl mx-auto -mt-20 md:-mt-16 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
                 <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-2xl p-4 md:p-6 hover:bg-white focus-within:bg-white transition-colors duration-300">
-                    <div className="grid grid-cols-3 md:grid-cols-3 gap-4 items-end">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                         <div>
                             <label htmlFor="location" className="text-sm font-semibold text-gray-700">Location</label>
                             <div className="relative">
