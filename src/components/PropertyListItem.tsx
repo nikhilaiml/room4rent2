@@ -153,8 +153,8 @@ export const PropertyListItem = ({ id, title, location, securityDeposit, price, 
   };
 
   return (
-    <Link href={`/properties/${id}`} className="block group h-full">
-    <Card className="overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col md:flex-row rounded-lg hover:-translate-y-1 h-full">
+    <Link href={`/properties/${id}`} className="block group">
+    <Card className="overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col md:flex-row rounded-lg hover:-translate-y-1 h-80">
       <CardContent className="p-0 flex flex-col md:flex-row w-full h-full">
         {/* Image Section - Top on mobile, Left on desktop */}
         <div className="relative overflow-hidden w-full md:w-64 flex-shrink-0 h-48 md:h-full" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
