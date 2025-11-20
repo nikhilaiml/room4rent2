@@ -266,7 +266,7 @@ function PropertiesList() {
                                                 securityDeposit={prop.securityDeposit || 0}
                                                 price={prop.price}
                                                 views={prop.views || 0}
-                                                images={prop.imageUrls || ['https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop']}
+                                                images={prop.imageUrls}
                                                 rating={prop.rating || 4}
                                                 listingType={prop.listingType}
                                             />
@@ -279,7 +279,7 @@ function PropertiesList() {
                                                 securityDeposit={prop.securityDeposit || 0}
                                                 price={prop.price}
                                                 views={prop.views || 0}
-                                                images={prop.imageUrls || ['https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop']}
+                                                images={prop.imageUrls}
                                                 rating={prop.rating || 4}
                                                 listingType={prop.listingType}
                                             />

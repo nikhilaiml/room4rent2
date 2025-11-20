@@ -11,14 +11,14 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Carousel, CarouselContent, CarouselItem, CarouselApi } from '@/components/ui/carousel';
 
-export const PropertyListItem = ({ id, title, location, securityDeposit, price, views, images, rating, listingType }: {
+export const PropertyListItem = ({ id, title, location, securityDeposit, price, views, images = [], rating, listingType }: {
   id: string;
   title: string;
   location: string;
   securityDeposit: number;
   price: number;
   views: number;
-  images: string[];
+  images?: string[];
   rating: number;
   listingType?: string;
 }) => {
@@ -71,7 +71,7 @@ export const PropertyListItem = ({ id, title, location, securityDeposit, price, 
 
   // Auto-swipe carousel on hover
   useEffect(() => {
-    if (isHovered && api && images.length > 1) {
+    if (isHovered && api && images && images.length > 1) {
       intervalRef.current = setInterval(() => {
         api.scrollNext();
       }, 2000); // Change image every 2 seconds
@@ -87,7 +87,7 @@ export const PropertyListItem = ({ id, title, location, securityDeposit, price, 
         clearInterval(intervalRef.current);
       }
     };
-  }, [isHovered, api, images.length]);
+  }, [isHovered, api, images?.length]);
 
   const handleShare = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -158,7 +158,7 @@ export const PropertyListItem = ({ id, title, location, securityDeposit, price, 
       <CardContent className="p-0 flex flex-col md:flex-row w-full">
         {/* Image Section - Top on mobile, Left on desktop */}
         <div className="relative overflow-hidden w-full md:w-64 flex-shrink-0 h-48 md:h-full" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-          {images.length > 1 ? (
+          {images && images.length > 1 ? (
             <Carousel setApi={setApi} opts={{ align: "start", loop: true }} className="w-full h-full">
               <CarouselContent className="h-full">
                 {images.map((imgSrc, index) => (
@@ -169,7 +169,7 @@ export const PropertyListItem = ({ id, title, location, securityDeposit, price, 
               </CarouselContent>
             </Carousel>
           ) : (
-            <Image src={images[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop'} alt={title} width={256} height={192} className="w-full object-cover h-full transform group-hover:scale-110 transition-transform duration-500" />
+            <Image src={(images && images[0]) || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop'} alt={title} width={256} height={192} className="w-full object-cover h-full transform group-hover:scale-110 transition-transform duration-500" />
           )}
           {listingType && (
             <div className="absolute top-3 left-3 bg-primary text-primary-foreground text-sm px-4 py-2 rounded-full font-bold z-10">
