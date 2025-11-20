@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Star, MapPin, Share2, Heart, Phone, Eye, Bed, Bath, Car } from 'lucide-react';
+import { Star, MapPin, Share2, Heart, Phone, Eye, Bed, Bath, Car, MessageSquare } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useSupabaseClient } from '@/supabase';
 import { useState, useEffect } from 'react';
@@ -164,9 +164,19 @@ export const PropertyListItem = ({ id, title, location, securityDeposit, price, 
               <p className="font-bold text-xl text-primary">₹{price.toLocaleString()}/Month</p>
               <p className="text-sm text-muted-foreground">Security: ₹{securityDeposit.toLocaleString()}</p>
             </div>
-            <Button asChild variant="outline" size="default" className="px-6 py-2">
-                <span className="font-semibold">View Details</span>
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" size="default" className="px-4 py-2">
+                <Phone className="w-4 h-4 mr-2" />
+                Call Owner
+              </Button>
+              <Button variant="outline" size="default" className="px-4 py-2">
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Send Enquiry
+              </Button>
+              <Button asChild variant="outline" size="default" className="px-6 py-2">
+                  <span className="font-semibold">View Details</span>
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>
