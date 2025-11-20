@@ -159,24 +159,25 @@ export const PropertyListItem = ({ id, title, location, securityDeposit, price, 
               <span className="flex items-center gap-2"><Car className="w-5 h-5"/> 1</span>
           </div>
 
+          <div className="flex justify-end gap-2 mb-4">
+            <Button variant="outline" size="default" className="px-4 py-2">
+              <Phone className="w-4 h-4 mr-2" />
+              Call Owner
+            </Button>
+            <Button variant="outline" size="default" className="px-4 py-2">
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Send Enquiry
+            </Button>
+          </div>
+
           <div className="flex justify-between items-center mt-auto pt-5 border-t border-gray-200">
             <div className="flex flex-col">
               <p className="font-bold text-xl text-primary">₹{price.toLocaleString()}/Month</p>
               <p className="text-sm text-muted-foreground">Security: ₹{securityDeposit.toLocaleString()}</p>
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="default" className="px-4 py-2">
-                <Phone className="w-4 h-4 mr-2" />
-                Call Owner
-              </Button>
-              <Button variant="outline" size="default" className="px-4 py-2">
-                <MessageSquare className="w-4 h-4 mr-2" />
-                Send Enquiry
-              </Button>
-              <Button asChild variant="outline" size="default" className="px-6 py-2">
-                  <span className="font-semibold">View Details</span>
-              </Button>
-            </div>
+            <Button asChild variant="outline" size="default" className="px-6 py-2">
+                <span className="font-semibold">View Details</span>
+            </Button>
           </div>
         </div>
       </CardContent>
