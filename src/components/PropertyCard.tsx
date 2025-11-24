@@ -155,20 +155,20 @@ export const PropertyCard = ({ id, title, location, securityDeposit, price, view
   return (
     <Link href={`/properties/${id}`} className="block h-full group">
     <Card className="overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-80 flex flex-col rounded-lg hover:-translate-y-1">
-      <CardContent className="p-0 flex-grow flex flex-col">
-        <div className="relative overflow-hidden" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+      <CardContent className="p-0 flex flex-col h-full">
+        <div className="relative overflow-hidden h-48 flex-shrink-0" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
           {images && images.length > 1 ? (
-            <Carousel setApi={setApi} opts={{ align: "start", loop: true }} className="w-full">
-              <CarouselContent>
+            <Carousel setApi={setApi} opts={{ align: "start", loop: true }} className="w-full h-full">
+              <CarouselContent className="h-full">
                 {images.map((imgSrc, index) => (
-                  <CarouselItem key={index}>
-                    <Image src={imgSrc} alt={`${title} - ${index + 1}`} width={400} height={250} className="w-full object-cover h-full transform group-hover:scale-105 transition-transform duration-500" />
+                  <CarouselItem key={index} className="h-full">
+                    <Image src={imgSrc} alt={`${title} - ${index + 1}`} width={400} height={250} className="w-full object-cover h-48 transform group-hover:scale-105 transition-transform duration-500" />
                   </CarouselItem>
                 ))}
               </CarouselContent>
             </Carousel>
           ) : (
-            <Image src={(images && images[0]) || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop'} alt={title} width={400} height={250} className="w-full object-cover h-full transform group-hover:scale-105 transition-transform duration-500" />
+            <Image src={(images && images[0]) || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop'} alt={title} width={400} height={250} className="w-full object-cover h-48 transform group-hover:scale-105 transition-transform duration-500" />
           )}
           {listingType && (
             <div className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs px-3 py-1 rounded-full font-bold z-10">
@@ -182,17 +182,17 @@ export const PropertyCard = ({ id, title, location, securityDeposit, price, view
                <Button variant="ghost" size="icon" className="w-8 h-8 bg-white/80 hover:bg-white text-gray-700" onClick={handleShare}><Share2 className="w-4 h-4" /></Button>
           </div>
         </div>
-        <div className="p-4 flex flex-col flex-grow overflow-hidden">
-          <h3 className="font-bold text-lg flex-1 mr-2 truncate group-hover:text-primary transition-colors">{title}</h3>
-          <p className="text-sm text-muted-foreground flex items-center mt-1 truncate"><MapPin className="w-4 h-4 mr-1 flex-shrink-0" /> {location}</p>
+        <div className="p-4 flex flex-col flex-1 min-h-0">
+          <h3 className="font-bold text-lg mb-1 truncate group-hover:text-primary transition-colors">{title}</h3>
+          <p className="text-sm text-muted-foreground flex items-center mb-2 truncate"><MapPin className="w-4 h-4 mr-1 flex-shrink-0" /> {location}</p>
 
-          <div className="flex items-center text-sm text-muted-foreground gap-4 my-3">
+          <div className="flex items-center text-sm text-muted-foreground gap-4 mb-3">
               <span className="flex items-center gap-1"><Bed className="w-4 h-4"/> 3</span>
               <span className="flex items-center gap-1"><Bath className="w-4 h-4"/> 2</span>
               <span className="flex items-center gap-1"><Car className="w-4 h-4"/> 1</span>
           </div>
 
-          <div className="flex justify-between items-center mt-auto pt-4 border-t">
+          <div className="flex justify-between items-center mt-auto pt-3 border-t">
             <div>
               <p className="font-bold text-lg text-primary">₹{price.toLocaleString()}{listingType === 'Sale' ? '' : '/Month'}</p>
             </div>
