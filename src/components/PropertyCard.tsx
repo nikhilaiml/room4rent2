@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Star, MapPin, Share2, Heart, Phone, Eye, Bed, Bath, Car } from 'lucide-react';
+import { MapPin, Share2, Heart, Bed, Bath, Car } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useSupabaseClient } from '@/supabase';
 import { useState, useEffect, useRef } from 'react';
@@ -182,7 +182,7 @@ export const PropertyCard = ({ id, title, location, securityDeposit, price, view
                <Button variant="ghost" size="icon" className="w-8 h-8 bg-white/80 hover:bg-white text-gray-700" onClick={handleShare}><Share2 className="w-4 h-4" /></Button>
           </div>
         </div>
-        <div className="p-4 flex flex-col flex-grow">
+        <div className="p-4 flex flex-col flex-grow overflow-hidden">
           <h3 className="font-bold text-lg flex-1 mr-2 truncate group-hover:text-primary transition-colors">{title}</h3>
           <p className="text-sm text-muted-foreground flex items-center mt-1 truncate"><MapPin className="w-4 h-4 mr-1 flex-shrink-0" /> {location}</p>
 
@@ -194,10 +194,10 @@ export const PropertyCard = ({ id, title, location, securityDeposit, price, view
 
           <div className="flex justify-between items-center mt-auto pt-4 border-t">
             <div>
-              <p className="font-bold text-lg text-primary">₹{price.toLocaleString()}/Month</p>
+              <p className="font-bold text-lg text-primary">₹{price.toLocaleString()}{listingType === 'Sale' ? '' : '/Month'}</p>
             </div>
-            <Button asChild variant="outline" size="sm">
-                <p>View Details</p>
+            <Button variant="outline" size="sm">
+                View Details
             </Button>
           </div>
         </div>
