@@ -17,6 +17,7 @@ import React, { useState, useMemo, Suspense, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Bubbles from '@/components/Bubbles';
 import { PropertyCard } from '@/components/PropertyCard';
+import { motion } from 'framer-motion';
 
 const cities = placeholderImages.cities;
 const testimonials = placeholderImages.testimonials;
@@ -103,7 +104,7 @@ export default function HomePage() {
     window.addEventListener('locationUpdated', handleLocationUpdate);
     return () => window.removeEventListener('locationUpdated', handleLocationUpdate);
   }, []);
-  
+
   const propertiesQuery = useMemo(() => {
     if (userLocation) {
       return {
@@ -144,57 +145,57 @@ export default function HomePage() {
       <main className="flex-grow">
         <section className="relative h-[400px] md:h-[500px] bg-cover bg-center text-white">
           <Image
-              src={placeholderImages.hero.src}
-              alt="Find Your Dream Apartment"
-              fill
-              priority
-              style={{ objectFit: 'cover' }}
-              className="absolute inset-0"
-              data-ai-hint="bright modern living room"
-            />
-            <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-            <Bubbles />
-            <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
-                 <h1 className="text-4xl md:text-5xl font-bold">{displayedText}<span className={`inline-block w-1 h-12 bg-white ml-1 ${showCursor ? 'opacity-100' : 'opacity-0'} transition-opacity duration-100`}></span></h1>
-                 <p className="mt-2 md:mt-4 text-lg md:text-xl max-w-2xl animate-in fade-in slide-in-from-top-12 duration-700 delay-500">Book rooms online with ease</p>
-            </div>
-            <div className="relative z-10 p-4 w-full max-w-5xl mx-auto -mt-16 md:-mt-24 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
-                <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-2xl p-4 md:p-6 hover:bg-white focus-within:bg-white transition-colors duration-300">
-                    <div className="grid grid-cols-3 gap-2 items-end">
-                        <div>
-                            <label htmlFor="location" className="text-sm font-semibold text-gray-700">Location</label>
-                            <div className="relative">
-                                <Input id="location" placeholder="Enter city or location" className="text-black" value={location} onChange={(e) => setLocation(e.target.value)} />
-                            </div>
-                        </div>
-                        <div>
-                            <label className="text-sm font-semibold text-gray-700">Price Range</label>
-                            <div className="flex flex-col sm:flex-row gap-2">
-                                <Input placeholder="Min Price" type="number" className="text-black" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
-                                <Input placeholder="Max Price" type="number" className="text-black" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
-                            </div>
-                        </div>
-                        <div>
-                            <label htmlFor="for-whom" className="text-sm font-semibold text-gray-700">For Whom</label>
-                            <Select value={forWhom} onValueChange={setForWhom}>
-                                <SelectTrigger className="text-black">
-                                    <SelectValue placeholder="Select audience" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="anyone">Anyone</SelectItem>
-                                    <SelectItem value="students">Students</SelectItem>
-                                    <SelectItem value="professionals">Professionals</SelectItem>
-                                    <SelectItem value="families">Families</SelectItem>
-                                    <SelectItem value="couples">Couples</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-                    <Button className="w-full h-12 text-base font-bold" onClick={handleSearch}>
-                        Search Rooms
-                    </Button>
+            src={placeholderImages.hero.src}
+            alt="Find Your Dream Apartment"
+            fill
+            priority
+            style={{ objectFit: 'cover' }}
+            className="absolute inset-0"
+            data-ai-hint="bright modern living room"
+          />
+          <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+          <Bubbles />
+          <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
+            <h1 className="text-4xl md:text-5xl font-bold">{displayedText}<span className={`inline-block w-1 h-12 bg-white ml-1 ${showCursor ? 'opacity-100' : 'opacity-0'} transition-opacity duration-100`}></span></h1>
+            <p className="mt-2 md:mt-4 text-lg md:text-xl max-w-2xl animate-in fade-in slide-in-from-top-12 duration-700 delay-500">Book rooms online with ease</p>
+          </div>
+          <div className="relative z-10 p-4 w-full max-w-5xl mx-auto -mt-16 md:-mt-24 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
+            <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-2xl p-4 md:p-6 hover:bg-white focus-within:bg-white transition-colors duration-300">
+              <div className="grid grid-cols-3 gap-2 items-end">
+                <div>
+                  <label htmlFor="location" className="text-sm font-semibold text-gray-700">Location</label>
+                  <div className="relative">
+                    <Input id="location" placeholder="Enter city or location" className="text-black" value={location} onChange={(e) => setLocation(e.target.value)} />
+                  </div>
                 </div>
+                <div>
+                  <label className="text-sm font-semibold text-gray-700">Price Range</label>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Input placeholder="Min Price" type="number" className="text-black" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
+                    <Input placeholder="Max Price" type="number" className="text-black" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="for-whom" className="text-sm font-semibold text-gray-700">For Whom</label>
+                  <Select value={forWhom} onValueChange={setForWhom}>
+                    <SelectTrigger className="text-black">
+                      <SelectValue placeholder="Select audience" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="anyone">Anyone</SelectItem>
+                      <SelectItem value="students">Students</SelectItem>
+                      <SelectItem value="professionals">Professionals</SelectItem>
+                      <SelectItem value="families">Families</SelectItem>
+                      <SelectItem value="couples">Couples</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <Button className="w-full h-12 text-base font-bold" onClick={handleSearch}>
+                Search Rooms
+              </Button>
             </div>
+          </div>
         </section>
 
         <section className="pt-24 pb-12 bg-background">
@@ -234,21 +235,21 @@ export default function HomePage() {
         </section>
 
         <section className="py-12 bg-primary text-primary-foreground">
-           <div className="container mx-auto px-4 text-center">
-              <h2 className="text-3xl font-bold mb-2">Discover Popular Properties</h2>
-              <p className="mb-8">Explore the most sought-after properties in our portfolio.</p>
-              {/* You can re-use the carousel or show different properties here */}
-              <Suspense fallback={<div className="text-center"><p>Loading properties...</p></div>}>
-                {isLoadingAllProperties ? (
-                  <div className="text-center"><p>Loading properties...</p></div>
-                ) : !allProperties || allProperties.length === 0 ? (
-                  <div className="text-center"><p>No properties found in your location. Try searching for properties in other cities.</p></div>
-                ) : (
-                  <PropertiesCarousel properties={allProperties.slice(0, 6)} isLoading={isLoadingAllProperties} />
-                )}
-              </Suspense>
-            </div>
-         </section>
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl font-bold mb-2">Discover Popular Properties</h2>
+            <p className="mb-8">Explore the most sought-after properties in our portfolio.</p>
+            {/* You can re-use the carousel or show different properties here */}
+            <Suspense fallback={<div className="text-center"><p>Loading properties...</p></div>}>
+              {isLoadingAllProperties ? (
+                <div className="text-center"><p>Loading properties...</p></div>
+              ) : !allProperties || allProperties.length === 0 ? (
+                <div className="text-center"><p>No properties found in your location. Try searching for properties in other cities.</p></div>
+              ) : (
+                <PropertiesCarousel properties={allProperties.slice(0, 6)} isLoading={isLoadingAllProperties} />
+              )}
+            </Suspense>
+          </div>
+        </section>
 
         <section className="py-16 bg-background">
           <div className="container mx-auto px-4">
@@ -271,29 +272,29 @@ export default function HomePage() {
         </section>
 
         <section className="py-12 bg-white">
-            <div className="container mx-auto text-center px-4">
-                <h2 className="text-3xl font-bold mb-2">Clients Testimonials</h2>
-                <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">What our happy clients say about us.</p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {testimonials.map(testimonial => (
-                        <Card key={testimonial.name} className="bg-background text-center p-6 shadow-none border-0">
-                            <CardContent className="relative">
-                                <p className="text-gray-600 mb-6 italic">&quot;{testimonial.text}&quot;</p>
-                                <div className="absolute -bottom-10 right-0 text-6xl text-primary opacity-20">”</div>
-                                <div className="flex items-center justify-center">
-                                    <Image src={testimonial.avatar.src} alt={testimonial.name} width={60} height={60} className="rounded-full mr-4 object-cover" data-ai-hint={testimonial.avatar.hint} />
-                                    <div>
-                                      <h4 className="font-bold">{testimonial.name}</h4>
-                                      <p className="text-sm text-gray-500">{testimonial.role}</p>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
+          <div className="container mx-auto text-center px-4">
+            <h2 className="text-3xl font-bold mb-2">Clients Testimonials</h2>
+            <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">What our happy clients say about us.</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {testimonials.map(testimonial => (
+                <Card key={testimonial.name} className="bg-background text-center p-6 shadow-none border-0">
+                  <CardContent className="relative">
+                    <p className="text-gray-600 mb-6 italic">&quot;{testimonial.text}&quot;</p>
+                    <div className="absolute -bottom-10 right-0 text-6xl text-primary opacity-20">”</div>
+                    <div className="flex items-center justify-center">
+                      <Image src={testimonial.avatar.src} alt={testimonial.name} width={60} height={60} className="rounded-full mr-4 object-cover" data-ai-hint={testimonial.avatar.hint} />
+                      <div>
+                        <h4 className="font-bold">{testimonial.name}</h4>
+                        <p className="text-sm text-gray-500">{testimonial.role}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
+          </div>
         </section>
-        
+
       </main>
       <Footer />
     </div>
