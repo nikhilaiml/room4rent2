@@ -142,7 +142,7 @@ export const PropertyCard = ({ id, title, location, amenities, securityDeposit, 
                <Button variant="ghost" size="icon" className="w-8 h-8 bg-white/80 hover:bg-white text-gray-700" onClick={handleShare}><Share2 className="w-4 h-4" /></Button>
           </div>
         </div>
-        <div className="p-4 flex flex-col flex-grow">
+        <div className="p-4 flex flex-col flex-grow overflow-hidden">
           <h3 className="font-bold text-lg flex-1 mr-2 line-clamp-2 group-hover:text-primary transition-colors">{title}</h3>
           <p className="text-sm text-muted-foreground flex items-center mt-1 truncate"><MapPin className="w-4 h-4 mr-1 flex-shrink-0" /> {location}</p>
           
