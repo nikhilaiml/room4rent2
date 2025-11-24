@@ -143,7 +143,7 @@ export const PropertyCard = ({ id, title, location, amenities, securityDeposit, 
           </div>
         </div>
         <div className="p-4 flex flex-col flex-grow">
-          <h3 className="font-bold text-lg flex-1 mr-2 truncate group-hover:text-primary transition-colors">{title}</h3>
+          <h3 className="font-bold text-lg flex-1 mr-2 line-clamp-2 group-hover:text-primary transition-colors">{title}</h3>
           <p className="text-sm text-muted-foreground flex items-center mt-1 truncate"><MapPin className="w-4 h-4 mr-1 flex-shrink-0" /> {location}</p>
           
           <div className="flex items-center text-sm text-muted-foreground gap-4 my-3">
