@@ -186,10 +186,10 @@ function PropertyDetails() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <Header />
-      <main className="flex-grow">
+      <Header transparent={true} />
+      <main className="flex-grow -mt-20">
         {/* Image Gallery Section */}
-        <div className="w-full bg-black">
+        <div className="w-full bg-black pt-20">
           <div className="max-w-7xl mx-auto">
             <Carousel className="w-full">
               <CarouselContent>
