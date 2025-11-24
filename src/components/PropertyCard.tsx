@@ -162,13 +162,13 @@ export const PropertyCard = ({ id, title, location, securityDeposit, price, view
               <CarouselContent>
                 {images.map((imgSrc, index) => (
                   <CarouselItem key={index}>
-                    <Image src={imgSrc} alt={`${title} - ${index + 1}`} width={400} height={250} className="w-full object-cover h-full" />
+                    <Image src={imgSrc} alt={`${title} - ${index + 1}`} width={400} height={250} className="w-full object-cover h-full transform group-hover:scale-105 transition-transform duration-500" />
                   </CarouselItem>
                 ))}
               </CarouselContent>
             </Carousel>
           ) : (
-            <Image src={(images && images[0]) || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop'} alt={title} width={400} height={250} className="w-full object-cover h-full transform group-hover:scale-110 transition-transform duration-500" />
+            <Image src={(images && images[0]) || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop'} alt={title} width={400} height={250} className="w-full object-cover h-full transform group-hover:scale-105 transition-transform duration-500" />
           )}
           {listingType && (
             <div className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs px-3 py-1 rounded-full font-bold z-10">
@@ -196,7 +196,7 @@ export const PropertyCard = ({ id, title, location, securityDeposit, price, view
             <div>
               <p className="font-bold text-lg text-primary">₹{price.toLocaleString()}{listingType === 'Sale' ? '' : '/Month'}</p>
             </div>
-            <Button variant="outline" size="sm">
+            <Button variant="default" size="sm">
                 View Details
             </Button>
           </div>
