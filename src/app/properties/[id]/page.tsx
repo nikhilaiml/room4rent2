@@ -11,10 +11,11 @@ import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Button } from '@/components/ui/button';
-import { Share2, Heart, Phone, ShieldCheck, Wifi, BedDouble, Bath } from 'lucide-react';
+import { Share2, Heart, Phone, ShieldCheck, Wifi, BedDouble, Bath, MapPin, Home, Maximize, Car, MessageSquare, Eye, Star } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useSupabaseClient, useSupabase } from '@/supabase';
 import ChatComponent from '@/components/ChatComponent';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface Property {
   id: string;
@@ -27,6 +28,9 @@ interface Property {
   propertyType: string;
   amenities: string[];
   ownerId: string;
+  securityDeposit?: number;
+  views?: number;
+  rating?: number;
 }
 
 function PropertyDetails() {
@@ -52,35 +56,35 @@ function PropertyDetails() {
 
   if (isLoading) {
     return (
-        <div className="flex flex-col min-h-screen">
-            <Header />
-            <main className="flex-grow flex items-center justify-center">
-                <p>Loading property details...</p>
-            </main>
-            <Footer />
-        </div>
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-grow flex items-center justify-center">
+          <p>Loading property details...</p>
+        </main>
+        <Footer />
+      </div>
     );
   }
 
   if (error) {
     return (
-        <div className="flex flex-col min-h-screen">
-            <Header />
-            <main className="flex-grow flex items-center justify-center">
-                <p>Error loading property: {error.message}</p>
-            </main>
-            <Footer />
-            {showChat && chatEnquiryId && user && property && (
-              <ChatComponent
-                enquiryId={chatEnquiryId}
-                currentUserId={user.id}
-                otherUserId={(property as any).ownerId}
-                onClose={() => setShowChat(false)}
-              />
-            )}
-          </div>
-        );
-      }
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-grow flex items-center justify-center">
+          <p>Error loading property: {error.message}</p>
+        </main>
+        <Footer />
+        {showChat && chatEnquiryId && user && property && (
+          <ChatComponent
+            enquiryId={chatEnquiryId}
+            currentUserId={user.id}
+            otherUserId={(property as any).ownerId}
+            onClose={() => setShowChat(false)}
+          />
+        )}
+      </div>
+    );
+  }
 
   if (!property) {
     return (
@@ -101,7 +105,7 @@ function PropertyDetails() {
       </div>
     );
   }
-  
+
   const handleCall = () => {
     toast({
       title: "Contact Owner",
@@ -141,9 +145,6 @@ function PropertyDetails() {
         .select()
         .single();
 
-      console.log('Enquiry data:', enquiryData);
-      console.log('Enquiry error:', enquiryError);
-
       if (enquiryError) throw enquiryError;
 
       // Fetch owner details
@@ -175,171 +176,273 @@ function PropertyDetails() {
     }
   };
 
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast({
+      title: "Link Copied!",
+      description: "Property link has been copied to your clipboard.",
+    });
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <main className="flex-grow py-0 px-0 md:py-8 md:px-8">
-        <div className="w-full">
-            <div className="overflow-hidden">
-                 <div className="hidden md:block p-6">
-                     <div className="flex flex-col md:flex-row justify-between items-start">
-                         <div>
-                             <h1 className="text-2xl md:text-3xl font-bold">{property.title}</h1>
-                             <p className="text-md text-muted-foreground mt-2">{property.location}, {property.city}</p>
-                         </div>
-                         <div className="flex items-center gap-2 mt-4 md:mt-0">
-                              <Button variant="outline" size="icon"><Heart className="w-5 h-5" /></Button>
-                              <Button variant="outline" size="icon"><Share2 className="w-5 h-5" /></Button>
-                         </div>
-                     </div>
-                 </div>
-                <div className="p-0 md:p-6">
-                    <div className="hidden md:block">
-                        <Carousel className="w-full mb-8">
-                            <CarouselContent>
-                            {property.imageUrls && property.imageUrls.length > 0 ? (
-                                property.imageUrls.map((url, index) => (
-                                <CarouselItem key={index}>
-                                    <Image src={url} alt={`${property.title} image ${index + 1}`} width={1200} height={800} className="w-full h-auto max-h-[800px] object-cover"/>
-                                </CarouselItem>
-                                ))
-                            ) : (
-                                 <CarouselItem>
-                                    <Image src={'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200&h=800&auto=format&fit=crop'} alt="Placeholder image" width={1200} height={800} className="w-full h-auto object-cover"/>
-                                </CarouselItem>
-                            )}
-                            </CarouselContent>
-                            <CarouselPrevious className="left-4" />
-                            <CarouselNext className="right-4" />
-                        </Carousel>
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                            <div className="lg:col-span-2">
-                                <div className="mb-8">
-                                    <h2 className="text-2xl font-bold mb-4">About this property</h2>
-                                    <p className="text-muted-foreground">{property.description}</p>
-                                </div>
-                                <div className="mb-8">
-                                    <h2 className="text-2xl font-bold mb-4">Amenities</h2>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                       {/* This should be dynamic based on property.amenities */}
-                                       <div className="flex items-center gap-2"><Wifi className="w-5 h-5 text-primary"/><span>WiFi</span></div>
-                                       <div className="flex items-center gap-2"><BedDouble className="w-5 h-5 text-primary"/><span>Furnished</span></div>
-                                       <div className="flex items-center gap-2"><Bath className="w-5 h-5 text-primary"/><span>Attached Bathroom</span></div>
-                                       <div className="flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-primary"/><span>Security</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="lg:col-span-1">
-                                <div className="bg-white p-6 rounded-lg shadow-md">
-                                    <div className="mb-6">
-                                        <p className="text-3xl font-bold text-primary">₹{property.price.toLocaleString()}<span className="text-lg font-normal text-muted-foreground">/month</span></p>
-                                        <Badge className="mt-2">{property.propertyType}</Badge>
-                                    </div>
-                                    <div>
-                                        <p className="font-bold mb-2">Owner Details</p>
-                                        {ownerDetails ? (
-                                          <div className="text-sm">
-                                            <p><strong>Name:</strong> {ownerDetails.name}</p>
-                                            <p><strong>Email:</strong> {ownerDetails.email}</p>
-                                          </div>
-                                        ) : (
-                                          <p className="text-sm text-muted-foreground">Contact details will be visible after sending an enquiry.</p>
-                                        )}
-                                        <Button className="w-full mt-4" onClick={handleCall}>
-                                            <Phone className="w-4 h-4 mr-2" /> Call Owner
-                                        </Button>
-                                        <Button
-                                          variant="secondary"
-                                          className="w-full mt-2"
-                                          onClick={handleSendEnquiry}
-                                        >
-                                          Send Enquiry
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+      <main className="flex-grow">
+        {/* Image Gallery Section */}
+        <div className="w-full bg-black">
+          <div className="max-w-7xl mx-auto">
+            <Carousel className="w-full">
+              <CarouselContent>
+                {property.imageUrls && property.imageUrls.length > 0 ? (
+                  property.imageUrls.map((url, index) => (
+                    <CarouselItem key={index}>
+                      <div className="relative w-full h-[400px] md:h-[600px]">
+                        <Image
+                          src={url}
+                          alt={`${property.title} - ${index + 1}`}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))
+                ) : (
+                  <CarouselItem>
+                    <div className="relative w-full h-[400px] md:h-[600px]">
+                      <Image
+                        src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200&h=800&auto=format&fit=crop"
+                        alt="Placeholder"
+                        fill
+                        className="object-cover"
+                      />
                     </div>
-                    <div className="md:hidden p-4">
-                        <Carousel className="w-full">
-                            <CarouselContent>
-                            {property.imageUrls && property.imageUrls.length > 0 ? (
-                                property.imageUrls.map((url, index) => (
-                                <CarouselItem key={index}>
-                                    <Image src={url} alt={`${property.title} image ${index + 1}`} width={800} height={600} className="w-full h-auto object-cover rounded-lg"/>
-                                </CarouselItem>
-                                ))
-                            ) : (
-                                 <CarouselItem>
-                                    <Image src={'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&h=600&auto=format&fit=crop'} alt="Placeholder image" width={800} height={600} className="w-full h-auto object-cover rounded-lg"/>
-                                </CarouselItem>
-                            )}
-                            </CarouselContent>
-                            <CarouselPrevious className="left-4" />
-                            <CarouselNext className="right-4" />
-                        </Carousel>
-                        <div className="mt-4">
-                            <h1 className="text-2xl md:text-3xl font-bold">{property.title}</h1>
-                            <p className="text-md text-muted-foreground mt-2">{property.location}, {property.city}</p>
-                            <div className="flex items-center gap-2 mt-4">
-                                <Button variant="outline" size="icon"><Heart className="w-5 h-5" /></Button>
-                                <Button variant="outline" size="icon"><Share2 className="w-5 h-5" /></Button>
-                            </div>
-                        </div>
-                        <div className="mt-4">
-                            <p className="text-2xl font-bold">₹{property.price.toLocaleString()}<span className="text-lg font-normal text-muted-foreground">/month</span></p>
-                            <Badge className="mt-2">{property.propertyType}</Badge>
-                        </div>
-                        <div className="mt-4">
-                            <h2 className="text-2xl font-bold mb-4">About this property</h2>
-                            <p className="text-muted-foreground">{property.description}</p>
-                        </div>
-                         <div className="mt-4">
-                            <h2 className="text-2xl font-bold mb-4">Amenities</h2>
-                            <div className="grid grid-cols-2 gap-4">
-                               {/* This should be dynamic based on property.amenities */}
-                               <div className="flex items-center gap-2"><Wifi className="w-5 h-5 text-primary"/><span>WiFi</span></div>
-                               <div className="flex items-center gap-2"><BedDouble className="w-5 h-5 text-primary"/><span>Furnished</span></div>
-                               <div className="flex items-center gap-2"><Bath className="w-5 h-5 text-primary"/><span>Attached Bathroom</span></div>
-                               <div className="flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-primary"/><span>Security</span></div>
-                            </div>
-                        </div>
-                        <div className="mt-4">
-                            <p className="font-bold mb-2">Owner Details</p>
-                            {ownerDetails ? (
-                              <div className="text-sm">
-                                <p><strong>Name:</strong> {ownerDetails.name}</p>
-                                <p><strong>Email:</strong> {ownerDetails.email}</p>
-                              </div>
-                            ) : (
-                              <p className="text-sm text-muted-foreground">Contact details will be visible after sending an enquiry.</p>
-                            )}
-                            <Button className="w-full mt-4" onClick={handleCall}>
-                                <Phone className="w-4 h-4 mr-2" /> Call Owner
-                            </Button>
-                            <Button
-                              variant="secondary"
-                              className="w-full mt-2"
-                              onClick={handleSendEnquiry}
-                            >
-                              Send Enquiry
-                            </Button>
-                        </div>
-                    </div>
-                </div>
+                  </CarouselItem>
+                )}
+              </CarouselContent>
+              <CarouselPrevious className="left-4" />
+              <CarouselNext className="right-4" />
+            </Carousel>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          {/* Property Overview */}
+          <div className="mb-8">
+            <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-4">
+              <div className="flex-1">
+                <h1 className="text-3xl md:text-4xl font-bold mb-2">{property.title}</h1>
+                <p className="text-lg text-muted-foreground flex items-center gap-2">
+                  <MapPin className="w-5 h-5" />
+                  {property.location}, {property.city}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" size="icon" onClick={handleShare}>
+                  <Share2 className="w-5 h-5" />
+                </Button>
+                <Button variant="outline" size="icon">
+                  <Heart className="w-5 h-5" />
+                </Button>
+              </div>
             </div>
+
+            {/* Key Features */}
+            <div className="flex flex-wrap gap-6 py-4 border-y">
+              <div className="flex items-center gap-2">
+                <BedDouble className="w-5 h-5 text-primary" />
+                <span className="font-semibold">3 Bedrooms</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Bath className="w-5 h-5 text-primary" />
+                <span className="font-semibold">2 Bathrooms</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Maximize className="w-5 h-5 text-primary" />
+                <span className="font-semibold">1200 sq ft</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Home className="w-5 h-5 text-primary" />
+                <span className="font-semibold">{property.propertyType}</span>
+              </div>
+              {property.views && (
+                <div className="flex items-center gap-2">
+                  <Eye className="w-5 h-5 text-muted-foreground" />
+                  <span className="text-muted-foreground">{property.views} views</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Two Column Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column - Main Content */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Description */}
+              <div>
+                <h2 className="text-2xl font-bold mb-4">About this property</h2>
+                <p className="text-muted-foreground leading-relaxed">
+                  {property.description}
+                </p>
+              </div>
+
+              {/* Property Details */}
+              <div>
+                <h2 className="text-2xl font-bold mb-4">Property Details</h2>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="border rounded-lg p-4">
+                    <p className="text-sm text-muted-foreground mb-1">Property Type</p>
+                    <p className="font-semibold">{property.propertyType}</p>
+                  </div>
+                  <div className="border rounded-lg p-4">
+                    <p className="text-sm text-muted-foreground mb-1">Monthly Rent</p>
+                    <p className="font-semibold">₹{property.price.toLocaleString()}</p>
+                  </div>
+                  {property.securityDeposit && (
+                    <div className="border rounded-lg p-4">
+                      <p className="text-sm text-muted-foreground mb-1">Security Deposit</p>
+                      <p className="font-semibold">₹{property.securityDeposit.toLocaleString()}</p>
+                    </div>
+                  )}
+                  <div className="border rounded-lg p-4">
+                    <p className="text-sm text-muted-foreground mb-1">Location</p>
+                    <p className="font-semibold">{property.city}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Amenities */}
+              <div>
+                <h2 className="text-2xl font-bold mb-4">Amenities</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div className="flex items-center gap-3 p-3 border rounded-lg">
+                    <Wifi className="w-5 h-5 text-primary" />
+                    <span>WiFi</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 border rounded-lg">
+                    <BedDouble className="w-5 h-5 text-primary" />
+                    <span>Furnished</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 border rounded-lg">
+                    <Bath className="w-5 h-5 text-primary" />
+                    <span>Attached Bathroom</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 border rounded-lg">
+                    <ShieldCheck className="w-5 h-5 text-primary" />
+                    <span>Security</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 border rounded-lg">
+                    <Car className="w-5 h-5 text-primary" />
+                    <span>Parking</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 border rounded-lg">
+                    <Home className="w-5 h-5 text-primary" />
+                    <span>Balcony</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Location */}
+              <div>
+                <h2 className="text-2xl font-bold mb-4">Location</h2>
+                <div className="border rounded-lg overflow-hidden">
+                  <div className="bg-muted h-64 flex items-center justify-center">
+                    <div className="text-center">
+                      <MapPin className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
+                      <p className="text-muted-foreground">Map view coming soon</p>
+                      <p className="text-sm text-muted-foreground mt-1">{property.location}, {property.city}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column - Sidebar */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-8">
+                <Card>
+                  <CardContent className="p-6">
+                    {/* Price */}
+                    <div className="mb-6">
+                      <p className="text-3xl font-bold text-primary">
+                        ₹{property.price.toLocaleString()}
+                        <span className="text-lg font-normal text-muted-foreground">/month</span>
+                      </p>
+                      {property.securityDeposit && (
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Security: ₹{property.securityDeposit.toLocaleString()}
+                        </p>
+                      )}
+                      <Badge className="mt-3">{property.propertyType}</Badge>
+                    </div>
+
+                    {/* Owner Details */}
+                    <div className="mb-6 pb-6 border-b">
+                      <h3 className="font-bold mb-3">Owner Details</h3>
+                      {ownerDetails ? (
+                        <div className="space-y-2 text-sm">
+                          <p><strong>Name:</strong> {ownerDetails.name}</p>
+                          <p><strong>Email:</strong> {ownerDetails.email}</p>
+                        </div>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">
+                          Contact details will be visible after sending an enquiry.
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="space-y-3">
+                      <Button className="w-full" size="lg" onClick={handleCall}>
+                        <Phone className="w-4 h-4 mr-2" />
+                        Call Owner
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        className="w-full"
+                        size="lg"
+                        onClick={handleSendEnquiry}
+                      >
+                        <MessageSquare className="w-4 h-4 mr-2" />
+                        Send Enquiry
+                      </Button>
+                    </div>
+
+                    {/* Rating */}
+                    {property.rating && (
+                      <div className="mt-6 pt-6 border-t">
+                        <div className="flex items-center gap-2">
+                          <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                          <span className="font-semibold">{property.rating}</span>
+                          <span className="text-sm text-muted-foreground">Rating</span>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
       <Footer />
+      {showChat && chatEnquiryId && user && property && (
+        <ChatComponent
+          enquiryId={chatEnquiryId}
+          currentUserId={user.id}
+          otherUserId={(property as any).ownerId}
+          onClose={() => setShowChat(false)}
+        />
+      )}
     </div>
   );
 }
 
 
 export default function PropertyPage() {
-    return (
-        <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}>
-            <PropertyDetails />
-        </Suspense>
-    )
+  return (
+    <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}>
+      <PropertyDetails />
+    </Suspense>
+  )
 }
