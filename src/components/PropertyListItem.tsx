@@ -169,15 +169,16 @@ export const PropertyListItem = ({ id, title, location, securityDeposit, price, 
                     {images.map((imgSrc, index) => (
                       <CarouselItem key={index} className="h-full pl-0">
                         <motion.div
-                          className="relative w-full h-full"
+                          className="relative w-full h-full flex items-center justify-center"
                           whileHover={{ scale: 1.05 }}
                           transition={{ duration: 0.6 }}
                         >
                           <Image
                             src={imgSrc}
                             alt={`${title} - ${index + 1}`}
-                            fill
-                            className="object-cover"
+                            width={600}
+                            height={450}
+                            className="object-cover w-full h-full"
                             unoptimized
                           />
                         </motion.div>
@@ -187,15 +188,16 @@ export const PropertyListItem = ({ id, title, location, securityDeposit, price, 
                 </Carousel>
               ) : (
                 <motion.div
-                  className="relative w-full h-full"
+                  className="relative w-full h-full flex items-center justify-center"
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.6 }}
                 >
                   <Image
                     src={(images && images[0]) || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop'}
                     alt={title}
-                    fill
-                    className="object-cover"
+                    width={600}
+                    height={450}
+                    className="object-cover w-full h-full"
                     unoptimized
                   />
                 </motion.div>

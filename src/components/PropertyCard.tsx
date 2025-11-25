@@ -165,22 +165,23 @@ export const PropertyCard = ({ id, title, location, securityDeposit, price, view
       >
         <Card className="overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-500 h-full flex flex-col rounded-2xl relative group bg-white dark:bg-card">
           <CardContent className="p-0 flex flex-col h-full">
-            <div className="relative overflow-hidden aspect-[4/3] flex-shrink-0">
+            <div className="relative overflow-hidden aspect-[4/3] flex-shrink-0 bg-gray-100">
               {images && images.length > 1 ? (
                 <Carousel setApi={setApi} opts={{ align: "start", loop: true }} className="w-full h-full">
                   <CarouselContent className="h-full ml-0">
                     {images.map((imgSrc, index) => (
-                      <CarouselItem key={index} className="h-full pl-0">
+                      <CarouselItem key={index} className="h-full pl-0 aspect-[4/3]">
                         <motion.div
-                          className="relative w-full h-full"
+                          className="relative w-full h-full flex items-center justify-center"
                           whileHover={{ scale: 1.05 }}
                           transition={{ duration: 0.6 }}
                         >
                           <Image
                             src={imgSrc}
                             alt={`${title} - ${index + 1}`}
-                            fill
-                            className="object-cover"
+                            width={600}
+                            height={450}
+                            className="object-cover w-full h-full"
                             unoptimized
                           />
                         </motion.div>
@@ -190,15 +191,16 @@ export const PropertyCard = ({ id, title, location, securityDeposit, price, view
                 </Carousel>
               ) : (
                 <motion.div
-                  className="relative w-full h-full"
+                  className="relative w-full h-full flex items-center justify-center"
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.6 }}
                 >
                   <Image
                     src={(images && images[0]) || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop'}
                     alt={title}
-                    fill
-                    className="object-cover"
+                    width={600}
+                    height={450}
+                    className="object-cover w-full h-full"
                     unoptimized
                   />
                 </motion.div>
