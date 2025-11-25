@@ -178,7 +178,7 @@ export const PropertyListItem = ({ id, title, location, securityDeposit, price, 
                             alt={`${title} - ${index + 1}`}
                             width={256}
                             height={320}
-                            className="w-full object-cover h-full"
+                            className="w-full object-fill h-full"
                           />
                         </motion.div>
                       </CarouselItem>
@@ -196,7 +196,7 @@ export const PropertyListItem = ({ id, title, location, securityDeposit, price, 
                     alt={title}
                     width={256}
                     height={320}
-                    className="w-full object-cover h-full"
+                    className="w-full object-fill h-full"
                   />
                 </motion.div>
               )}
