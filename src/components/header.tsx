@@ -7,6 +7,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { User, LogIn, LogOut, Menu, Search } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 import { Logo } from './logo';
@@ -112,27 +113,31 @@ export default function Header({ transparent = false }: { transparent?: boolean 
                     </Button>
                   </>
                 ) : (
-                  <>
-                    <Button
-                      variant="outline"
-                      asChild
-                      size="sm"
-                      className={isTransparent ? "border-white/20 text-white hover:bg-white/10" : ""}
-                    >
-                      <Link href="/login" className="flex items-center">
-                        <User className="mr-0 sm:mr-2 h-4 w-4" /> <span className="hidden sm:inline">Login</span>
-                      </Link>
-                    </Button>
-                    <Button
-                      asChild
-                      size="sm"
-                      className={isTransparent ? "bg-white/20 hover:bg-white/30 text-white" : ""}
-                    >
-                      <Link href="/register" className="flex items-center">
-                        <LogIn className="mr-2 h-4 w-4" /> Register
-                      </Link>
-                    </Button>
-                  </>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className={isTransparent ? "border-white/20 text-white hover:bg-white/10" : ""}
+                      >
+                        <User className="h-5 w-5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem asChild>
+                        <Link href="/login" className="flex items-center cursor-pointer">
+                          <LogIn className="mr-2 h-4 w-4" />
+                          Login
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/register" className="flex items-center cursor-pointer">
+                          <User className="mr-2 h-4 w-4" />
+                          Register
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 )}
               </>
             )}
