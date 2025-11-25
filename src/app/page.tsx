@@ -234,6 +234,22 @@ export default function HomePage() {
           </div>
         </section>
 
+        <section className="py-12 bg-primary text-primary-foreground">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl font-bold mb-2">Discover Popular Properties</h2>
+            <p className="mb-8">Explore the most sought-after properties in our portfolio.</p>
+            <Suspense fallback={<div className="text-center"><p>Loading properties...</p></div>}>
+              {isLoadingAllProperties ? (
+                <div className="text-center"><p>Loading properties...</p></div>
+              ) : !allProperties || allProperties.length === 0 ? (
+                <div className="text-center"><p>No properties available at the moment.</p></div>
+              ) : (
+                <PropertiesCarousel properties={allProperties.slice(0, 6)} isLoading={isLoadingAllProperties} />
+              )}
+            </Suspense>
+          </div>
+        </section>
+
         <section className="py-16 bg-background">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold text-center mb-10">Why Choose Us</h2>
