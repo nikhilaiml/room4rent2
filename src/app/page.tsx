@@ -105,7 +105,8 @@ export default function HomePage() {
     return () => window.removeEventListener('locationUpdated', handleLocationUpdate);
   }, []);
 
-  const propertiesQuery = useMemo(() => {
+  // Query for user's location properties (for Recommended Properties section)
+  const recommendedPropertiesQuery = useMemo(() => {
     if (userLocation) {
       return {
         table: 'properties',
@@ -119,16 +120,29 @@ export default function HomePage() {
     return null;
   }, [userLocation]);
 
-  const { data: properties, isLoading: isLoadingProperties } = useCollection(propertiesQuery);
+  const { data: recommendedProperties, isLoading: isLoadingRecommended } = useCollection(recommendedPropertiesQuery);
 
-  // Query for all properties (for Discover Popular Properties section)
-  const allPropertiesQuery = useMemo(() => ({
-    table: 'properties',
-    orderBy: { column: 'createdAt', ascending: false },
-    realtime: true,
-  }), []);
+  // Query for properties NOT in user's location (for Discover Properties section)
+  const discoverPropertiesQuery = useMemo(() => {
+    if (userLocation) {
+      return {
+        table: 'properties',
+        filter: (query: any) => {
+          return query.neq('city', userLocation.toLowerCase());
+        },
+        orderBy: { column: 'createdAt', ascending: false },
+        realtime: true,
+      };
+    }
+    // If no user location, show all properties
+    return {
+      table: 'properties',
+      orderBy: { column: 'createdAt', ascending: false },
+      realtime: true,
+    };
+  }, [userLocation]);
 
-  const { data: allProperties, isLoading: isLoadingAllProperties } = useCollection(allPropertiesQuery);
+  const { data: discoverProperties, isLoading: isLoadingDiscover } = useCollection(discoverPropertiesQuery);
 
   const handleSearch = () => {
     const queryParams = new URLSearchParams();
@@ -223,12 +237,12 @@ export default function HomePage() {
               Properties in {userLocation || 'your area'}
             </p>
             <Suspense fallback={<div className="text-center"><p>Loading properties...</p></div>}>
-              {isLoadingAllProperties ? (
+              {isLoadingRecommended ? (
                 <div className="text-center"><p>Loading properties...</p></div>
-              ) : !allProperties || allProperties.length === 0 ? (
-                <div className="text-center"><p>No properties found in your location. Try searching for properties in other cities.</p></div>
+              ) : !recommendedProperties || recommendedProperties.length === 0 ? (
+                <div className="text-center"><p>No properties found in {userLocation || 'your location'}. Try searching for properties in other cities.</p></div>
               ) : (
-                <PropertiesCarousel properties={allProperties.slice(0, 6)} isLoading={isLoadingAllProperties} />
+                <PropertiesCarousel properties={recommendedProperties.slice(0, 6)} isLoading={isLoadingRecommended} />
               )}
             </Suspense>
           </div>
@@ -236,15 +250,15 @@ export default function HomePage() {
 
         <section className="py-12 bg-primary text-primary-foreground">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold mb-2">Discover Popular Properties</h2>
-            <p className="mb-8">Explore the most sought-after properties in our portfolio.</p>
+            <h2 className="text-3xl font-bold mb-2">Discover Properties</h2>
+            <p className="mb-8">Explore properties in other cities</p>
             <Suspense fallback={<div className="text-center"><p>Loading properties...</p></div>}>
-              {isLoadingAllProperties ? (
+              {isLoadingDiscover ? (
                 <div className="text-center"><p>Loading properties...</p></div>
-              ) : !allProperties || allProperties.length === 0 ? (
-                <div className="text-center"><p>No properties available at the moment.</p></div>
+              ) : !discoverProperties || discoverProperties.length === 0 ? (
+                <div className="text-center"><p>No properties available in other cities at the moment.</p></div>
               ) : (
-                <PropertiesCarousel properties={allProperties.slice(0, 6)} isLoading={isLoadingAllProperties} />
+                <PropertiesCarousel properties={discoverProperties.slice(0, 6)} isLoading={isLoadingDiscover} />
               )}
             </Suspense>
           </div>
