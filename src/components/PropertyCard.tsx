@@ -158,29 +158,29 @@ export const PropertyCard = ({ id, title, location, securityDeposit, price, view
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        whileHover={{ y: -8 }}
+        whileHover={{ y: -10 }}
         onHoverStart={() => setIsHovered(true)}
         onHoverEnd={() => setIsHovered(false)}
+        className="h-full"
       >
-        <Card className="overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 h-80 flex flex-col rounded-lg relative group">
+        <Card className="overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-500 h-full flex flex-col rounded-2xl relative group bg-white dark:bg-card">
           <CardContent className="p-0 flex flex-col h-full">
-            <div className="relative overflow-hidden h-48 flex-shrink-0">
+            <div className="relative overflow-hidden aspect-[4/3] flex-shrink-0">
               {images && images.length > 1 ? (
                 <Carousel setApi={setApi} opts={{ align: "start", loop: true }} className="w-full h-full">
-                  <CarouselContent className="h-full">
+                  <CarouselContent className="h-full ml-0">
                     {images.map((imgSrc, index) => (
-                      <CarouselItem key={index} className="h-full">
+                      <CarouselItem key={index} className="h-full pl-0">
                         <motion.div
-                          className="relative w-full h-48"
+                          className="relative w-full h-full"
                           whileHover={{ scale: 1.05 }}
-                          transition={{ duration: 0.4 }}
+                          transition={{ duration: 0.6 }}
                         >
                           <Image
                             src={imgSrc}
                             alt={`${title} - ${index + 1}`}
-                            width={400}
-                            height={250}
-                            className="w-full object-cover h-48"
+                            fill
+                            className="object-cover"
                           />
                         </motion.div>
                       </CarouselItem>
@@ -189,111 +189,88 @@ export const PropertyCard = ({ id, title, location, securityDeposit, price, view
                 </Carousel>
               ) : (
                 <motion.div
-                  className="relative w-full h-48"
+                  className="relative w-full h-full"
                   whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.4 }}
+                  transition={{ duration: 0.6 }}
                 >
                   <Image
                     src={(images && images[0]) || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&h=250&auto=format&fit=crop'}
                     alt={title}
-                    width={400}
-                    height={250}
-                    className="w-full object-cover h-48"
+                    fill
+                    className="object-cover"
                   />
                 </motion.div>
               )}
 
               {/* Gradient Overlay on Hover */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
 
               {listingType && (
-                <motion.div
-                  className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs px-3 py-1 rounded-full font-bold z-10 shadow-lg"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                >
-                  {listingType === 'Sale' ? 'For Sale' : 'For Rent'}
-                </motion.div>
+                <div className="absolute top-4 left-4 z-10">
+                  <div className={`px-3 py-1.5 rounded-full text-xs font-bold shadow-lg backdrop-blur-md ${listingType === 'Sale'
+                      ? 'bg-blue-500/90 text-white'
+                      : 'bg-primary/90 text-white'
+                    }`}>
+                    {listingType === 'Sale' ? 'For Sale' : 'For Rent'}
+                  </div>
+                </div>
               )}
 
-              <div className="absolute top-3 right-3 flex space-x-1 z-10">
-                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="w-8 h-8 bg-white/90 hover:bg-white text-gray-700 backdrop-blur-sm shadow-lg"
-                    onClick={handleFavorite}
-                  >
-                    <motion.div
-                      animate={isFavorite ? { scale: [1, 1.2, 1] } : {}}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <Heart className={`w-4 h-4 transition-colors ${isFavorite ? 'text-primary fill-primary' : 'text-gray-500'}`} />
-                    </motion.div>
-                  </Button>
-                </motion.div>
+              <div className="absolute top-4 right-4 flex space-x-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="p-2 rounded-full bg-white/90 text-gray-700 backdrop-blur-sm shadow-lg hover:bg-white hover:text-primary transition-colors"
+                  onClick={handleFavorite}
+                >
+                  <Heart className={`w-4 h-4 ${isFavorite ? 'text-primary fill-primary' : ''}`} />
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="p-2 rounded-full bg-white/90 text-gray-700 backdrop-blur-sm shadow-lg hover:bg-white hover:text-primary transition-colors"
+                  onClick={handleShare}
+                >
+                  <Share2 className="w-4 h-4" />
+                </motion.button>
+              </div>
 
-                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="w-8 h-8 bg-white/90 hover:bg-white text-gray-700 backdrop-blur-sm shadow-lg"
-                    onClick={handleShare}
-                  >
-                    <Share2 className="w-4 h-4" />
-                  </Button>
-                </motion.div>
+              <div className="absolute bottom-4 left-4 right-4 z-10 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                <p className="font-bold text-2xl drop-shadow-md">₹{price.toLocaleString()}<span className="text-sm font-normal opacity-90">{listingType === 'Sale' ? '' : '/mo'}</span></p>
               </div>
             </div>
 
-            <div className="p-4 flex flex-col flex-1 min-h-0">
-              <motion.h3
-                className="font-bold text-lg mb-1 truncate group-hover:text-primary transition-colors"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.1 }}
-              >
-                {title}
-              </motion.h3>
-
-              <motion.p
-                className="text-sm text-muted-foreground flex items-center mb-2 truncate"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.15 }}
-              >
-                <MapPin className="w-4 h-4 mr-1 flex-shrink-0" /> {location}
-              </motion.p>
-
-              <motion.div
-                className="flex items-center text-sm text-muted-foreground gap-4 mb-3"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                <span className="flex items-center gap-1"><Bed className="w-4 h-4" /> 3</span>
-                <span className="flex items-center gap-1"><Bath className="w-4 h-4" /> 2</span>
-                <span className="flex items-center gap-1"><Car className="w-4 h-4" /> 1</span>
-              </motion.div>
-
-              <motion.div
-                className="flex justify-between items-center mt-auto pt-3 border-t"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.25 }}
-              >
-                <div>
-                  <p className="font-bold text-lg text-primary">₹{price.toLocaleString()}{listingType === 'Sale' ? '' : '/Month'}</p>
+            <div className="p-5 flex flex-col flex-1 min-h-0 bg-card">
+              <div className="mb-1">
+                <div className="flex items-center text-xs font-medium text-primary mb-1 uppercase tracking-wider">
+                  {listingType === 'Sale' ? 'Apartment' : 'Rental'}
                 </div>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button variant="default" size="sm" className="shadow-md hover:shadow-lg transition-shadow">
-                    View Details
-                  </Button>
-                </motion.div>
-              </motion.div>
+                <h3 className="font-bold text-lg leading-tight truncate group-hover:text-primary transition-colors" title={title}>
+                  {title}
+                </h3>
+              </div>
+
+              <div className="flex items-center text-sm text-muted-foreground mb-4 truncate">
+                <MapPin className="w-3.5 h-3.5 mr-1.5 flex-shrink-0 text-primary/70" />
+                <span className="truncate">{location}</span>
+              </div>
+
+              <div className="flex items-center justify-between text-sm text-muted-foreground mt-auto pt-4 border-t border-border/50">
+                <div className="flex items-center gap-4">
+                  <span className="flex items-center gap-1.5" title="3 Bedrooms">
+                    <Bed className="w-4 h-4 text-primary/60" />
+                    <span className="font-medium text-foreground">3</span>
+                  </span>
+                  <span className="flex items-center gap-1.5" title="2 Bathrooms">
+                    <Bath className="w-4 h-4 text-primary/60" />
+                    <span className="font-medium text-foreground">2</span>
+                  </span>
+                  <span className="flex items-center gap-1.5" title="1 Parking">
+                    <Car className="w-4 h-4 text-primary/60" />
+                    <span className="font-medium text-foreground">1</span>
+                  </span>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>

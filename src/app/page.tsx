@@ -223,23 +223,6 @@ export default function HomePage() {
               Properties in {userLocation || 'your area'}
             </p>
             <Suspense fallback={<div className="text-center"><p>Loading properties...</p></div>}>
-              {isLoadingProperties ? (
-                <div className="text-center"><p>Loading properties...</p></div>
-              ) : !properties || properties.length === 0 ? (
-                <div className="text-center"><p>No properties available at the moment.</p></div>
-              ) : (
-                <PropertiesCarousel properties={properties.slice(0, 6)} isLoading={isLoadingProperties} />
-              )}
-            </Suspense>
-          </div>
-        </section>
-
-        <section className="py-12 bg-primary text-primary-foreground">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold mb-2">Discover Popular Properties</h2>
-            <p className="mb-8">Explore the most sought-after properties in our portfolio.</p>
-            {/* You can re-use the carousel or show different properties here */}
-            <Suspense fallback={<div className="text-center"><p>Loading properties...</p></div>}>
               {isLoadingAllProperties ? (
                 <div className="text-center"><p>Loading properties...</p></div>
               ) : !allProperties || allProperties.length === 0 ? (
