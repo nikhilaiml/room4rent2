@@ -181,6 +181,7 @@ export const PropertyCard = ({ id, title, location, securityDeposit, price, view
                             alt={`${title} - ${index + 1}`}
                             fill
                             className="object-cover"
+                            unoptimized
                           />
                         </motion.div>
                       </CarouselItem>
@@ -198,6 +199,7 @@ export const PropertyCard = ({ id, title, location, securityDeposit, price, view
                     alt={title}
                     fill
                     className="object-cover"
+                    unoptimized
                   />
                 </motion.div>
               )}

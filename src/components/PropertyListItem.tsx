@@ -178,6 +178,7 @@ export const PropertyListItem = ({ id, title, location, securityDeposit, price, 
                             alt={`${title} - ${index + 1}`}
                             fill
                             className="object-cover"
+                            unoptimized
                           />
                         </motion.div>
                       </CarouselItem>
@@ -195,6 +196,7 @@ export const PropertyListItem = ({ id, title, location, securityDeposit, price, 
                     alt={title}
                     fill
                     className="object-cover"
+                    unoptimized
                   />
                 </motion.div>
               )}
@@ -205,8 +207,8 @@ export const PropertyListItem = ({ id, title, location, securityDeposit, price, 
               {listingType && (
                 <div className="absolute top-4 left-4 z-10">
                   <div className={`px-3 py-1.5 rounded-full text-xs font-bold shadow-lg backdrop-blur-md ${listingType === 'Sale'
-                      ? 'bg-blue-500/90 text-white'
-                      : 'bg-primary/90 text-white'
+                    ? 'bg-blue-500/90 text-white'
+                    : 'bg-primary/90 text-white'
                     }`}>
                     {listingType === 'Sale' ? 'For Sale' : 'For Rent'}
                   </div>
