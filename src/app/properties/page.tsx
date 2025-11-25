@@ -266,7 +266,7 @@ function PropertiesList() {
                                                 securityDeposit={prop.securityDeposit || 0}
                                                 price={prop.price}
                                                 views={prop.views || 0}
-                                                images={prop.imageUrls}
+                                                images={prop.imageUrls || (prop as any).image_urls}
                                                 rating={prop.rating || 4}
                                                 listingType={prop.listingType}
                                             />
@@ -279,7 +279,7 @@ function PropertiesList() {
                                                 securityDeposit={prop.securityDeposit || 0}
                                                 price={prop.price}
                                                 views={prop.views || 0}
-                                                images={prop.imageUrls}
+                                                images={prop.imageUrls || (prop as any).image_urls}
                                                 rating={prop.rating || 4}
                                                 listingType={prop.listingType}
                                             />

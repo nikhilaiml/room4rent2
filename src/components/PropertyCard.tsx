@@ -165,7 +165,7 @@ export const PropertyCard = ({ id, title, location, securityDeposit, price, view
       >
         <Card className="overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-500 h-full flex flex-col rounded-2xl relative group bg-white dark:bg-card">
           <CardContent className="p-0 flex flex-col h-full">
-            <div className="relative overflow-hidden h-56 flex-shrink-0">
+            <div className="relative overflow-hidden aspect-[4/3] flex-shrink-0">
               {images && images.length > 1 ? (
                 <Carousel setApi={setApi} opts={{ align: "start", loop: true }} className="w-full h-full">
                   <CarouselContent className="h-full ml-0">
